@@ -18,12 +18,14 @@ main(int argc, char *argv[]) {
 	char *buff;
 	static char *env;
 	char *seq,*title,*ident;
+	char input_file_name[100];
 
 	float min_P;
 
 	struct hept_pref *h;
 
 	FILE *MAT;
+	FILE *SEQ;
 
 
 	/* defaults */
@@ -41,9 +43,17 @@ main(int argc, char *argv[]) {
 	strcpy(&heptfile[0],env);
 	strcpy(&heptfile[strlen(heptfile)],"/new.mat");
 
-
+        if (argc == 1) { 
+	   exit_error();
+        }
+	
 	for(i=1; i<argc; ++i) {
-           if(argv[i][0]!='-') exit_error();
+           if(argc == 2 && argv[i][0] != '-') {
+	        strcpy(&input_file_name[0], argv[i]);
+	   } else if (argc > 2 && i == 1 && argv[i][0] != '-') { 
+		exit_error();
+	   }	   
+
 	   if(strcmp(&argv[i][1],"m")==0) {
              if((i+1)>=argc) exit_error();
              strcpy(&heptfile[0],argv[i+1]);
@@ -72,7 +82,9 @@ main(int argc, char *argv[]) {
 	     weighted=1;
 	   } else if(strcmp(&argv[i][1],"V")==0 || strcmp(&argv[i][1],"v")==0) {
 	     verb=1;
-           } else {
+ 	   } else if(i == argc - 1) {
+	     strcpy(&input_file_name[0], argv[i]);
+	   } else {
 	     fprintf(stderr," can't understand flag/field %s\n",argv[i]);
              exit_error();
            }
@@ -107,14 +119,20 @@ main(int argc, char *argv[]) {
 		}
 	}
 
-	/* Read in a sequence from the standard input */
+	/* Read in a sequence from the file */
+	
+	if((SEQ=fopen(input_file_name,"r"))==NULL) {
+		fprintf(stderr,"Error reading %s\n",input_file_name);
+		exit(-1);
+	}
+	
 	nseq = 0;
 	ident = (char*) malloc(100*sizeof(char));
 	title = (char*) malloc(100000*sizeof(char));
 	buff  = (char*) malloc(100000*sizeof(char));
 	t = 0;
 	tc = 0;
-	while(fgets(buff,99999,stdin)!=NULL) {
+	while(fgets(buff,99999,SEQ)!=NULL) {
 		/* There is a memory problem - the matrix data gets corrupted under OSF after this fgets */
 		for(i=0; i<strlen(buff); ++i) if(buff[i]=='\n' || buff[i]=='\r') buff[i]='\0';
 		if(buff[0]=='>') {
