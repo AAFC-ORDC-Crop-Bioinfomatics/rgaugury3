@@ -1,0 +1,12 @@
+
+Either re-compile the program as (e.g.)
+
+cc -O2 -I. -o ncoils-osf ncoils.c read_matrix.c -lm
+
+or use the exectuables (ncoils-osf, ncoils-irix) given.
+
+Move the executables to a central bin directory and re-name
+as appropriate.
+
+You then need to set an environment variable $COILSDIR to this directory
+so that matrices can be seen.
