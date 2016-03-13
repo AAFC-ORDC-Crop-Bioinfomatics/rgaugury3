@@ -52,8 +52,8 @@ my @interested_NBS = ("PF00931"); # incase of multiple domains, array is used he
 my $blast_evalue = "1e-5";
 
 #make sure below folder contain pfam and preselected RGA database
-my $pfam_index_folder = "/home/AAFC-AAC/lipi/database/pfam.v27";
-my $RGD_index_file    = "/home/AAFC-AAC/lipi/database/RGA/index/plant.RGA.dataset.unique.fasta";
+my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam.v27") ? $ENV{"HOME"}."/database/pfam.v27": die "unable to locate pfam DB";
+my $RGD_index_file    = (-e $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta") ? $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # -------------------  main body -----------------------------
 my %NBS_pfam_lst               = ();
