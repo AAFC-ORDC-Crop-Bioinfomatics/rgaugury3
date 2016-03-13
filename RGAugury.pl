@@ -317,7 +317,7 @@ system("perl -S pfamscan.RGA.summary.pl -i $NBS_pfam_out -pfx $prefix");#output 
 system("perl -S nbs.domain.result.merge.pl -nbs $nbs_prediction -lrr $lrr_prediction -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  #all $domain_prediction are output of last scirpt
 system("perl -S NBS-encoding.amount.summary.pl -i $NBS_merged_domain -o $NBS_pre_candidates_lst -pfx $prefix");
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ATTENTION @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# -------------------------------------- ATTENTION --------------------------------------
 # $NBS_merged_domain has some of the false positive NBS protein, because pfam_scan's evalue is 1e-5,
 # thus NBS confering only protein sequence need further analysis by doub check of interproscan
 
@@ -337,10 +337,11 @@ while (<IN>) {
     chomp;
     my ($id,$type) = split/\t/,$_;
     if ($type eq 'NBS') {
-        # for those NBS type, it will undertake further analysis.
+        # for those NBS type, it will be undertaken further analysis.
         print TMP_NBS ">$id\n$protein_fasta{$id}\n";
     }
     else {
+        # for those not NBS tupe, they will be hashed as final NBS-encoding candidates
         $NBS_candidates_lst{$id} = $type;
     }
 }
@@ -388,9 +389,6 @@ Ptime("Interproscan further analysis is done...");
 #system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
 Ptime("RLK and RLP prediction is done...");
 system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_candidates_lst $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
-
-
-
 
 
 # ----------output RGA candidates aa sequence --------------
