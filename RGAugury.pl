@@ -346,7 +346,7 @@ while (<IN>) {
     }
 }
 close IN;
-close TMP_NBS;
+close TMP_NBS; 
 
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
     Ptime("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
