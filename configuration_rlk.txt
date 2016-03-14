@@ -1,0 +1,6 @@
+PF13947	Wall-associated receptor kinase galacturonan-binding
+PF00069	Protein kinase domain
+PF12398	Receptor serine/threonine kinase
+PF14380	Wall-associated receptor kinase C-terminal
+PF08488	Wall-associated kinase
+PF07714	Protein tyrosine kinase
