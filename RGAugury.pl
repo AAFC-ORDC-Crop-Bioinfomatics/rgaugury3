@@ -4,6 +4,7 @@ use Getopt::Long;
 use Scalar::Util qw(looks_like_number);
 use File::Basename;
 use File::Path qw(make_path remove_tree);
+use FindBin;
 
 #RGAugury pipeline
 
@@ -48,15 +49,17 @@ my ($prefix)    = ($options->{pfx}) ? "$options->{pfx}" : $aa_infile =~ /([a-zA-
 # --------------------- cutoff, key interproScan ID and blastp evalue for pfamScan ---------------------------
 my $e_seq    = 0.1;
 my $e_dom    = 0.1;
-my @interested_NBS = ("PF00931"); # incase of multiple domains, array is used here. make sure all domain code starting with 'PF'
+my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
 my $blast_evalue = "1e-5";
 
 #make sure below folder contain pfam and preselected RGA database
 my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam.v27") ? $ENV{"HOME"}."/database/pfam.v27": die "unable to locate pfam DB";
-my $RGD_index_file    = (-e $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta") ? $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
+my $RGD_index_file    = (-e $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta") ? $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
-$ENV{COILSDIR} = dirname(__FILE__)."/coils";
+#$ENV{COILSDIR} = dirname(__FILE__)."/coils";
+$ENV{COILSDIR} = $FindBin::Bin."/coils";
+
 
 # -------------------  main body -----------------------------
 my %NBS_pfam_lst               = ();
@@ -356,15 +359,16 @@ if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
 }
 else {
     Ptime("initializing interproscan 2nd round...");
-    system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,panther,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
+    system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
 }
 
-system("perl -S ipr.specific.id.selection.pl $iprscan_out_2nd $tmp_nbs_ipr $tmp_lrr_ipr $tmp_tir_ipr $tmp_cc_ipr") if ($iprscan_out_2nd and -s $iprscan_out_2nd);#keep the order of output
+system("perl -S ipr.specific.id.selection.pl -i $iprscan_out_2nd -o_n $tmp_nbs_ipr -o_l $tmp_lrr_ipr -o_t $tmp_tir_ipr") if ($iprscan_out_2nd and -s $iprscan_out_2nd);#keep the order of output
 
-push(@deletion,$tmp_nbs_ipr) if (-e $tmp_nbs_ipr);
-push(@deletion,$tmp_lrr_ipr) if (-e $tmp_lrr_ipr);
-push(@deletion,$tmp_tir_ipr) if (-e $tmp_tir_ipr);
-push(@deletion,$tmp_cc_ipr ) if (-e $tmp_cc_ipr );
+#push(@deletion,$tmp_nbs_ipr) if (-e $tmp_nbs_ipr);
+#push(@deletion,$tmp_lrr_ipr) if (-e $tmp_lrr_ipr);
+#push(@deletion,$tmp_tir_ipr) if (-e $tmp_tir_ipr);
+
+##push(@deletion,$tmp_cc_ipr ) if (-e $tmp_cc_ipr );
 
 # if this candidates are further confirmed to contain NBS domain by interProScan. then them can be defined as NBS containing only genes,
 # beause in previous pfam scan analysis, they have been proved to contain zero tir, cc or lrr motif or domain, then only nbs needs furhter confirmation.
@@ -674,4 +678,19 @@ sub output_protein_fasta_ram_manner {
     if ($errorFlag>0) {
         Ptime("unalbe to output @error in $line");
     }
+}
+
+sub nbarc_parser {
+    my $file = shift;
+    my %config = ();
+    
+    open(IN,"$file") or die "unable to open $file\n";
+    while (<IN>) {
+        chomp;
+        my ($config,@other) = split/\s+/,$_;
+        #next unless ($config =~ /^pf/i);
+        $config{uc($config)} = 1;
+    }
+    close IN;
+    return \%config;    
 }
