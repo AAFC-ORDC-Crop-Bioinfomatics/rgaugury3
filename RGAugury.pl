@@ -55,6 +55,9 @@ my $blast_evalue = "1e-5";
 my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam.v27") ? $ENV{"HOME"}."/database/pfam.v27": die "unable to locate pfam DB";
 my $RGD_index_file    = (-e $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta") ? $ENV{"HOME"}."/database/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
+# --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
+$ENV{COILSDIR} = dirname(__FILE__)."/coils";
+
 # -------------------  main body -----------------------------
 my %NBS_pfam_lst               = ();
 my %RGA_blast_lst              = ();
