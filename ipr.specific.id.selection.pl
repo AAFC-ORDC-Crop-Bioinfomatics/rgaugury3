@@ -1,32 +1,43 @@
 #!/usr/bin/perl -w
 use strict;
 use Scalar::Util qw(looks_like_number);
-
-die "to extract the id of NBS, LRR, etc. \nperl script.pl iprscan.tsv" unless ($#ARGV >= 0);
-
-my $out_nbs = ($ARGV[1]) ? $ARGV[1] : "NBS.res.ipr.txt";
-my $out_lrr = ($ARGV[2]) ? $ARGV[2] : "LRR.res.ipr.txt";
-my $out_tir = ($ARGV[3]) ? $ARGV[3] : "TIR.res.ipr.txt" ;
-my $out_cc  = ($ARGV[4]) ? $ARGV[4] : "CC.res.ipr.txt";
+use FindBin;
+use Getopt::Long;
 
 
+my $USAGE = <<USAGE;
+Scripts: for furhter analysis of iprscan
 
-open(IN,"$ARGV[0]");
+Version: , Written by Pingchuan Li, Frank You Lab
+
+arguments: 
+
+        -i           protein fasta file
+        -o_n         
+        -o_l         
+        -o_t         
+
+USAGE
+
+#---------- parameters which should be defined in advance -----------
+GetOptions(my $options = {},
+                    "-i=s","-o_n=s","-o_l=s","-o_t=s"
+                  );
+
+my $input   = $options->{i};
+my $out_nbs = ($options->{o_n}) ? $options->{o_n} : "NBS.res.ipr.txt";
+my $out_lrr = ($options->{o_l}) ? $options->{o_l} : "LRR.res.ipr.txt";
+my $out_tir = ($options->{o_t}) ? $options->{o_t} : "TIR.res.ipr.txt" ;
+
+die $USAGE unless ($input);
+
 my %result = ();
+my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
+
+open(IN,$input) or die "unable to open $input\n";
 while (<IN>) {
     chomp;
     my ($id,$md5,$len,$database,$hitid,$desc,$start,$end,$evalue,$true,$date,$ipr,$domain_name) = split/\t/,$_;
-    #$result{$id}->{$database}->{len} = $len;
-    #$result{$id}->{$database}->{hitid} = $hitid;
-    #$result{$id}->{$database}->{desc} = ($desc)?$desc:'na';
-    #$result{$id}->{$database}->{start} = $start;
-    #$result{$id}->{$database}->{end} = $end;
-    #$result{$id}->{$database}->{evalue} = $evalue;
-    #$result{$id}->{$database}->{true} = $true;
-    #$result{$id}->{$database}->{date} = $date;
-    #$result{$id}->{$database}->{ipr} = ($ipr)?$ipr:'na';
-    #$result{$id}->{$database}->{domain_name} = ($domain_name)?$domain_name:'na';
-    
     push(@{$result{$id}->{$database}},join("|",$len,$database,$hitid,($desc)?$desc:'na',$start,$end,$evalue,$true,($ipr)?$ipr:'na',($domain_name)?$domain_name:'na'));
 }
 close IN;
@@ -49,12 +60,14 @@ foreach my $id (sort {$a cmp $b} keys %result){
     my $coilflag = 0;
     foreach my $database (sort {$a cmp $b} keys %{$result{$id}}) {
         foreach my $rec (@{$result{$id}->{$database}}) {
-            if ($rec =~/PF00931/i) {
-                $nbsflag = 1;
-                ($len) = $rec =~ /^(\d+?)\|/;
-                
-                my ($len,$database,$hitid,$desc,$start,$end,$evalue,$true,$ipr,$domain_name) = split/\|/,$rec;
-                push(@{$NBS{$id}},join("|","domain_NBS","$start-$end"));
+            foreach my $config (@interested_NBS) {
+                if ($rec =~/$config/i) {
+                    $nbsflag = 1;
+                    ($len) = $rec =~ /^(\d+?)\|/;
+                    
+                    my ($len,$database,$hitid,$desc,$start,$end,$evalue,$true,$ipr,$domain_name) = split/\|/,$rec;
+                    push(@{$NBS{$id}},join("|","domain_NBS","$start-$end"));
+                }
             }
         }
     }
@@ -92,7 +105,7 @@ foreach my $id (sort {$a cmp $b} keys %result){
         if ($nbsflag == 1) {
             foreach my $rec (@{$result{$id}->{SMART}}) {
                 my ($len,$database,$hitid,$desc,$start,$end,$evalue,$true,$ipr,$domain_name) = split/\|/,$rec;
-                if ($desc =~ /Leucine-rich/i) {
+                if ($desc =~ /Leucine-rich/i or $desc =~ /leucine rich/i) {
                     $lrrflag = 1;
                     push(@{$LRR{$id}},join("|","domain_LRR","$start-$end"));
                 }
@@ -129,10 +142,22 @@ foreach my $id (sort {$a cmp $b} keys %NBS) {
 }
 close NBS;
 
-#open(COIL,">$out_cc");
-#foreach my $id (sort {$a cmp $b} keys %COIL) {
-#    print COIL "$id\t";
-#    my $value = join(" ",@{$COIL{$id}});
-#    print COIL "$value\n";
-#}
-#close COIL;
+
+
+#  ---------------------------sub------------------------------
+sub nbarc_parser {
+    my $file = shift;
+    my %config = ();
+    
+    open(IN,"$file") or die "unable to open $file\n";
+    while (<IN>) {
+        chomp;
+        my ($config,@other) = split/\s+/,$_;
+        #next unless ($config =~ /^pf/i);
+        $config{uc($config)} = 1;
+    }
+    close IN;
+    return \%config;    
+}
+
+
