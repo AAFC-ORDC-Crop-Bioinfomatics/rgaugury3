@@ -1,0 +1,9 @@
+
+
+be aware of below:
+
+1) put RGADB directory under /home/user_id/database
+2) put pfam.v27 directory under /home/user_id/database
+3) put coils directory under directory of main program
+4) install pfam_scan packages
+5) 
