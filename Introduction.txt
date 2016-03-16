@@ -5,5 +5,6 @@ be aware of below:
 1) put RGADB directory under /home/user_id/database
 2) put pfam.v27 directory under /home/user_id/database
 3) put coils directory under directory of main program
-4) install pfam_scan packages
-5) 
+4) install Hmmer3 , http://hmmer.org/ 
+5) install pfam_scan package (ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz ) following its README
+6)    
