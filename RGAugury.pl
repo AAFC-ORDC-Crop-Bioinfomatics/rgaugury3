@@ -7,6 +7,7 @@ use File::Path qw(make_path remove_tree);
 use FindBin;
 
 #RGAugury pipeline
+my $version = 2.00;
 
 Ptime("Pipeline to predict the plant RGA...");
 Ptime("Make sure all other programs are ready...");
