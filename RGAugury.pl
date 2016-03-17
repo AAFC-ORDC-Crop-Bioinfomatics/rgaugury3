@@ -53,7 +53,7 @@ my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")}
 my $blast_evalue = "1e-5";
 
 #make sure below folder contain pfam and preselected RGA database
-my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam.v27") ? $ENV{"HOME"}."/database/pfam.v27": die "unable to locate pfam DB";
+my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
 my $RGD_index_file    = (-e $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta") ? $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
