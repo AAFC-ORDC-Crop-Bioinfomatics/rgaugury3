@@ -1,5 +1,5 @@
 
-
+outline
 make sure 1) git, 2) blast+ is installed prior to below stpes:
 
 
@@ -10,3 +10,16 @@ make sure 1) git, 2) blast+ is installed prior to below stpes:
 4) install Hmmer3 , http://hmmer.org/ 
 5) install pfam_scan package (ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz ) following its README, make sure pfam_scan.pl's path has been exported into environment variables
 6)    
+
+
+
+.bashrc path sample
+
+export PATH=$PATH:/home/lipch/bin/hmmer3/bin
+export PATH=$PATH:/home/lipch/RGAugury_pipeline
+export PATH=$PATH:/home/lipch/RGAugury_pipeline/coils
+export PATH=$PATH:/home/lipch/RGAugury_pipeline/phobius1.01
+export PATH=$PATH:/home/lipch/bin
+export PATH=$PATH:/home/lipch/database/interproscan-5.17-56.0
+export PERL5LIB=/home/lipch/Downloads/PfamScan:$PERL5LIB
+
