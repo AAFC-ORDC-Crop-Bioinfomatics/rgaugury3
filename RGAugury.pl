@@ -11,9 +11,6 @@ use FindBin;
 Ptime("Pipeline to predict the plant RGA...");
 Ptime("Make sure all other programs are ready...");
 
-
-my $version = 0.2;
-
 my $USAGE = <<USAGE;
 Scripts: RGA prediction pipeline
 
