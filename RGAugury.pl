@@ -362,11 +362,10 @@ else {
 
 system("perl -S ipr.specific.id.selection.pl -i $iprscan_out_2nd -o_n $tmp_nbs_ipr -o_l $tmp_lrr_ipr -o_t $tmp_tir_ipr") if ($iprscan_out_2nd and -s $iprscan_out_2nd);#keep the order of output
 
-#push(@deletion,$tmp_nbs_ipr) if (-e $tmp_nbs_ipr);
-#push(@deletion,$tmp_lrr_ipr) if (-e $tmp_lrr_ipr);
-#push(@deletion,$tmp_tir_ipr) if (-e $tmp_tir_ipr);
-
-##push(@deletion,$tmp_cc_ipr ) if (-e $tmp_cc_ipr );
+push(@deletion,$tmp_nbs_ipr) if (-e $tmp_nbs_ipr);
+push(@deletion,$tmp_lrr_ipr) if (-e $tmp_lrr_ipr);
+push(@deletion,$tmp_tir_ipr) if (-e $tmp_tir_ipr);
+#push(@deletion,$tmp_cc_ipr ) if (-e $tmp_cc_ipr );
 
 # if this candidates are further confirmed to contain NBS domain by interProScan. then them can be defined as NBS containing only genes,
 # beause in previous pfam scan analysis, they have been proved to contain zero tir, cc or lrr motif or domain, then only nbs needs furhter confirmation.

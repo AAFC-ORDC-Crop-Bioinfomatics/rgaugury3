@@ -73,10 +73,6 @@ foreach my $gene (sort {$a cmp $b} keys %domain) {
     print join("\t", $gene,$seqlen{$gene},$nbs,$lrr,$tir,$cc);
     print "\n";
     
-    #if ($gene eq 'Traes_5BL_502C0C0E7.1') {
-    #    print STDERR join("\t", $gene,$seqlen{$gene},$nbs,$lrr,$tir,$cc);
-    #    print STDERR "\n";
-    #}
 }
 
 # -----------subfunctions-----------
