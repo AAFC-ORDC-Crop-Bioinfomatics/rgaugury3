@@ -1,10 +1,11 @@
 
 
-be aware of below:
+make sure 1) git 2)blast+ is installed prior to below stpes:
 
-1) put RGADB directory under /home/user_id/database
-2) put pfam.v27 directory under /home/user_id/database
-3) put coils directory under directory of main program
+
+1) install BioPerl and Moose modules via CPAN, following guide in http://stackoverflow.com/questions/898782/how-do-i-tell-cpan-to-install-all-dependencies for dependencies install,sudo might be needed
+1.1) if using ubuntu, please follow http://www.bioperl.org/wiki/Installing_BioPerl_on_Ubuntu_Server to install Bioperl with sudo privilege
+2) put pfam directory under /home/user_id/database
 4) install Hmmer3 , http://hmmer.org/ 
-5) install pfam_scan package (ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz ) following its README
+5) install pfam_scan package (ftp://ftp.ebi.ac.uk/pub/databases/Pfam/Tools/PfamScan.tar.gz ) following its README, make sure pfam_scan.pl's path has been exported into environment variables
 6)    
