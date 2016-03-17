@@ -1,3 +1,5 @@
+the manual will be drafted in Wiki Page
+
 
 outline
 make sure 1) git, 2) blast+ is installed prior to below stpes:
