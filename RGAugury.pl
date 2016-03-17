@@ -57,9 +57,7 @@ my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam.v27") ? $ENV{"HOME"}."/
 my $RGD_index_file    = (-e $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta") ? $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
-#$ENV{COILSDIR} = dirname(__FILE__)."/coils";
 $ENV{COILSDIR} = $FindBin::Bin."/coils";
-
 
 # -------------------  main body -----------------------------
 my %NBS_pfam_lst               = ();
