@@ -1,6 +1,6 @@
 
 
-make sure 1) git 2)blast+ is installed prior to below stpes:
+make sure 1) git, 2) blast+ is installed prior to below stpes:
 
 
 1) install BioPerl 1.61-core and Moose modules via CPAN, following guide in http://stackoverflow.com/questions/898782/how-do-i-tell-cpan-to-install-all-dependencies for dependencies install,sudo might be needed
