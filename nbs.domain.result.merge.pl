@@ -4,8 +4,6 @@ use warnings;
 use Getopt::Long;
 use Scalar::Util qw(looks_like_number);
 
-my $version = 0.1;
-# -
 GetOptions(my $options = {},
               "-seq=s","-nbs=s","-lrr=s","-tir=s","-cc=s"
 );
@@ -17,7 +15,7 @@ Script: to merge the prediction file
 
 Usage:   perl $0 <options> <files>
 -------------------------------------------------------------------------------------------------------------
-Version: $version, coded by Pingchuan Li
+ coded by Pingchuan Li
 Arguments:
         -seq       the fasta seq, to acquire seq length
         -nbs       nbs filename

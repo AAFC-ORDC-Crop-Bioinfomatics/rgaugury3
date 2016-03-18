@@ -8,7 +8,7 @@ use Getopt::Long;
 my $USAGE = <<USAGE;
 Scripts: for furhter analysis of iprscan
 
-Version: , Written by Pingchuan Li, Frank You Lab
+ Written by Pingchuan Li, Frank You Lab
 
 arguments: 
 

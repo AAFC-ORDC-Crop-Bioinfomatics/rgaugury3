@@ -4,13 +4,13 @@ use Getopt::Long;
 use Scalar::Util qw(looks_like_number);
 use FindBin;
 
-my $version = 0.1;
+
 #print STDERR "This script is yet to be finished, the RLK and RLP has minor redundant with NBS encoding genes\n";
 
 my $USAGE = <<USAGE;
 Scripts: RLK protein prediction, make sure the Phobius can be invoked.
 
-Version: $version, Written by Pingchuan Li, Frank You Lab
+ Written by Pingchuan Li, Frank You Lab
 
 Usage :perl unique.xxx.pl <option> <file>
 

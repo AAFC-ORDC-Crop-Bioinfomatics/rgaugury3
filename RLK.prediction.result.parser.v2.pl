@@ -3,7 +3,7 @@ use strict;
 use Scalar::Util qw(looks_like_number);
 
 
-# ver 0.3, debugged TMCC
+
 
 die "to parse the output of RLKorP.assay.Alll.genes.script" unless ($#ARGV >= 0);
 
