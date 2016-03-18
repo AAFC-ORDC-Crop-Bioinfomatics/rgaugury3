@@ -6,8 +6,8 @@ use File::Basename;
 use File::Path qw(make_path remove_tree);
 use FindBin;
 
-#RGAugury pipeline
-my $version = 2.00;
+#----------------------------------RGAugury pipeline---------------------------------------
+my $version = v2.00;
 
 Ptime("Pipeline to predict the plant RGA...");
 Ptime("Make sure all other programs are ready...");
@@ -79,9 +79,9 @@ my $NBS_candidates_lst            = $prefix."NBS.candidates.lst";
 my $NBS_candidates_fas            = $prefix."NBS.candidates.fas";
 my $NBS_merged_domain             = $prefix."NBS.merged.domains.txt";
 
-my $RGA_blast                     = $prefix."RGA.blastp.$blast_evalue.out";
-my $RGA_blast_fasta               = $prefix."tmp.RGA.blast.lst.fasta";
-my $RGA_blast_lst                 = $prefix."tmp.RGA.blast.lst";
+my $RGA_blast_out                 = $prefix."RGA.blastp.$blast_evalue.out";
+my $RGA_blast_fasta               = $prefix."preRGA.candidates.by.Blast.fasta";
+my $RGA_blast_lst                 = $prefix."preRGA.candidates.by.Blast.lst";
 my $RGA_candidates_fasta          = $prefix."RGA.candidates.fasta";
 my $RGA_candidates_fasta_nt       = $prefix."RGA.candidates.cdna.fasta";
 my $candidate_RGA_pfam_out        = $prefix."candidates_RGA_pfam_out";
@@ -113,7 +113,7 @@ my $tmp_cc_ipr                    = $prefix."tmp_cc_ipr.dissect.txt ";
 my $error_report                  = $prefix."Error.logfile.txt";
 
 
-# ----------------read protein fasta--------------------------
+# ----------------preprocessing protein/DNA fasta sequence-----------------------
 open(ERROR,">$error_report");
 
 Ptime("formatting the input file...");
@@ -165,6 +165,31 @@ if ($g_infile and -s $g_infile) {
 
 local $/ = "\n";
 
+
+# -------------------------blastp to RGA database------------------
+# -----------this step will get a potential candidates RGA---------
+# ---all furhter analysis will be based on the preRGA fasta seq----
+Ptime("Blast with RGA DB...");
+if ($RGA_blast_out and -s $RGA_blast_out) {
+    Ptime("$RGA_blast_out detected in current folder, pipeline will jumps to next step - code 003");
+}
+else {
+    blastp_parallel($aa_formated_infile, $RGD_index_file, $blast_evalue, $RGA_blast_out, $cpu);
+}
+
+Ptime("Blast is done, now parsing the output...");
+
+open(IN,$RGA_blast_out);
+while (<IN>) {
+    chomp;
+    my ($geneid,@array) = split/\t/,$_;
+    $RGA_blast_lst{$geneid} = 1;  #unique geneid for fasta export purpose
+}
+close IN;
+
+#--------output pre-candidates of RGA, which include NBS-encoding, RLP, RLK and other potential disease resistance genes analogs.-----------
+output_protein_fasta_ram_manner(\%RGA_blast_lst, \%protein_fasta, $RGA_blast_fasta, __LINE__);
+
 #-----------------using pfam to scan the pfam-------------------
 #--------------supporting broken execution----------------------
 #--------remove the $pfam_out if not correctly executed --------
@@ -173,7 +198,7 @@ if ($pfam_out and -s $pfam_out) {
     Ptime("$pfam_out detected in current folder, pipeline will jumps to next step - code 001");
 }
 else {
-    pfamscan_parallel($pfam_out, $e_seq, $e_dom, $cpu, $aa_formated_infile, $pfam_index_folder);
+    pfamscan_parallel($pfam_out, $e_seq, $e_dom, $cpu, $RGA_blast_fasta, $pfam_index_folder);
 }
 
 open(IN, $pfam_out) or die "cant open $pfam_out file\n";  #use @interested_NBS to screen pfam out and acquire all the NBS-encoding genes list
@@ -211,7 +236,7 @@ if ($cc_prediction and -s $cc_prediction) {
 }
 else {
     Ptime("initializing coiled-coil prediction...");
-    system("perl -S coils.identification.pl $aa_formated_infile $cpu $cc_prediction");
+    system("perl -S coils.identification.pl $RGA_blast_fasta $cpu $cc_prediction");
 }
 
 open(IN, $cc_prediction);  #$cc_prediction is output of coils.identification.pl
@@ -221,37 +246,6 @@ while (<IN>) {
    $coils{$id} = join(" ",@res);
 }
 close IN;
-
-# -------------------------blastp to RGA database------------------
-# -----------this step will get a potential candidates RGA---------
-Ptime("Blast with RGA DB...");
-if ($RGA_blast and -s $RGA_blast) {
-    Ptime("$RGA_blast detected in current folder, pipeline will jumps to next step - code 003");
-}
-else {
-    blastp_parallel($aa_formated_infile, $RGD_index_file, $blast_evalue, $RGA_blast, $cpu);
-}
-
-Ptime("Blast is done, now parsing the output...");
-
-open(IN,$RGA_blast);
-while (<IN>) {
-    chomp;
-    my ($geneid,@array) = split/\t/,$_;
-    $RGA_blast_lst{$geneid} = 1;
-}
-close IN;
-
-#--------output candidates of RGA, which include NBS-encoding, RLP, RLK and other potential disease resistance genes analogs.-----------
-output_protein_fasta_ram_manner(\%RGA_blast_lst, \%protein_fasta, $RGA_blast_fasta, __LINE__);
-push(@deletion,"$RGA_blast_fasta");
-
-#open(OUT,">$RGA_blast_fasta");          
-#foreach my $id (sort {$a cmp $b} keys %RGA_blast_lst) {
-#    my $seq = $protein_fasta{$id};
-#    print OUT ">$id\n$seq\n";
-#}
-#close OUT;
 
 # -------------------------iprscan---------------------------------
 #----using above outputed fasta file to do iprscan for 1st time----
@@ -295,7 +289,7 @@ if ($RLKorRLP_prediction_output and -s $RLKorRLP_prediction_output) {#$RLKRLP_ou
     Ptime("$RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
 }
 else {
-    system("perl -S RLK.prediction.pl -i $aa_formated_infile -pfx $prefix -pfam $candidate_RGA_pfam_out -iprs $iprscan_out -cpu $cpu -lst $candidate_RGA_lst -o $RLKorRLP_prediction_output");
+    system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $candidate_RGA_pfam_out -iprs $iprscan_out -cpu $cpu -lst $candidate_RGA_lst -o $RLKorRLP_prediction_output");
 }
 
 #-----------merge coilsed coil to above output<$RLKorRLP_prediciton_outputs---------------
@@ -387,8 +381,7 @@ close OUT;
 Ptime("Interproscan further analysis is done...");
 
 
-#output lst of RLK, RLP and TMCC
-#system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
+#----output lst of RLK, RLP and TMCC---
 Ptime("RLK and RLP prediction is done...");
 system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_candidates_lst $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
 
@@ -576,12 +569,12 @@ sub splitted_results_merge {
 }
 
 sub pfamscan_parallel {
-    my ($pfam_out, $e_seq, $e_dom, $cpu, $aa_formated_infile, $pfam_index_folder) = @_;
+    my ($pfam_out, $e_seq, $e_dom, $cpu, $RGA_blast_fasta, $pfam_index_folder) = @_;
     my @splitted_out = ();
     my $userID = `echo \$USER`;
     my @fingerprints = ();
     
-    my @split_files = fasta_file_split($aa_formated_infile, $cpu);
+    my @split_files = fasta_file_split($RGA_blast_fasta, $cpu);
     foreach my $file (@split_files) {
         if (-e $file) {
             my $fingerprint = generate_rand_filename(10); #to replace PID to monitor the status of threads
@@ -604,7 +597,7 @@ sub pfamscan_parallel {
 }
 
 sub blastp_parallel {
-    my ($aa_formated_infile,$RGD_index_file,$blast_evalue,$RGA_blast,$cpu) = @_;
+    my ($aa_formated_infile,$RGD_index_file,$blast_evalue,$RGA_blast_out,$cpu) = @_;
     my @splitted_out = ();
     my $userID = `echo \$USER`;
     my @fingerprints = ();
@@ -625,7 +618,7 @@ sub blastp_parallel {
     threads_finish_examination($userID, @fingerprints);
 
     #splitted result merge to an intact output $tmp_file
-    splitted_results_merge($RGA_blast,@splitted_out);
+    splitted_results_merge($RGA_blast_out,@splitted_out);
 
     files_remove(@splitted_out);
     files_remove(@split_files);
