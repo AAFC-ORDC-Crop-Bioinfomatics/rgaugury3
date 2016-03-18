@@ -251,36 +251,11 @@ else {
 
 Ptime("Interproscan is done...");
 
-# -----------extract only RGA related pfam info from $pfam_out-----------
-#open(IN, $pfam_out) or die "cant open $pfam_out";
-#open(OUT,">$candidate_RGA_pfam_out");
-##push(@deletion,$candidate_RGA_pfam_out);
-#while (<IN>) {
-#    chomp;
-#    next unless ($_);
-#    my ($geneid,@array) = split/\s+/, $_;
-#    if (exists $RGA_blast_lst{$geneid}) {
-#        print OUT join("\t",$geneid,@array);
-#        print OUT "\n";
-#        
-#        $overlap_RGAblast_pfam_lst{$geneid} = 1;  #select pfam_scan output from those which has hits in RGA DB hits
-#    }
-#}
-#close IN;
-#close OUT;
-
-#open(LST,">$candidate_RGA_lst");
-#foreach my $id (sort {$a cmp $b} keys %overlap_RGAblast_pfam_lst) {
-#    print LST "$id\n";
-#}
-#close LST;
-
 # --------------------------RLK and RLP prediction--------------
 if ($RLKorRLP_prediction_output and -s $RLKorRLP_prediction_output) {#$RLKRLP_out_raw
     Ptime("$RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
 }
 else {
-    #system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $candidate_RGA_pfam_out -iprs $iprscan_out -cpu $cpu -lst $candidate_RGA_lst -o $RLKorRLP_prediction_output");
      system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $pfam_out               -iprs $iprscan_out -cpu $cpu -lst $RGA_blast_lst     -o $RLKorRLP_prediction_output");
 }
 
