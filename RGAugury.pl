@@ -9,11 +9,11 @@ use FindBin;
 #----------------------------------RGAugury pipeline---------------------------------------
 
 my $USAGE = <<USAGE;
-Scripts: RGA prediction pipeline
+Scripts: Resistance Gene Analogs (RGAs) prediction pipeline
 
- Written by Pingchuan Li, Frank You Lab
+ Programmed by Pingchuan Li @ AAFC - Frank You Lab
 
-Usage :perl RGAs.prediction.pl <option>
+Usage :perl RGAs.prediction.pl <options>
 
 arguments: 
 
