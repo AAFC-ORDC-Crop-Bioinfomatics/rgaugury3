@@ -8,9 +8,6 @@ use FindBin;
 
 #----------------------------------RGAugury pipeline---------------------------------------
 
-Ptime("Pipeline to predict the plant RGA...");
-Ptime("Make sure all other programs are ready...");
-
 my $USAGE = <<USAGE;
 Scripts: RGA prediction pipeline
 
@@ -110,6 +107,9 @@ my $tmp_cc_ipr                    = $prefix."tmp_cc_ipr.dissect.txt ";
 my $error_report                  = $prefix."Error.logfile.txt";
 
 # ----------------preprocessing protein/DNA fasta sequence-----------------------
+Ptime("Pipeline to predict the plant RGA...");
+Ptime("Make sure all other programs are ready...");
+
 open(ERROR,">$error_report");
 
 Ptime("formatting the input file...");
