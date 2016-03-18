@@ -13,7 +13,7 @@ Scripts: Resistance Gene Analogs (RGAs) prediction pipeline
 
  Programmed by Pingchuan Li @ AAFC - Frank You Lab
 
-Usage :perl RGAs.prediction.pl <options>
+Usage :perl RGAugury.pl <options>
 
 arguments: 
 
