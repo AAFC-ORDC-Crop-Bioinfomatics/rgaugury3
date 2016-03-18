@@ -1,13 +1,15 @@
 #!/usr/bin/perl -w
 use strict;
+use Scalar::Util qw(looks_like_number);
 
-die "perl coils.identification.pl input_fasta cpu_number output_file" unless ($#ARGV == 2);
+die "perl coils.identification.pl <input_fasta> <cpu_number> <output_file>" unless ($#ARGV == 2);
 
-my $cpu = ($ARGV[1]) ? $ARGV[1] : 2;
-my $out = ($ARGV[2]) ? $ARGV[2] : "coils.res.txt" ;
+my $input_fasta = $ARGV[0];
+my $cpu         = (looks_like_number($ARGV[1])) ? $ARGV[1] : 2 ;
+my $out         = ($ARGV[2]) ? $ARGV[2] : "coils.res.txt" ;
 
 local $/ = ">";
-open(IN,"$ARGV[0]");
+open(IN, $input_fasta);
 open(OUT,">.temporary1.txt");
 while (<IN>) {
     chomp;
@@ -21,9 +23,7 @@ while (<IN>) {
 close IN;
 close OUT;
 
-#system("coils -f <.temporary1.txt >.temporary2.txt  2>/dev/null");
 coils_parallel(".temporary1.txt", ".temporary2.txt");
-
 
 open(IN,".temporary2.txt");
 my %gene = ();
