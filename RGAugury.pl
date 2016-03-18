@@ -7,7 +7,6 @@ use File::Path qw(make_path remove_tree);
 use FindBin;
 
 #----------------------------------RGAugury pipeline---------------------------------------
-my $version = v2.00;
 
 Ptime("Pipeline to predict the plant RGA...");
 Ptime("Make sure all other programs are ready...");
@@ -15,18 +14,18 @@ Ptime("Make sure all other programs are ready...");
 my $USAGE = <<USAGE;
 Scripts: RGA prediction pipeline
 
-Version: $version, Written by Pingchuan Li, Frank You Lab
+ Written by Pingchuan Li, Frank You Lab
 
 Usage :perl RGAs.prediction.pl <option>
 
 arguments: 
 
         -p           protein fasta file
-        -n           corresponding cDNA/CDS nucleotide for -p (optional)
-        -g           genome file in fasta format (optional)
-        -gff         gff3 file (optional)
+        -n           corresponding cDNA/CDS nucleotide for -p   (optional)
+        -g           genome file in fasta format   (optional)
+        -gff         gff3 file   (optional)
         -c           cpu or threads number, default = 2
-        -pfx         prefix for filename, useful for multiple speices input in same folder (optional)
+        -pfx         prefix for filename, useful for multiple speices input in same folder   (optional)
         
 USAGE
 
@@ -41,14 +40,14 @@ my $aa_infile   = $options->{p};
 my $nt_infile   = $options->{n};  
 my $g_infile    = $options->{g};
 my $gff         = $options->{gff};
-my $cpu         = $options->{c};
+my $cpu         = ($options->{c})? $options->{c} : 2 ;
 my ($prefix)    = ($options->{pfx}) ? "$options->{pfx}" : $aa_infile =~ /([a-zA-Z0-9]+)/; $prefix .= ".";
 
 # --------------------- cutoff, key interproScan ID and blastp evalue for pfamScan ---------------------------
 my $e_seq    = 0.1;
 my $e_dom    = 0.1;
 my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
-my $blast_evalue = "1e-5";
+my $blast_evalue   = "1e-5";
 
 #make sure below folder contain pfam and preselected RGA database
 my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
@@ -65,10 +64,8 @@ my %nt_fasta                   = ();
 my %genome_fasta               = ();
 my %overlap_RGAblast_pfam_lst  = ();
 my %NBS_candidates_lst         = ();
-my @deletion                   = ();
 my %coils = ();
-
-
+my @deletion                   = ();
 
 #otput file name
 my $aa_formated_infile            = $prefix."formated.protein.input.fas";
@@ -93,7 +90,7 @@ my $lrr_prediction                = $prefix."LRR.res.pfam.txt";
 my $tir_prediction                = $prefix."TIR.res.pfam.txt";
 
 my $cc_prediction                 = $prefix."coils.res.txt";
-my $candidate_RGA_lst             = $prefix."candidates_RGA_lst";
+#my $candidate_RGA_lst             = $prefix."candidates_RGA_lst";
 my $RLKorRLP_prediction_output    = $prefix."RLKorRLP.domain.prediction.txt";
 my $RLKorRLP_merged_domain        = $prefix."RLKorRLP.merged.domains.txt";
 
@@ -112,7 +109,6 @@ my $tmp_tir_ipr                   = $prefix."tmp_tir_ipr.dissect.txt";
 my $tmp_cc_ipr                    = $prefix."tmp_cc_ipr.dissect.txt ";  
 my $error_report                  = $prefix."Error.logfile.txt";
 
-
 # ----------------preprocessing protein/DNA fasta sequence-----------------------
 open(ERROR,">$error_report");
 
@@ -124,7 +120,6 @@ while (<IN>) {
     my ($title,$seq) = split/\n/,$_,2;
     next unless ($title and $seq);
     my ($id) = $title =~ /([a-zA-Z0-9\.\-\_]+)/;
-    #$title =~ s/\s+//g;
     $seq   =~ s/\s+//g;
     $seq   =~ s/\*//g;
     
@@ -139,7 +134,7 @@ foreach my $id (sort {$a cmp $b} keys %protein_fasta) {
 close OUT;
 
 if ($nt_infile and -s $nt_infile) {
-    open(IN,$nt_infile);
+    open(IN,$nt_infile) or die "unable to open $nt_infile\n";
     while (<IN>) {
         chomp;
         my ($title,$seq) = split/\n/,$_,2;
@@ -151,7 +146,7 @@ if ($nt_infile and -s $nt_infile) {
 }
 
 if ($g_infile and -s $g_infile) {
-    open(IN, $g_infile);
+    open(IN, $g_infile) or die "unable to open $g_infile\n";
     while (<IN>) {
         chomp;
         my ($title,$seq) = split/\n/,$_,2;
@@ -162,9 +157,7 @@ if ($g_infile and -s $g_infile) {
     }
     close IN;
 }
-
 local $/ = "\n";
-
 
 # -------------------------blastp to RGA database------------------
 # -----------this step will get a potential candidates RGA---------
@@ -187,11 +180,10 @@ while (<IN>) {
 }
 close IN;
 
-#--------output pre-candidates of RGA, which include NBS-encoding, RLP, RLK and other potential disease resistance genes analogs.-----------
-output_protein_fasta_ram_manner(\%RGA_blast_lst, \%protein_fasta, $RGA_blast_fasta, __LINE__);
+output_protein_fasta_ram_manner(\%RGA_blast_lst, \%protein_fasta, $RGA_blast_fasta, __LINE__);     #output pre-candidates of RGA, which include NBS-encoding, RLP, RLK and other potential disease resistance genes analogs.-----------
+output_lst_ram_manner(\%RGA_blast_lst, $RGA_blast_lst);
 
 #-----------------using pfam to scan the pfam-------------------
-#--------------supporting broken execution----------------------
 #--------remove the $pfam_out if not correctly executed --------
 
 if ($pfam_out and -s $pfam_out) {
@@ -206,9 +198,9 @@ while (<IN>) {
     chomp;
     next if ($_ =~ /^#/ or $_ =~ /^\s/);
     
-    my ($geneid,@array) = split/\s+/,$_;
+    my ($geneid, @array) = split/\s+/, $_;
     foreach my $PF (@interested_NBS) {
-        if ($_ =~ /$PF\W/) {
+        if ($_ =~ /$PF/) {
             $NBS_pfam_lst{$geneid} = 1;
         }
     }
@@ -216,12 +208,12 @@ while (<IN>) {
 close IN;
 
 #-----------selectively output all pfam scan data for NBS(true) coding gene only
-open(IN,"$pfam_out");
-open(OUT,">$NBS_pfam_out");
+open(IN,  "$pfam_out");
+open(OUT, ">$NBS_pfam_out");
 while (<IN>) {
     chomp;
     next unless ($_ =~ /\w/ or $_ =~ /\d/);
-    my ($geneid,@array) = split/\s+/,$_;
+    my ($geneid, @array) = split/\s+/,$_;
     if ($NBS_pfam_lst{$geneid}) {
         print OUT "$_\n";                    
     }
@@ -260,58 +252,58 @@ else {
 Ptime("Interproscan is done...");
 
 # -----------extract only RGA related pfam info from $pfam_out-----------
-open(IN, $pfam_out) or die "cant open $pfam_out";
-open(OUT,">$candidate_RGA_pfam_out");
-#push(@deletion,$candidate_RGA_pfam_out);
-while (<IN>) {
-    chomp;
-    next unless ($_);
-    my ($geneid,@array) = split/\s+/, $_;
-    if (exists $RGA_blast_lst{$geneid}) {
-        print OUT join("\t",$geneid,@array);
-        print OUT "\n";
-        
-        $overlap_RGAblast_pfam_lst{$geneid} = 1;  #select pfam_scan output from those which has hits in RGA DB hits
-    }
-}
-close IN;
-close OUT;
+#open(IN, $pfam_out) or die "cant open $pfam_out";
+#open(OUT,">$candidate_RGA_pfam_out");
+##push(@deletion,$candidate_RGA_pfam_out);
+#while (<IN>) {
+#    chomp;
+#    next unless ($_);
+#    my ($geneid,@array) = split/\s+/, $_;
+#    if (exists $RGA_blast_lst{$geneid}) {
+#        print OUT join("\t",$geneid,@array);
+#        print OUT "\n";
+#        
+#        $overlap_RGAblast_pfam_lst{$geneid} = 1;  #select pfam_scan output from those which has hits in RGA DB hits
+#    }
+#}
+#close IN;
+#close OUT;
 
-open(LST,">$candidate_RGA_lst");
-foreach my $id (sort {$a cmp $b} keys %overlap_RGAblast_pfam_lst) {
-    print LST "$id\n";
-}
-close LST;
+#open(LST,">$candidate_RGA_lst");
+#foreach my $id (sort {$a cmp $b} keys %overlap_RGAblast_pfam_lst) {
+#    print LST "$id\n";
+#}
+#close LST;
 
 # --------------------------RLK and RLP prediction--------------
-
 if ($RLKorRLP_prediction_output and -s $RLKorRLP_prediction_output) {#$RLKRLP_out_raw
     Ptime("$RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
 }
 else {
-    system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $candidate_RGA_pfam_out -iprs $iprscan_out -cpu $cpu -lst $candidate_RGA_lst -o $RLKorRLP_prediction_output");
+    #system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $candidate_RGA_pfam_out -iprs $iprscan_out -cpu $cpu -lst $candidate_RGA_lst -o $RLKorRLP_prediction_output");
+     system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $pfam_out               -iprs $iprscan_out -cpu $cpu -lst $RGA_blast_lst     -o $RLKorRLP_prediction_output");
 }
 
 #-----------merge coilsed coil to above output<$RLKorRLP_prediciton_outputs---------------
-open(IN,  $RLKorRLP_prediction_output);
-open(TMP,     ">$RLKorRLP_merged_domain");
-print TMP join("\t", "id","stk","tm","sp","LysM","LRR","CC\n");
+open(IN,      $RLKorRLP_prediction_output);
+open(MERGE,     ">$RLKorRLP_merged_domain");
+print MERGE join("\t", "id", "stk", "tm", "sp", "LysM", "LRR", "CC\n");
 #this will add one more column in terms of cc to the $RLKorRLP_prediction_output
 while (<IN>) {
    chomp;
    next if($_ =~ /LysM\tLRR/); #ignore first headline prior to processing
-   my ($id,@content) = split/\t/,$_;
+   my ($id, @content) = split/\t/,$_;
    my $cc = ($coils{$id}) ? $coils{$id} : '.' ;
-   print TMP join("\t", $id, @content, "$cc\n");
+   print MERGE join("\t", $id, @content, "$cc\n");
 }
 close IN;
-close TMP;
+close MERGE;
 
 
 # ----------dissect NBS.pfam.out------------generate NBS.res.pfam.out etc.------------
-system("perl -S pfamscan.RGA.summary.pl -i $NBS_pfam_out -pfx $prefix");#output  NBS.res.pfam.txt LRR.res.pfam.txt, TIR.res.pfam.txt and PPR.res.pfam.txt totall 4 files
-system("perl -S nbs.domain.result.merge.pl -nbs $nbs_prediction -lrr $lrr_prediction -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  #all $domain_prediction are output of last scirpt
-system("perl -S NBS-encoding.amount.summary.pl -i $NBS_merged_domain -o $NBS_pre_candidates_lst -pfx $prefix");
+system("perl -S pfamscan.RGA.summary.pl        -i   $NBS_pfam_out      -pfx $prefix");              #output  NBS.res.pfam.txt LRR.res.pfam.txt, TIR.res.pfam.txt and PPR.res.pfam.txt totall 4 files
+system("perl -S nbs.domain.result.merge.pl     -nbs $nbs_prediction    -lrr $lrr_prediction         -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  #all $domain_prediction are output of last scirpt
+system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS_pre_candidates_lst -pfx $prefix");
 
 # -------------------------------------- ATTENTION --------------------------------------
 # $NBS_merged_domain has some of the false positive NBS protein, because pfam_scan's evalue is 1e-5,
@@ -328,7 +320,7 @@ open(TMP_NBS,">$tmp_nbsonly_fas");
 push(@deletion,$tmp_nbsonly_fas) if (-e $tmp_nbsonly_fas);
 #push(@deletion,$NBS_pre_candidates_lst);
 #push(@deletion,"summary.txt");
-push(@deletion,"intermediate.txt") if (-e "intermediate.txt");
+
 while (<IN>) {
     chomp;
     my ($id,$type) = split/\t/,$_;
@@ -445,8 +437,6 @@ close ERROR;
 foreach my $file (@deletion) {
     unlink "$file" or warn "couldnt delete $file: $!\n";
 }
-
-
 
 
 #-----------------------------------------------------------
@@ -668,6 +658,17 @@ sub output_protein_fasta_ram_manner {
     }
 }
 
+sub output_lst_ram_manner {
+    my ($hash_ref, $output) = @_;
+    
+    open(OUTPUT,">$output");
+    my %hash  = %{$hash_ref};
+    foreach my $key (sort {$a cmp $b} keys %hash) {
+        print OUTPUT "$key\n";
+    }
+    close OUTPUT;
+}
+
 sub nbarc_parser {
     my $file = shift;
     my %config = ();
@@ -682,3 +683,5 @@ sub nbarc_parser {
     close IN;
     return \%config;    
 }
+
+
