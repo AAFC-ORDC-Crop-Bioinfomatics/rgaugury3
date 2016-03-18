@@ -34,19 +34,18 @@ GetOptions(my $options = {},
                   );
 die $USAGE unless defined ($options->{i});
 
-my $input  = $options->{i};
-my @types = ("stk","tm","sp","LysM","LRR"); #tm = transmembrane
-#my %summary = ();
-my %result = ();
-my @tmp = ();
-my $prefix = ($options->{pfx}) ? $options->{pfx} : "output." ;
+my $input      = $options->{i};
+my @types      = ("stk","tm","sp","LysM","LRR"); #tm = transmembrane
+my %result     = ();
+my @tmp        = ();
+my $prefix     = ($options->{pfx}) ? $options->{pfx} : "output." ;
 my $outputfile = ($options->{o}) ? $options->{o} : "RLKorP.assay.Alll.genes.lst.txt"; # or RLKorRLP.domain.prediction.txt specified by RGA pipeline
 
-my $cpu = ($options->{cpu}) ? $options->{cpu} : 1 ;
+my $cpu            = ($options->{cpu}) ? $options->{cpu} : 1 ;
 my $phobius_output = "$prefix"."phobius.txt";
 #push(@tmp, "$phobius_output");
 
-my @pfam_rlk = keys %{file_parser("$FindBin::Bin/configuration_rlk.txt")};
+my @pfam_rlk       = keys %{file_parser("$FindBin::Bin/configuration_rlk.txt")};
 
 transmembrane($input, $phobius_output);
 
@@ -179,8 +178,8 @@ sub transmembrane {
     #splitted result merge to an intact output $phobius_output
     splitted_results_merge($output,@splitted_out);
 
-    files_remove(@splitted_out);
-    files_remove(@renamed_split_files);
+    #files_remove(@splitted_out);
+    #files_remove(@renamed_split_files);
 }
 
 
@@ -188,12 +187,14 @@ sub pfam_parse{
     my $input = shift;
     open(IN,$input) || die "cant open the $input";
     my $evalue = 0.1;
+    my $i = 0;
     while (<IN>) {
+        $i++;
         chomp;
         next if (/^#/);
-        next if (/^\s+/);
+        next if (/^\s*$/);
         
-        my @array = split/\t/,$_;
+        my @array = split/\s+/,$_;
         next if ($array[12] >$evalue);
         my $id = $array[0];
         my $start = $array[1];

@@ -49,7 +49,7 @@ my %LRR = ();
 my %NBS = ();
 my %COIL = ();
 
-open(INTER,">intermediate.txt");
+#open(INTER,">intermediate.txt");
 foreach my $id (sort {$a cmp $b} keys %result){
     
     my @array = ();
@@ -74,13 +74,13 @@ foreach my $id (sort {$a cmp $b} keys %result){
     
     #--------------- only nbs domain containing protein will be further processed by the subfunction loop ----------------
     if ($nbsflag == 1) {
-        print INTER "$id\t$len";
+        #print INTER "$id\t$len";
         foreach my $database (sort {$a cmp $b} keys %{$result{$id}}) {
             foreach my $rec (sort {$a cmp $b} @{$result{$id}->{$database}}) {
-                print INTER "\t$rec";
+                #print INTER "\t$rec";
             }
         }
-        print INTER "\n";
+        #print INTER "\n";
     }
     
     
@@ -116,7 +116,7 @@ foreach my $id (sort {$a cmp $b} keys %result){
         }
     };
 }
-close INTER;
+#close INTER;
 
 open(LRR,">$out_lrr");
 foreach my $id (sort {$a cmp $b} keys %LRR) {
