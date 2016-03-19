@@ -109,29 +109,12 @@ my $error_report                  = $prefix."Error.logfile.txt";
 # ----------------preprocessing protein/DNA fasta sequence-----------------------
 Ptime("Pipeline to predict the plant RGA...");
 Ptime("Make sure all other programs are ready...");
+open(ERROR, ">$error_report");
 
-open(ERROR,">$error_report");
-
-Ptime("formatting the input file...");
 local $/ = ">";
-open(IN, $aa_infile) or die "unalbe to open $aa_infile\n";
-while (<IN>) {
-    chomp;
-    my ($title,$seq) = split/\n/,$_,2;
-    next unless ($title and $seq);
-    my ($id) = $title =~ /([a-zA-Z0-9\.\-\_]+)/;
-    $seq   =~ s/\s+//g;
-    $seq   =~ s/\*//g;
-    
-    $protein_fasta{$id}= $seq;
-}
-close IN;
 
-open(OUT,">$aa_formated_infile");
-foreach my $id (sort {$a cmp $b} keys %protein_fasta) {
-    print OUT ">$id\n$protein_fasta{$id}\n";
-}
-close OUT;
+Ptime("formatting the input file as standard input file...");
+%protein_fasta = %{format_fasta($aa_infile, $aa_formated_infile)};
 
 if ($nt_infile and -s $nt_infile) {
     open(IN,$nt_infile) or die "unable to open $nt_infile\n";
@@ -659,4 +642,45 @@ sub nbarc_parser {
     return \%config;    
 }
 
+sub format_fasta {
+    my ($input, $output) = @_;
+    my %fasta = ();
+    
+    if ($output and -s $output) {
+        open(IN,$output) or die "unable to open $output fasta";
+        while (<IN>) {
+            chomp;
+            my ($title, $seq) = split/\n/,$_,2;
+            next unless ($title and $seq);
+            
+            $seq =~ s/\s+//g;
+            $fasta{$title} = $seq;
+        }
+        close IN;
+        Ptime("$output existed in current folder, reading it to RAM and going ahead with next step...");
+    }
+    else {
+        open(IN, $input) or die "unalbe to open $input\n";
+        while (<IN>) {
+            chomp;
+            my ($title, $seq) = split/\n/,$_,2;
+            next unless ($title and $seq);
+            my ($id) = $title =~ /([a-zA-Z0-9\.\-\_]+)/;
+            
+            $seq   =~ s/\s+//g;
+            $seq   =~ s/\*//g;
+            
+            $fasta{$id}= $seq;
+        }
+        close IN;
+        
+        open(OUT,">$output");
+        foreach my $id (sort {$a cmp $b} keys %fasta) {
+            print OUT ">$id\n$fasta{$id}\n";
+        }
+        close OUT;
+    }
+    
+    return \%fasta;
+}
 
