@@ -30,7 +30,7 @@ USAGE
 GetOptions(my $options = {},
                     "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s"
                   );
-
+my $start_run = time();
 die $USAGE unless defined ($options->{p});
 
 my $aa_infile   = $options->{p};  
@@ -396,6 +396,9 @@ foreach my $file (@deletion) {
     unlink "$file" or warn "couldnt delete $file: $!\n";
 }
 
+my $end_run = time();
+hhmmss_consumed($end_run - $start_run);
+
 
 #-----------------------------------------------------------
 #--------------------------sub functions--------------------
@@ -684,3 +687,11 @@ sub format_fasta {
     return \%fasta;
 }
 
+sub hhmmss_consumed {
+  my $hourz = int($_[0]/3600);
+  my $leftover = $_[0] % 3600;
+  my $minz = int($leftover/60);
+  my $secz = int($leftover % 60);
+  my $consumed = sprintf ("%02d:%02d:%02d", $hourz,$minz,$secz);
+  Ptime("input <$aa_infile> time taken -  $consumed");
+}

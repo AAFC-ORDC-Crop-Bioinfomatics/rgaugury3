@@ -182,10 +182,9 @@ my $rlk_lrr  = (looks_like_number($lrr_lysm{'rlk'}->{'lrr'}))  ? $lrr_lysm{'rlk'
 my $rlk_lysm = (looks_like_number($lrr_lysm{'rlk'}->{'lysm'})) ? $lrr_lysm{'rlk'}->{'lysm'} : 0 ;
 
 
-print STDERR "RLP lrr = $rlp_lrr; RLP lysm = $rlp_lysm; RLK lrr = $rlk_lrr; RLK lysm = $rlk_lysm\n";
-
-my @stk = keys %stk;
-print STDERR "stk # = ",$#stk + 1,"\n";
+#print STDERR "RLP lrr = $rlp_lrr; RLP lysm = $rlp_lysm; RLK lrr = $rlk_lrr; RLK lysm = $rlk_lysm\n";
+#my @stk = keys %stk;
+#print STDERR "stk # = ",$#stk + 1,"\n";
 
 # --------------------------------------sub ----------------------------------------------
 sub Ptime{
