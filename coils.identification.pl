@@ -191,7 +191,7 @@ sub coils_parallel{
             
             rename $file, ".splitted.$fingerprint.file.txt"; #because > content won't display in ps, thus extra steps were added here.
             push(@renamed_split_files, ".splitted.$fingerprint.file.txt");
-            system("scoils -f .splitted.$fingerprint.file.txt >.splited.res.coils$file.out 2>/dev/null &");
+            system("scoils-ht -f .splitted.$fingerprint.file.txt >.splited.res.coils$file.out 2>/dev/null &");
             push(@splitted_out,".splited.res.coils$file.out");
         }
         else {
