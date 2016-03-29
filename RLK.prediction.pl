@@ -178,8 +178,8 @@ sub transmembrane {
     #splitted result merge to an intact output $phobius_output
     splitted_results_merge($output,@splitted_out);
 
-    #files_remove(@splitted_out);
-    #files_remove(@renamed_split_files);
+    files_remove(@splitted_out);
+    files_remove(@renamed_split_files);
 }
 
 
