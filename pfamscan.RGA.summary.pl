@@ -8,7 +8,7 @@ Scripts: pfam_scan RGA summary script
 
 arguments: 
 
-        -i           inputfile, output by pfan_scan.pl script
+        -i           inputfile, output by pfam_scan.pl script
         -pfx         prefix
         
 USAGE
