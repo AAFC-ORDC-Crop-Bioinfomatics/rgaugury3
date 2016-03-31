@@ -227,8 +227,8 @@ sub iprscan_parse {
         #print "$evalue2\n";next;
         #next if ($evalue2 >$evalue);
         #$len,$database,$hitid,($desc)?$desc:'na',$start,$end,$evalue,$true,($ipr)?$ipr:'na',($domain_name)?$domain_name:'na'
-        $desc        = ($desc)?$desc:'na';
-        $ipr         = ($ipr)?$ipr:'na';
+        $desc        = ($desc)? $desc : 'na' ;
+        $ipr         = ($ipr) ? $ipr : 'na' ;
         $domain_name = ($domain_name)?$domain_name:'na';
         
         #if ($hitid =~ /PF00069/i or $hitid =~ /PF07714/i or $hitid =~ /PF12398/i) {
@@ -240,7 +240,7 @@ sub iprscan_parse {
             push(@{$result{$id}->{LysM}->{range}},join("|","iprscan","$start-$end"));
                    $result{$id}->{LysM}->{property} = 1;
         }
-        elsif ($desc =~ /leucine.*rich/i) {
+        elsif ($desc =~ /leucine.*rich/i or $domain_name =~ /leucine.*rich/i) {
             push(@{$result{$id}->{LRR}->{range}},join("|","iprscan","$start-$end"));
                    $result{$id}->{LRR}->{property} = 1;
         }
