@@ -69,7 +69,7 @@ while (<IN>) {
     next unless (/^\w/);
     my @array = split/\t/,$_;
     
-    if ($array[2] =~ /mrna/i) {
+    if ($array[2] =~ /mrna/i or $array[2] =~ /transcript/i) {
         # modifiy the below phrase to adapt to other genome gff3
         #my ($id)  = $array[8] =~ /NAME=(.*?)\./;
         
