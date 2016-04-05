@@ -101,18 +101,16 @@ close IN;
 
 open(OUT,">$dir/CVIT.input.$type2.$options->{c}.txt"); 
 foreach my $id (sort {$a cmp $b} keys %gene) {
-                    my $chr  =  $gene{$id}->{chr};
-                    my $start = $gene{$id}->{start};
-                    my $end =  $gene{$id}->{end};
-                    my $str =   $gene{$id}->{str};
-                    my $color = $gene{$id}->{color};
+                    my $chr   =  $gene{$id}->{chr};
+                    my $start =  $gene{$id}->{start};
+                    my $end   =  $gene{$id}->{end};
+                    my $str   =  $gene{$id}->{str};
+                    my $color =  $gene{$id}->{color};
 
                     print OUT join("\t",$chr, 'cvit', $type, $start, $end, ".",$str,".","Name=;color=$color");
                     print OUT "\n";
 }
 close OUT;
-
-
 
 # --------------sub---------------------
 sub Ptime{
