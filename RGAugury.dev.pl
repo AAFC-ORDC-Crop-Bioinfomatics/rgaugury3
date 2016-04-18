@@ -20,6 +20,7 @@ arguments:
         -p           protein fasta file
         -n           corresponding cDNA/CDS nucleotide for -p   (optional)
         -g           genome file in fasta format   (optional)
+        -d           database, by default value is pfam, gene3d and superfamily only.
         -gff         gff3 file   (optional)
         -c           cpu or threads number, default = 2
         -pfx         prefix for filename, useful for multiple speices input in same folder   (optional)
@@ -28,7 +29,7 @@ USAGE
 
 #---------- parameters which should be defined in advance -----------
 GetOptions(my $options = {},
-                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s"
+                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s"
                   );
 my $start_run = time();
 die $USAGE unless defined ($options->{p});
@@ -39,6 +40,7 @@ my $g_infile    = $options->{g};
 my $gff         = $options->{gff};
 my $cpu         = ($options->{c})? $options->{c} : 2 ;
 my ($prefix)    = ($options->{pfx}) ? "$options->{pfx}" : $aa_infile =~ /([a-zA-Z0-9]+)/; $prefix .= ".";
+my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d,superfamily";
 
 # --------------------- cutoff, key interproScan ID and blastp evalue for pfamScan ---------------------------
 my $e_seq    = 0.1;
@@ -61,7 +63,7 @@ my %nt_fasta                   = ();
 my %genome_fasta               = ();
 my %overlap_RGAblast_pfam_lst  = ();
 my %NBS_candidates_lst         = ();
-my %coils = ();
+my %coils                      = ();
 my @deletion                   = ();
 
 #otput file name
@@ -229,7 +231,8 @@ if ($iprscan_out and -s $iprscan_out) {
 }
 else {
     Ptime("initializing interproscan...");
-    system("interproscan.sh -i $RGA_blast_fasta -appl Pfam,panther,smart,gene3d,superfamily -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
+    #system("interproscan.sh -i $RGA_blast_fasta -appl Pfam,panther,smart,gene3d,superfamily -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
+    system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
 }
 
 Ptime("Interproscan is done...");
@@ -306,8 +309,12 @@ if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
     Ptime("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
 }
 else {
-    Ptime("initializing interproscan 2nd round...");
-    system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
+    Ptime("extracting interproscan for potential NBS encoding genes...");
+    #system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
+    #system("interproscan.sh -i $tmp_nbsonly_fas -appl $iprDB -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
+
+    # extract iprscan data from previous analyzed iprscan_out as iprscan_out_2nd
+    iprscan_out_extraction($iprscan_out, $NBS_pre_candidates_lst, $iprscan_out_2nd);
 }
 
 system("perl -S ipr.specific.id.selection.pl -i $iprscan_out_2nd -o_n $tmp_nbs_ipr -o_l $tmp_lrr_ipr -o_t $tmp_tir_ipr") if ($iprscan_out_2nd and -s $iprscan_out_2nd);#keep the order of output
@@ -372,7 +379,6 @@ output_protein_fasta_lst_manner($RLK_candidates_lst ,$RLK_candidates_fas)  if ($
 output_protein_fasta_lst_manner($RLP_candidates_lst ,$RLP_candidates_fas)  if ($RLP_candidates_lst  and -s $RLP_candidates_lst);
 output_protein_fasta_lst_manner($TMCC_candidates_lst,$TMCC_candidates_fas) if ($TMCC_candidates_lst and -s $TMCC_candidates_lst);
 
-
 # ------------ output RGAs nucleotide seq if sepcificed in command line------------
 if ($nt_infile) {
     open(OUT,">$RGA_candidates_fasta_nt") or warn "unable to open $nt_infile : $!\n";
@@ -386,7 +392,6 @@ if ($nt_infile) {
     }
     close OUT;
 }
-
 
 #------------------prepare CVIT data-=----------------------
 if ($gff and -s $gff) {
@@ -743,4 +748,29 @@ sub extra_LRR_analysis{
         print OUT "\n";
     }
     close OUT;
+}
+
+sub iprscan_out_extraction{
+    my ($iprscan_out, $lst, $output) = @_;
+    
+    my %lst = ();
+    open(IN,$lst) or die "unable to open $lst\n";
+    while (<IN>) {
+        chomp;
+        my @lst = split/\t/,$_;
+        $lst{$lst[0]} = 1;
+    }
+    close IN;
+    
+    open(IN, $iprscan_out) or die "unable to open $iprscan_out\n";
+    open(OUT,">$output");
+    while (<IN>) {
+        chomp;
+        my @array = split/\t/,$_;
+        if (exists $lst{$array[0]}) {
+            print OUT "$_\n";
+        }
+    }
+    close OUT;
+    close IN;
 }
