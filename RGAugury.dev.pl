@@ -286,7 +286,7 @@ system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS
 
 open(IN,$NBS_pre_candidates_lst);
 open(TMP_NBS,">$tmp_nbsonly_fas");
-push(@deletion,$tmp_nbsonly_fas) if (-e $tmp_nbsonly_fas);
+#push(@deletion,$tmp_nbsonly_fas) if (-e $tmp_nbsonly_fas);
 #push(@deletion,$NBS_pre_candidates_lst);
 #push(@deletion,"summary.txt");
 
