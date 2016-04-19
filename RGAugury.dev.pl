@@ -294,7 +294,7 @@ while (<IN>) {
     my ($id,$type) = split/\t/,$_;
     if ($type eq 'NBS') {
         # for those NBS type, it will be undertaken further analysis.
-        print TMP_NBS_LST ">$id\n";#$protein_fasta{$id}\n
+        print TMP_NBS_LST "$id\n";#$protein_fasta{$id}\n
     }
     else {
         # for those not NBS tupe, they will be hashed as final NBS-encoding candidates
