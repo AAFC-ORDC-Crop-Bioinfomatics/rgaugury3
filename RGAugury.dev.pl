@@ -304,8 +304,8 @@ while (<IN>) {
 close IN;
 close TMP_NBS_LST;
 
-#push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
-#push(@deletion,$NBS_pre_candidates_lst);
+push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
+push(@deletion,$NBS_pre_candidates_lst);
 #push(@deletion,"summary.txt");
 
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
