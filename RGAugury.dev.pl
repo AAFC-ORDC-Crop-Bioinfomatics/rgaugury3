@@ -102,6 +102,7 @@ my $TMCC_candidates_fas           = $prefix."TMCC.candidates.fas";
 
 #tmp files
 my $tmp_nbsonly_fas               = $prefix."tmp.NBSonly.fas";
+my $tmp_nbsonly_lst               = $prefix."tmp.NBSonly.lst";
 my $tmp_nbs_ipr                   = $prefix."tmp_nbs_ipr.dissect.txt";
 my $tmp_lrr_ipr                   = $prefix."tmp_lrr_ipr.dissect.txt";
 my $tmp_tir_ipr                   = $prefix."tmp_tir_ipr.dissect.txt";
@@ -285,8 +286,8 @@ system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS
 #-analysis 'NBS' type only protein with extra database
 
 open(IN,$NBS_pre_candidates_lst);
-open(TMP_NBS,">$tmp_nbsonly_fas");
-#push(@deletion,$tmp_nbsonly_fas) if (-e $tmp_nbsonly_fas);
+open(TMP_NBS_LST,">$tmp_nbsonly_lst");
+push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
 #push(@deletion,$NBS_pre_candidates_lst);
 #push(@deletion,"summary.txt");
 
@@ -295,7 +296,7 @@ while (<IN>) {
     my ($id,$type) = split/\t/,$_;
     if ($type eq 'NBS') {
         # for those NBS type, it will be undertaken further analysis.
-        print TMP_NBS ">$id\n$protein_fasta{$id}\n";
+        print TMP_NBS_LST ">$id\n";#$protein_fasta{$id}\n
     }
     else {
         # for those not NBS tupe, they will be hashed as final NBS-encoding candidates
@@ -303,7 +304,7 @@ while (<IN>) {
     }
 }
 close IN;
-close TMP_NBS; 
+close TMP_NBS_LST; 
 
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
     Ptime("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
@@ -313,7 +314,7 @@ else {
     #system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");  
 
     # extract iprscan data from previous analyzed iprscan_out as iprscan_out_2nd
-    iprscan_out_extraction($iprscan_out, $NBS_pre_candidates_lst, $iprscan_out_2nd);
+    iprscan_out_extraction($iprscan_out, $tmp_nbsonly_lst, $iprscan_out_2nd);
 }
 
 system("perl -S ipr.specific.id.selection.pl -i $iprscan_out_2nd -o_n $tmp_nbs_ipr -o_l $tmp_lrr_ipr -o_t $tmp_tir_ipr") if ($iprscan_out_2nd and -s $iprscan_out_2nd);#keep the order of output
