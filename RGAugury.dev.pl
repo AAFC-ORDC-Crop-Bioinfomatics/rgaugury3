@@ -22,7 +22,7 @@ arguments:
         -p           protein fasta file
         -n           corresponding cDNA/CDS nucleotide for -p   (optional)
         -g           genome file in fasta format   (optional)
-        -d           database, by default value is pfam, gene3d and superfamily only.
+        -d           database, by default value chooses only pfam and gene3d.
         -gff         gff3 file   (optional)
         -c           cpu or threads number, default = 2
         -pfx         prefix for filename, useful for multiple speices input in same folder   (optional)
@@ -45,7 +45,7 @@ my $g_infile    = $options->{g};
 my $gff         = $options->{gff};
 my $cpu         = ($options->{c})? $options->{c} : 2 ;
 my ($prefix)    = ($options->{pfx}) ? "$options->{pfx}" : $aa_infile =~ /([a-zA-Z0-9]+)/; $prefix .= ".";
-my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d,superfamily";
+my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d";
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
 
 # --------------------- cutoff, key interproScan ID and blastp evalue for pfamScan ---------------------------
