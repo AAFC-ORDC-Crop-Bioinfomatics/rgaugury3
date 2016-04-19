@@ -46,7 +46,7 @@ my $gff         = $options->{gff};
 my $cpu         = ($options->{c})? $options->{c} : 2 ;
 my ($prefix)    = ($options->{pfx}) ? "$options->{pfx}" : $aa_infile =~ /([a-zA-Z0-9]+)/; $prefix .= ".";
 my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d";
-Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
+
 
 # --------------------- cutoff, key interproScan ID and blastp evalue for pfamScan ---------------------------
 my $e_seq    = 0.1;
@@ -85,6 +85,7 @@ my $RGA_blast_out                 = $prefix."RGA.blastp.$blast_evalue.out";
 my $RGA_blast_fasta               = $prefix."preRGA.candidates.by.Blast.fasta";
 my $RGA_blast_lst                 = $prefix."preRGA.candidates.by.Blast.lst";
 my $RGA_candidates_fasta          = $prefix."RGA.candidates.fasta";
+my $RGA_candidates_lst            = $prefix."RGA.candidates.lst";
 my $RGA_candidates_fasta_nt       = $prefix."RGA.candidates.cdna.fasta";
 my $candidate_RGA_pfam_out        = $prefix."candidates_RGA_pfam_out";
 my $iprscan_out                   = $prefix."iprscan_out.tsv";
@@ -106,6 +107,10 @@ my $RLP_candidates_fas            = $prefix."RLP.candidates.fas";
 my $TMCC_candidates_lst           = $prefix."TMCC.candidates.lst";
 my $TMCC_candidates_fas           = $prefix."TMCC.candidates.fas";
 
+# log file
+my $interproscan_log              = $prefix."interproscan.log";
+my $status_log                    = $prefix."status.log";
+
 #tmp files
 my $tmp_nbsonly_fas               = $prefix."tmp.NBSonly.fas";
 my $tmp_nbsonly_lst               = $prefix."tmp.NBSonly.lst";
@@ -115,6 +120,8 @@ my $tmp_tir_ipr                   = $prefix."tmp_tir_ipr.dissect.txt";
 my $tmp_cc_ipr                    = $prefix."tmp_cc_ipr.dissect.txt ";  
 my $error_report                  = $prefix."Error.logfile.txt";
 
+# --initializing the log4perl modules --------------------------------------------
+Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
 # ----------------preprocessing protein/DNA fasta sequence-----------------------
 DEBUG("Pipeline to predict the plant RGA...");
 DEBUG("Make sure all other programs are ready...");
@@ -239,7 +246,8 @@ if ($iprscan_out and -s $iprscan_out) {
 else {
     DEBUG("initializing interproscan...");
     #system("interproscan.sh -i $RGA_blast_fasta -appl Pfam,panther,smart,gene3d,superfamily -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
-    system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
+    #system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
+    system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>./$interproscan_log");
 }
 
 DEBUG("Interproscan is done...");
@@ -362,6 +370,7 @@ system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_
 # ----------output RGA candidates aa sequence --------------
 my %id = ();
 open(OUT,">$RGA_candidates_fasta");
+open(LST,">$RGA_candidates_lst");
 foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, $TMCC_candidates_lst) {
     open(IN,"$lst");
     while (<IN>) {
@@ -370,10 +379,11 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
         my @array = split/\s/,$_;
 
         my $id   = $array[0];
-        my $type = $array[1]; 
+        my $type = $array[1];
         
         my $new_id = join("|",$id,$type);
         print OUT ">$new_id\n$protein_fasta{$id}\n";
+        print LST "$id\t$type\n";
         
         # ------record outputed RGA --------
         $id{$id} = 1;
@@ -381,6 +391,7 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
     close IN;
 }
 close OUT;
+close LST;
 
 output_protein_fasta_lst_manner($NBS_candidates_lst ,$NBS_candidates_fas)  if ($NBS_candidates_lst  and -s $NBS_candidates_lst);
 output_protein_fasta_lst_manner($RLK_candidates_lst ,$RLK_candidates_fas)  if ($RLK_candidates_lst  and -s $RLK_candidates_lst);
@@ -782,3 +793,8 @@ sub iprscan_out_extraction{
     close OUT;
     close IN;
 }
+
+sub getLogFilename{
+    my $filename = $status_log;
+    return $filename;
+} 
