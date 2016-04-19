@@ -287,9 +287,7 @@ system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS
 
 open(IN,$NBS_pre_candidates_lst);
 open(TMP_NBS_LST,">$tmp_nbsonly_lst");
-push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
-#push(@deletion,$NBS_pre_candidates_lst);
-#push(@deletion,"summary.txt");
+
 
 while (<IN>) {
     chomp;
@@ -304,7 +302,11 @@ while (<IN>) {
     }
 }
 close IN;
-close TMP_NBS_LST; 
+close TMP_NBS_LST;
+
+#push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
+#push(@deletion,$NBS_pre_candidates_lst);
+#push(@deletion,"summary.txt");
 
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
     Ptime("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
