@@ -310,7 +310,7 @@ if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
 }
 else {
     Ptime("extracting interproscan for potential NBS encoding genes...");
-    #system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");
+    #system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");  
 
     # extract iprscan data from previous analyzed iprscan_out as iprscan_out_2nd
     iprscan_out_extraction($iprscan_out, $NBS_pre_candidates_lst, $iprscan_out_2nd);
