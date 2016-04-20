@@ -13,9 +13,9 @@ Scripts: for furhter analysis of iprscan
 arguments: 
 
         -i           protein fasta file
-        -o_n         
-        -o_l         
-        -o_t         
+        -o_n         output for NBS
+        -o_l         output for LRR
+        -o_t         output for TIR
 
 USAGE
 
@@ -58,6 +58,7 @@ foreach my $id (sort {$a cmp $b} keys %result){
     my $lrrflag = 0;
     my $tirflag = 0;
     my $coilflag = 0;
+    
     foreach my $database (sort {$a cmp $b} keys %{$result{$id}}) {
         foreach my $rec (@{$result{$id}->{$database}}) {
             foreach my $config (@interested_NBS) {
@@ -71,8 +72,9 @@ foreach my $id (sort {$a cmp $b} keys %result){
             }
         }
     }
-    
+
     #--------------- only nbs domain containing protein will be further processed by the subfunction loop ----------------
+    
     if ($nbsflag == 1) {
         #print INTER "$id\t$len";
         foreach my $database (sort {$a cmp $b} keys %{$result{$id}}) {
@@ -105,7 +107,8 @@ foreach my $id (sort {$a cmp $b} keys %result){
         if ($nbsflag == 1) {
             foreach my $rec (@{$result{$id}->{SMART}}) {
                 my ($len,$database,$hitid,$desc,$start,$end,$evalue,$true,$ipr,$domain_name) = split/\|/,$rec;
-                if ($desc =~ /Leucine-rich/i or $desc =~ /leucine rich/i) {
+                
+                if ($desc =~ /leucine.*rich/i or $domain_name =~ /leucine.*rich/i) {
                     $lrrflag = 1;
                     push(@{$LRR{$id}},join("|","domain_LRR","$start-$end"));
                 }

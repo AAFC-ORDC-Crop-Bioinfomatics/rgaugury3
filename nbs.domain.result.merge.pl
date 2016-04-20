@@ -50,7 +50,6 @@ while (<FASTA>) {
     next unless ($title and $seq);
     my ($id) = $title =~ /(\S+)/;
     $seq =~ s/\s+//g;
-    #$seq =~ s/\s*//g;
     my $len = length($seq);
     $seqlen{$id} = $len;
 }

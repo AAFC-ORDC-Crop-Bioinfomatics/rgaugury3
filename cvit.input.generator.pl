@@ -69,7 +69,7 @@ while (<IN>) {
     next unless (/^\w/);
     my @array = split/\t/,$_;
     
-    if ($array[2] =~ /mrna/i) {
+    if ($array[2] =~ /mrna/i or $array[2] =~ /transcript/i) {
         # modifiy the below phrase to adapt to other genome gff3
         #my ($id)  = $array[8] =~ /NAME=(.*?)\./;
         
@@ -101,18 +101,16 @@ close IN;
 
 open(OUT,">$dir/CVIT.input.$type2.$options->{c}.txt"); 
 foreach my $id (sort {$a cmp $b} keys %gene) {
-                    my $chr  =  $gene{$id}->{chr};
-                    my $start = $gene{$id}->{start};
-                    my $end =  $gene{$id}->{end};
-                    my $str =   $gene{$id}->{str};
-                    my $color = $gene{$id}->{color};
+                    my $chr   =  $gene{$id}->{chr};
+                    my $start =  $gene{$id}->{start};
+                    my $end   =  $gene{$id}->{end};
+                    my $str   =  $gene{$id}->{str};
+                    my $color =  $gene{$id}->{color};
 
                     print OUT join("\t",$chr, 'cvit', $type, $start, $end, ".",$str,".","Name=;color=$color");
                     print OUT "\n";
 }
 close OUT;
-
-
 
 # --------------sub---------------------
 sub Ptime{
