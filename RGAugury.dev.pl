@@ -304,13 +304,11 @@ system("perl -S NBS-encoding.amount.summary.dev.pl -i   $NBS_merged_domain -o   
 
 open(IN,$NBS_pre_candidates_lst);
 open(TMP_NBS_LST,">$tmp_nbsonly_lst");
-
-
 while (<IN>) {
     chomp;
-    my ($id,$type) = split/\t/,$_;
+    my ($id, $type) = split/\t/,$_;
     if ($type eq 'NBS') {
-        # for those NBS type, it will be undertaken further analysis.
+        # for those NBS type, it will be undertaken for further analysis.
         print TMP_NBS_LST "$id\n";#$protein_fasta{$id}\n
     }
     else {
