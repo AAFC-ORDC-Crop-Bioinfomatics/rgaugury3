@@ -68,7 +68,7 @@ while (<IN>) {
         push(@{$gene{TN}},$id);
     }
     
-    elsif ($v_tir == 1                                       and $v_tir + $v_nbs                  == 1) {
+    elsif ($v_tir == 1                                       and $v_nbs +          $v_cc + $v_tir == 1) {
         $total{TX}++;
         push(@{$gene{TX}},$id);
     }
@@ -82,6 +82,8 @@ while (<IN>) {
     else {
         $total{other}++;
         push(@{$gene{OTHER}},$id);
+        
+        # for debug purpose
         print OTHER "$_\t";
         print OTHER join("|",$v_nbs,$v_lrr,$v_cc,$v_tir,$v_nbs + $v_lrr + $v_cc + $v_tir,"\n");
     }
