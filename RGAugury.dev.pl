@@ -250,6 +250,7 @@ else {
     #system("interproscan.sh -i $RGA_blast_fasta -appl Pfam,panther,smart,gene3d,superfamily -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
     #system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
     system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>./$interproscan_log");
+    #system("perl -S iprscan.pl -i $RGA_blast_fasta -appl $iprDB -f tsv -o $iprscan_out -log $interproscan_log");
 }
 
 
