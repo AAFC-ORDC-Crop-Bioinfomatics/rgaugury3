@@ -57,16 +57,14 @@ sub count_split_number{
 }
 
 sub iprscan{
-    my ($input, $output) = @_;
-    my @splitted_out = ();
-    my $userID = `echo \$USER`;
+    my ($input, $output)    = @_;
+    my @splitted_out        = ();
+    my @fingerprints        = ();
+    my @renamed_split_files = ();
+    my $userID              = `echo \$USER`;
 
-    my @fingerprints = ();
-    
     my @split_files = fasta_file_split($input, $splitted_files_number);
 
-    my @renamed_split_files = ();
-    
     foreach my $file (@split_files) {
         if (-e $file) {
             my $fingerprint = generate_rand_filename(12); #to replace PID to monitor the status of threads
@@ -74,9 +72,7 @@ sub iprscan{
             
             rename $file, ".splitted.$fingerprint.file.txt"; #because > content won't display in ps, thus extra steps were added here.
             push(@renamed_split_files, ".splitted.$fingerprint.file.txt");
-            #system("scoils-ht -f .splitted.$fingerprint.file.txt >.splited.res.ipr$file.out 1>$logfile");
             system("interproscan.sh -i .splitted.$fingerprint.file.txt -appl $appl -f $format -iprlookup -o .splited.res.ipr$file.out 1>>./$logfile");
-            
             push(@splitted_out,".splited.res.ipr$file.out");
         }
         else {
@@ -93,7 +89,6 @@ sub iprscan{
     files_remove(@splitted_out);
     files_remove(@renamed_split_files);
 }
-
 
 sub generate_rand_filename {
      my $length_of_randomstring=shift;
