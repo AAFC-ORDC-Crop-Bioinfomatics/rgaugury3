@@ -4,7 +4,7 @@ use Getopt::Long;
 use Log::Log4perl::Level;
 use Log::Log4perl qw(:easy);
 
-#owning to iprlookup limitation occasionally, interproscan was invoked by perl script to run on splitted small data set
+#owning to iprlookup limitation occasionally, interproscan was invoked by perl script iprscan.pl to run on splitted small data set
 
 
 GetOptions(my $options = {},
