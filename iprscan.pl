@@ -32,7 +32,7 @@ die $USAGE unless(defined $options->{i});
 
 my $fasta  = $options->{i};
 my $output = $options->{o};
-my $splitted_files_number = count_split_number($fasta, 50);  #each splitted file contain 4000 entries
+my $splitted_files_number = count_split_number($fasta, 4000);  #each splitted file contain 4000 entries
 my $logfile = $options->{log};
 my $appl = $options->{appl};
 my $format = $options->{f};
@@ -43,7 +43,7 @@ iprscan($fasta,  $output);
 sub count_split_number{
     my ($file,$NoEach) = @_;
     my $totalSeqNo = `grep ">" $file |wc -l`; $totalSeqNo =~ s/\s+//g;
-    print "$totalSeqNo\n";
+
     my $number = '';
     
     my $value = ($totalSeqNo%$NoEach);
@@ -51,7 +51,7 @@ sub count_split_number{
         $number = $totalSeqNo/$NoEach;
     }
     else {
-        $number = 1+ int($totalSeqNo/$NoEach);
+        $number = 1 + int($totalSeqNo/$NoEach);
     }
     return $number;
 }
@@ -60,21 +60,22 @@ sub iprscan{
     my ($input, $output) = @_;
     my @splitted_out = ();
     my $userID = `echo \$USER`;
-    #Ptime("userid = $userID");
+
     my @fingerprints = ();
     
     my @split_files = fasta_file_split($input, $splitted_files_number);
+
     my @renamed_split_files = ();
     
     foreach my $file (@split_files) {
         if (-e $file) {
             my $fingerprint = generate_rand_filename(12); #to replace PID to monitor the status of threads
-            push(@fingerprints,$fingerprint);
+            push(@fingerprints, $fingerprint);
             
             rename $file, ".splitted.$fingerprint.file.txt"; #because > content won't display in ps, thus extra steps were added here.
             push(@renamed_split_files, ".splitted.$fingerprint.file.txt");
             #system("scoils-ht -f .splitted.$fingerprint.file.txt >.splited.res.ipr$file.out 1>$logfile");
-            system("interproscan.sh -i .splitted.$fingerprint.file.txt -appl $appl -f $format -iprlookup >.splited.res.ipr$file.out 1>./$logfile");
+            system("interproscan.sh -i .splitted.$fingerprint.file.txt -appl $appl -f $format -iprlookup -o .splited.res.ipr$file.out 1>>./$logfile");
             
             push(@splitted_out,".splited.res.ipr$file.out");
         }
