@@ -30,12 +30,12 @@ USAGE
 
 die $USAGE unless(defined $options->{i});
 
-my $fasta  = $options->{i};
-my $output = $options->{o};
+my $fasta                 = $options->{i};
+my $output                = $options->{o};
 my $splitted_files_number = count_split_number($fasta, 4000);  #each splitted file contain 4000 entries
-my $logfile = $options->{log};
-my $appl = $options->{appl};
-my $format = $options->{f};
+my $logfile               = $options->{log};
+my $appl                  = $options->{appl};
+my $format                = $options->{f};
 
 iprscan($fasta,  $output);
 
