@@ -43,7 +43,7 @@ while (<IN>) {
     my $v_cc  = domain_detect($cc);
     my $v_tir = domain_detect($tir);
     
-    if ($v_nbs == 1                                          and $v_nbs + $v_lrr + $v_cc + $v_tir == 1) {
+    if ($v_nbs == 1                                          and $v_lrr + $v_cc + $v_tir          == 0) {
         $total{NBS}++;
         push(@{$gene{NBS}},$id);
     }
@@ -68,6 +68,11 @@ while (<IN>) {
         push(@{$gene{TN}},$id);
     }
     
+    elsif ($v_tir == 1                                       and $v_nbs +          $v_cc + $v_tir == 1) {
+        $total{TX}++;
+        push(@{$gene{TX}},$id);
+    }
+    
     elsif ($v_cc == 1  and  $v_nbs == 1                      and $v_nbs + $v_lrr + $v_cc + $v_tir == 2) {
         $total{CN}++;
         push(@{$gene{CN}},$id);
@@ -77,6 +82,8 @@ while (<IN>) {
     else {
         $total{other}++;
         push(@{$gene{OTHER}},$id);
+        
+        # for debug purpose
         print OTHER "$_\t";
         print OTHER join("|",$v_nbs,$v_lrr,$v_cc,$v_tir,$v_nbs + $v_lrr + $v_cc + $v_tir,"\n");
     }
