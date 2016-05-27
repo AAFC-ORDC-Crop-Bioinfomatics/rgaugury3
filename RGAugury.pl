@@ -26,6 +26,7 @@ arguments:
         -gff         gff3 file   (optional)
         -c           cpu or threads number, default = 2
         -pfx         prefix for filename, useful for multiple speices input in same folder   (optional)
+        -e           E-value for alignment analysis
         
 USAGE
 
@@ -33,7 +34,7 @@ USAGE
 
 #---------- parameters which should be defined in advance -----------
 GetOptions(my $options = {},
-                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s"
+                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s","-e=i"
                   );
 
 my $start_run = time();
@@ -52,7 +53,7 @@ my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d";
 my $e_seq    = 0.1;
 my $e_dom    = 0.1;
 my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
-my $blast_evalue   = "1e-5";
+my $blast_evalue   = (defined $options->{e} and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
 
 # make sure below folder contain pfam and preselected RGA database
 my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
@@ -75,7 +76,7 @@ my @deletion                   = ();
 #otput file name
 my $aa_formated_infile            = $prefix."formated.protein.input.fas";
 my $pfam_out                      = $prefix."pfam.local.search.out";
-my $NBS_pfam_out                  = $prefix."NBS.pfam.out";
+#my $NBS_pfam_out                  = $prefix."NBS.pfam.out";
 my $NBS_pre_candidates_lst        = $prefix."NBS.pre.candidates.lst";
 my $NBS_candidates_lst            = $prefix."NBS.candidates.lst";
 my $NBS_candidates_fas            = $prefix."NBS.candidates.fas";
@@ -122,14 +123,15 @@ my $error_report                  = $prefix."Error.logfile.txt";
 
 # --initializing the log4perl modules --------------------------------------------
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
+
 # ----------------preprocessing protein/DNA fasta sequence-----------------------
-DEBUG("Pipeline to predict the plant RGA...");
-DEBUG("Make sure all other programs are ready...");
+DEBUG("step 1 -> Pipeline to predict the plant RGA...");
+DEBUG("step 2 -> Make sure all other programs are ready...");
 open(ERRREPORT, ">$error_report");
 
 local $/ = ">";
 
-DEBUG("formatting the input file as standard input file...");
+DEBUG("step 3 -> formatting the input file as standard input file...");
 %protein_fasta = %{format_fasta($aa_infile, $aa_formated_infile)};
 
 if ($nt_infile and -s $nt_infile) {
@@ -161,7 +163,7 @@ local $/ = "\n";
 # -------------------------blastp to RGA database------------------
 # -----------this step will get a potential candidates RGA---------
 # ---all furhter analysis will be based on the preRGA fasta seq----
-DEBUG("Blast with RGA DB...");
+DEBUG("step 4 -> Blast with RGA DB...");
 if ($RGA_blast_out and -s $RGA_blast_out) {
     DEBUG("$RGA_blast_out detected in current folder, pipeline will jumps to next step - code 003");
 }
@@ -169,7 +171,7 @@ else {
     blastp_parallel($aa_formated_infile, $RGD_index_file, $blast_evalue, $RGA_blast_out, $cpu);
 }
 
-DEBUG("Blast is done, now parsing the output...");
+DEBUG("step 5 -> Blast is done, now parsing the output...");
 
 open(IN,$RGA_blast_out);
 while (<IN>) {
@@ -185,6 +187,7 @@ output_lst_ram_manner(\%RGA_blast_lst, $RGA_blast_lst);
 #-----------------using pfam to scan the pfam-------------------
 #--------remove the $pfam_out if not correctly executed --------
 
+DEBUG("step 6 -> running pfam scan procedure...");
 if ($pfam_out and -s $pfam_out) {
     DEBUG("$pfam_out detected in current folder, pipeline will jumps to next step - code 001");
 }
@@ -206,27 +209,12 @@ while (<IN>) {
 }
 close IN;
 
-#-----------selectively output all pfam scan data for NBS(true) coding gene only
-open(IN,  "$pfam_out");
-open(OUT, ">$NBS_pfam_out");
-while (<IN>) {
-    chomp;
-    next unless ($_ =~ /\w/ or $_ =~ /\d/);
-    my ($geneid, @array) = split/\s+/,$_;
-    if ($NBS_pfam_lst{$geneid}) {
-        print OUT "$_\n";                    
-    }
-}
-close IN;
-close OUT;
-
 # --------------------coiled coil prediction -------------------
-DEBUG("to predict coiled coils...");
+DEBUG("step 7 -> to predict coiled coils...");
 if ($cc_prediction and -s $cc_prediction) {
     DEBUG("$cc_prediction detected in current folder, pipeline will jumps to next step - code 002");
 }
 else {
-    DEBUG("initializing coiled-coil prediction...");
     system("perl -S coils.identification.pl $RGA_blast_fasta $cpu $cc_prediction");
 }
 
@@ -240,24 +228,23 @@ close IN;
 
 # -------------------------iprscan---------------------------------
 #----using above outputed fasta file to do iprscan for 1st time----
+DEBUG("step 8 -> initializing interproscan...");
 if ($iprscan_out and -s $iprscan_out) {
     DEBUG("$iprscan_out detected in current folder, pipeline will jumps to next step - code 004");
 }
 else {
-    DEBUG("initializing interproscan...");
-    #system("interproscan.sh -i $RGA_blast_fasta -appl Pfam,panther,smart,gene3d,superfamily -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
-    #system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>/dev/null");
-    system("interproscan.sh -i $RGA_blast_fasta -appl $iprDB -f tsv -iprlookup -o $iprscan_out 1>./$interproscan_log");
+    system("perl -S iprscan.pl -i $RGA_blast_fasta -appl $iprDB -f tsv -o $iprscan_out -log $interproscan_log");
 }
 
-DEBUG("Interproscan is done...");
+
 
 # --------------------------RLK and RLP prediction--------------
+DEBUG("step 9 -> analysising RLK and RLP");
 if ($RLKorRLP_prediction_output and -s $RLKorRLP_prediction_output) {#$RLKRLP_out_raw
     DEBUG("$RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
 }
 else {
-     system("perl -S RLK.prediction.pl -i $RGA_blast_fasta -pfx $prefix -pfam $pfam_out               -iprs $iprscan_out -cpu $cpu -lst $RGA_blast_lst     -o $RLKorRLP_prediction_output");
+     system("perl -S RLK.prediction.pl  -i  $RGA_blast_fasta  -pfx  $prefix  -pfam  $pfam_out  -iprs $iprscan_out  -cpu $cpu  -lst $RGA_blast_lst   -o $RLKorRLP_prediction_output");
 }
 
 #-----------merge coilsed coil to above output<$RLKorRLP_prediciton_outputs---------------
@@ -278,13 +265,13 @@ close MERGE;
 
 # ----------dissect NBS.pfam.out------------generate NBS.res.pfam.out etc.------------
 #output  NBS.res.pfam.txt LRR.res.pfam.txt, TIR.res.pfam.txt and PPR.res.pfam.txt totall 4 files
-system("perl -S pfamscan.RGA.summary.pl        -i   $NBS_pfam_out      -pfx $prefix");              
+system("perl -S pfamscan.RGA.summary.pl        -i   $pfam_out      -pfx $prefix");              
 
 # -extra leucine rich repeat analysis --------------
 extra_LRR_analysis("$lrr_prediction");
 
 #merge essential motif/domain to one file
-system("perl -S nbs.domain.result.merge.pl     -nbs $nbs_prediction    -lrr $lrr_prediction         -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  
+system("perl -S nbs.domain.result.merge.pl     -nbs $nbs_prediction    -lrr $lrr_prediction     -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  
 
 # summary
 system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS_pre_candidates_lst -pfx $prefix");
@@ -301,13 +288,11 @@ system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS
 
 open(IN,$NBS_pre_candidates_lst);
 open(TMP_NBS_LST,">$tmp_nbsonly_lst");
-
-
 while (<IN>) {
     chomp;
-    my ($id,$type) = split/\t/,$_;
+    my ($id, $type) = split/\t/,$_;
     if ($type eq 'NBS') {
-        # for those NBS type, it will be undertaken further analysis.
+        # for those NBS type, it will be undertaken for further analysis.
         print TMP_NBS_LST "$id\n";#$protein_fasta{$id}\n
     }
     else {
@@ -320,15 +305,12 @@ close TMP_NBS_LST;
 
 push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
 push(@deletion,$NBS_pre_candidates_lst);
-#push(@deletion,"summary.txt");
 
+DEBUG("step 10 -> extracting interproscan for 2nd round of additional NBS encoding genes...");
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
     DEBUG("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
 }
 else {
-    DEBUG("extracting interproscan for potential NBS encoding genes...");
-    #system("interproscan.sh -i $tmp_nbsonly_fas -appl pfam,superfamily,coils -f tsv -iprlookup -o $iprscan_out_2nd 1>/dev/null");  
-
     # extract iprscan data from previous analyzed iprscan_out as iprscan_out_2nd
     iprscan_out_extraction($iprscan_out, $tmp_nbsonly_lst, $iprscan_out_2nd);
 }
@@ -359,11 +341,9 @@ foreach my $key (sort {$NBS_candidates_lst{$a} cmp $NBS_candidates_lst{$b}} keys
 }
 close OUT;
 
-DEBUG("Interproscan further analysis is done...");
-
 
 #----output lst of RLK, RLP and TMCC---
-DEBUG("RLK and RLP prediction is done...");
+DEBUG("step 11 -> RLK and RLP prediction is done...");
 system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_candidates_lst $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
 
 
@@ -392,7 +372,7 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
 }
 close OUT;
 close LST;
-
+# export fasta sequence via candidate list files ------------------------------------------------------------------------------
 output_protein_fasta_lst_manner($NBS_candidates_lst ,$NBS_candidates_fas)  if ($NBS_candidates_lst  and -s $NBS_candidates_lst);
 output_protein_fasta_lst_manner($RLK_candidates_lst ,$RLK_candidates_fas)  if ($RLK_candidates_lst  and -s $RLK_candidates_lst);
 output_protein_fasta_lst_manner($RLP_candidates_lst ,$RLP_candidates_fas)  if ($RLP_candidates_lst  and -s $RLP_candidates_lst);
@@ -414,10 +394,10 @@ if ($nt_infile) {
 
 #------------------prepare CVIT data-=----------------------
 if ($gff and -s $gff) {
-    system("perl -S cvit.input.generator.pl -l $NBS_candidates_lst  -p $aa_infile -f $gff -t gene -c blue   -t2 NBS  ");
-    system("perl -S cvit.input.generator.pl -l $RLK_candidates_lst  -p $aa_infile -f $gff -t gene -c green  -t2 RLK  ");
-    system("perl -S cvit.input.generator.pl -l $RLP_candidates_lst  -p $aa_infile -f $gff -t gene -c orange -t2 RLP  ");
-    system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC ");
+    system("perl -S cvit.input.generator.pl -l $NBS_candidates_lst  -p $aa_infile -f $gff -t gene -c blue   -t2 NBS  -pfx $prefix");
+    system("perl -S cvit.input.generator.pl -l $RLK_candidates_lst  -p $aa_infile -f $gff -t gene -c green  -t2 RLK  -pfx $prefix");
+    system("perl -S cvit.input.generator.pl -l $RLP_candidates_lst  -p $aa_infile -f $gff -t gene -c orange -t2 RLP  -pfx $prefix");
+    system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC -pfx $prefix");
 }
 
 #------------------ clean files ----------------------------
@@ -429,8 +409,8 @@ foreach my $file (@deletion) {
 }
 
 my $end_run = time();
+DEBUG("step 12 -> You have successfully finished RGA identification, cheering!");
 hhmmss_consumed($end_run - $start_run);
-
 
 #-----------------------------------------------------------
 #--------------------------sub functions--------------------
@@ -540,6 +520,7 @@ sub splitted_results_merge {
             open(IN,$file);
             while (<IN>) {
                 chomp;
+                next if ($_ =~ /^\s*$/ or $_ =~ /^#/);
                 print OUT "$_\n";
             }
             close IN;
@@ -618,7 +599,7 @@ sub output_protein_fasta_lst_manner {
             print OUT ">$id\n$protein_fasta{$id}\n";
         }
         else {
-            DEBUG("not found $id while outputting fasta");
+            #DEBUG("not found $id while outputting fasta");
         }
     }
     close IN;
@@ -647,7 +628,7 @@ sub output_protein_fasta_ram_manner {
     close OUT;
     
     if ($errorFlag>0) {
-        DEBUG("unalbe to output @error in $line");
+        #DEBUG("unalbe to output @error in $line");
     }
 }
 
@@ -725,7 +706,7 @@ sub hhmmss_consumed {
   my $minz = int($leftover/60);
   my $secz = int($leftover % 60);
   my $consumed = sprintf ("%02d:%02d:%02d", $hourz,$minz,$secz);
-  DEBUG("input <$aa_infile> time taken -  $consumed");
+  DEBUG("step 13 -> input <$aa_infile> time taken -  $consumed");
 }
 
 sub extra_LRR_analysis{
