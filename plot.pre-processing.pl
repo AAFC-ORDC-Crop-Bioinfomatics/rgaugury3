@@ -11,7 +11,7 @@ use Scalar::Util qw(looks_like_number);
 my $version = 0.1;
 # -
 GetOptions(my $options = {},
-              "-l1=s","-l2=s","-l3=s","-l4=s","-nd=s","-rd=s","-pfx=s"
+              "-l1=s","-l2=s","-l3=s","-l4=s","-nd=s","-rd=s","-o=s"
 );
 
 my $USAGE = <<USAGE;
@@ -31,7 +31,7 @@ Arguments:
         -nd     nbs merged motif
         -rd     rlp or rlk merged motif 
         
-        -pfx    prefix
+        -o      output file name
         
     enjoy it!
 USAGE
@@ -49,12 +49,10 @@ my %hash = (
     'LysM'=> 8
 );
 
-my $pfx =($options->{pfx}) ? $options->{pfx} : "input" ;
+my $output =($options->{o}) ? $options->{o} : "dm.compile.txt" ;
 
 my $nbs_domain_file = $options->{nd};
 my $rd_domain_file  = $options->{rd};
-
-my $output = $pfx.".dm.compile.txt";
 
 my $cvt_l1_ref = convertdata($options->{l1}, $options->{nd}, 2);
 my $cvt_l2_ref = convertdata($options->{l2}, $options->{rd}, 1);
@@ -104,7 +102,7 @@ sub convertdata {
         if ($i == 1) {
             for my $value ($init_start..$#array) {
                 $number_to_id{$value} = $array[$value];
-                print "$value\t $array[$value]\n";
+                #print "$value\t $array[$value]\n";
             }
         }
         else {
