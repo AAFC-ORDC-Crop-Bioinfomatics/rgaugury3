@@ -8,7 +8,7 @@ use FindBin;
 my $version = 0.1;
 # -
 GetOptions(my $options = {},
-              "-gff3=s","-m=i","-i=s","-s=s"
+              "-gff3=s","-i=s","-s=s"
 );
 
 my $USAGE = <<USAGE;
@@ -23,7 +23,6 @@ Notice: please make folder named as motif where the input file located, in which
 Arguments:
 
         -gff3    gene annotation gff3
-        -m       gff3 parsing method, 1 to 3, for flax, choose 1
         -i       motif and domain input
         -s       plot the intron lenght in ratio to extron[y] or no[n], default = 'n'
     enjoy it!
@@ -33,9 +32,6 @@ die $USAGE unless (defined $options->{i});
 
 #gff3 file
 my $gff3   = $options->{gff3};
-
-#gff3 parsing methods
-my $method = $options->{m};
 
 #motif file
 my $input  = $options->{i};
@@ -97,9 +93,8 @@ my %motif_img = (
 
 # all the gene gff will be imported into the %gene
 
-#populated %gene with parsing method, different genome GFF# has different ways to parse, for flax, choose 1
-# below function will populate the gene hash
-gff3_parser($gff3, $method); 
+# below function will populate the gene hash with standard method
+gff3_parser($gff3); 
 
 #processing motif input
 open(IN, $input);
@@ -129,8 +124,6 @@ while (<IN>) {
         $intron_No++;
     }
     
-    
-    
     my $image = '';
     if ($scale eq 'y') {
         $image = new GD::Image(abs($genelen/$factor)+1.2*$left_space, $height+2*$top_space);    
@@ -156,7 +149,6 @@ while (<IN>) {
     my $red   = $image->colorAllocate(255,0,0);      
     my $blue  = $image->colorAllocate(0,0,255);
     
-    #$image->stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)
     #$image->stringFT($black,"/home/lipch/jobs_servers/179.10.113.232/jobs/f.plot.domain.pipeline/DejaVuSansMono.ttf",45,0,10,56,"$id");
     
     my  %domain_color = (
@@ -172,11 +164,12 @@ while (<IN>) {
     
     $image->transparent($white);
     
-    my $outputfile = join("_",$id,"x$factor.png"); #"$id_x$factor.png";
+    my $outputfile = join(".", $id,"png"); #"$id_x$factor.png";
     
     #the linker line between exon and intron
     my $cat_start = "";
-    open(OUT,">$outputfile") or die "cant write to background\n";
+    mkdir("img") unless(-d "img");
+    open(OUT,">img/$outputfile") or die "cant write to background\n";
     
 
     if ($scale eq 'n') {
@@ -309,14 +302,12 @@ while (<IN>) {
     else {
         die "scale can be only y or n\n";
     }
-
     
     print OUT $image->png;
     close OUT;
 }
 
 ouptut_unfound_gff3_list();
-
 
 # -------------------- function ------------------------
 sub motif_tile{
@@ -329,7 +320,7 @@ sub motif_tile{
     while ($xpos <$end) {
         my $width = (($end - $xpos + 1)>=100) ? 100 : $end - $xpos + 1;
         my $motif_image_new = GD::Image->newFromPng("$motif_image",0);
-        $im->copy($motif_image_new,$xpos + $left_space,$ypos, 0, 0, $width, 100); #$top_space + $height - 5
+        $im->copy($motif_image_new,$xpos + $left_space,$ypos - 1 , 0, 0, $width, 100); #$top_space + $height - 5
         
         $xpos += 100;
         last if ($xpos >=100);
@@ -348,58 +339,42 @@ sub domain_draw {
 
 sub gff3_parser {
     #All the data will saved in %gene, especially the @cds
-    my ($file,$method) = @_;
+    my ($file) = @_;
     my $offset = 0;
     
-    
+    my $len = 0;
     open(IN,$file);
-    
-
-    if ($method == 1) {
-        my %pacid = ();
-        my $len = 0;
-        while (<IN>) {
-            chomp;
+    while (<IN>) {
+        chomp;
+        
+        my @array = split/\t/,$_;
+        if ($array[2] eq 'gene') {
+            $len = abs($array[4] - $array[3]) + 1;
+            $offset = $array[3] - 1;
+        }
+        elsif ($array[2] eq 'mRNA') {
+            my $geneid  = $array[8];
             
-            my @array = split/\t/,$_;
-            if ($array[2] eq 'gene') {
-                $len = abs($array[4] - $array[3]) + 1;
-                $offset = $array[3] - 1;
-            }
-            elsif ($array[2] eq 'mRNA') {
-                my ($pacid,$geneid)  = $array[8] =~ /ID=PAC:(\d+);Name=(Lus\d+)/;
-                
-                #print "$pacid,$geneid\n";
-                $pacid{$pacid} = $geneid;
-                
-                $gene{$geneid}->{len} = $len;
-            }
-            elsif ($array[2] eq 'CDS') {
-                my $start = $array[3] - $offset;
-                my $end   = $array[4] - $offset;
-                my ($pacid) = $array[8] =~ /ID=PAC:(\d+)/;
-                my $geneid = $pacid{$pacid};
-                
-                
-                # consider the strand info-----------
-                if ($array[6] eq '+') {
-                    push(@{$gene{$geneid}->{cds}},join("|",$start,$end));
-                }
-                else {
-                    #because flax gff3 always put smaller number at the first, thus in minus strand the smaller coordination is actually the 3' end
-                    unshift(@{$gene{$geneid}->{cds}},join("|",$end,$start));
-                }
+            $gene{$geneid}->{len} = $len;
+        }
+        elsif ($array[2] =~ /CDS/i or $array[2] =~ /UTR/i) {
+            my $start = $array[3] - $offset;
+            my $end   = $array[4] - $offset;
+
+            my $geneid = $array[8];
+
+            # consider the strand info-----------
+            if ($array[6] eq '+') {
+                push(@{$gene{$geneid}->{cds}},join("|",$start,$end));
             }
             else {
-                next;
+                #because flax gff3 always put smaller number at the first, thus in minus strand the smaller coordination is actually the 3' end
+                unshift(@{$gene{$geneid}->{cds}},join("|",$end,$start));
             }
         }
-    }
-    elsif ($method == 2) {#the API for other gff3 parser
-        die "such mehtod to parse the gff3 is yet to be developed\n";
-    }
-    else {
-        die "no such mehtod to parse the gff3\n";
+        else {
+            next;
+        }
     }
     close IN;
 }
@@ -441,7 +416,7 @@ sub aa_nn_mapping{
         }
     }
     my $ab = ($#tmp + 1)%3;
-    die "cds has problem" unless ($ab == 0);
+    #die "cds has problem" unless ($ab == 0);
     
     my $nn_number = 0;
     my $aa_number = 0;
