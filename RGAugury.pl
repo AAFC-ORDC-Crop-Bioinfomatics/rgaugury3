@@ -8,6 +8,11 @@ use FindBin;
 use Log::Log4perl::Level;
 use Log::Log4perl qw(:easy);
 
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(abs_path $0);
+use Tool qw(blastp_parallel pfamscan_parallel);
+
 #----------------------------------RGAugury pipeline---------------------------------------
 
 my $USAGE = <<USAGE;
@@ -420,7 +425,7 @@ sub Ptime{
           my ($msg)= @_;
           print STDERR "$time: $msg\n";
 }
-
+=for comment
 sub generate_rand_filename {
 
      my $length_of_randomstring=shift;
@@ -587,7 +592,7 @@ sub blastp_parallel {
     files_remove(@splitted_out);
     files_remove(@split_files);
 }
-
+=cut
 sub output_protein_fasta_lst_manner {
     my ($lst,$out) = @_;
     open(IN,$lst) or die "unable to open $lst\n";
