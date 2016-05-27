@@ -271,10 +271,10 @@ system("perl -S pfamscan.RGA.summary.pl        -i   $pfam_out      -pfx $prefix"
 extra_LRR_analysis("$lrr_prediction");
 
 #merge essential motif/domain to one file
-system("perl -S nbs.domain.result.merge.dev.pl     -nbs $nbs_prediction    -lrr $lrr_prediction     -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  
+system("perl -S nbs.domain.result.merge.pl     -nbs $nbs_prediction    -lrr $lrr_prediction     -tir $tir_prediction -cc $cc_prediction -seq $aa_formated_infile >$NBS_merged_domain");  
 
 # summary
-system("perl -S NBS-encoding.amount.summary.dev.pl -i   $NBS_merged_domain -o   $NBS_pre_candidates_lst -pfx $prefix");
+system("perl -S NBS-encoding.amount.summary.pl -i   $NBS_merged_domain -o   $NBS_pre_candidates_lst -pfx $prefix");
 
 # -------------------------------------- ATTENTION --------------------------------------
 # $NBS_merged_domain has some of the false positive NBS protein, because pfam_scan's evalue is 1e-5,
