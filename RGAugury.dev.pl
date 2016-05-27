@@ -358,7 +358,6 @@ foreach my $key (sort {$NBS_candidates_lst{$a} cmp $NBS_candidates_lst{$b}} keys
 }
 close OUT;
 
-
 #----output lst of RLK, RLP and TMCC---
 DEBUG("step 11 -> RLK and RLP prediction is done...");
 system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_candidates_lst $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
