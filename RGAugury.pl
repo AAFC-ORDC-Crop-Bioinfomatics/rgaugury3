@@ -367,6 +367,8 @@ system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_
 my %id = ();
 open(OUT,">$RGA_candidates_fasta");
 open(SUMMARY, ">$summary_table");
+print SUMMARY join("\t","ID","Length","Type","Figure\n");
+
 open(LST,">$RGA_candidates_lst");
 
 foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, $TMCC_candidates_lst) {
