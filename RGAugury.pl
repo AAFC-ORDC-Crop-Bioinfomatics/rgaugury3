@@ -443,8 +443,8 @@ if ($gff and -s $gff) {
     system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC -pfx $prefix");
 }
 else {
-    DEBUG("step 12 -> skipped, due to lack of gff3 file...");
-    DEBUG("step 13 -> skipped, due to lack of gff3 file...");
+    DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...");
+    DEBUG("step 13 -> skipped whole genome CViT input generaton, due to lack of gff3 file...");
 }
 #------------------ clean files ----------------------------
 push(@deletion, $error_report) if (-z $error_report);  #remove Error.log if its' empty logged.
