@@ -129,6 +129,7 @@ my $error_report                  = $prefix."Error.logfile.txt";
 
 # figure plot
 my $valid_dm                      = $prefix."dm.compile.txt";
+my $info_table                    = $prefix."RGA.info.txt";
 my $summary_table                 = $prefix."RGA.summaries.txt";
 
 # --initializing the log4perl modules --------------------------------------------
@@ -366,7 +367,7 @@ system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_
 # ----------output RGA candidates aa sequence --------------
 my %id = ();
 open(OUT,">$RGA_candidates_fasta");
-open(SUMMARY, ">$summary_table");
+open(SUMMARY, ">$info_table");
 print SUMMARY join("\t","ID","Length","Type","Figure\n");
 
 open(LST,">$RGA_candidates_lst");
@@ -434,7 +435,7 @@ if ($nt_infile) {
 if ($gff and -s $gff) {
     DEBUG("step 12 -> creating domain and motif architecture figure...");
     system("perl -S plot.pre-processing.pl -l1 $NBS_candidates_lst -l2 $RLP_candidates_lst -l3 $RLK_candidates_lst -l4 $TMCC_candidates_lst -nd $NBS_merged_domain -rd $RLKorRLP_merged_domain -o $valid_dm");
-    system("perl -S plot.gene.domain.motif.pl -gff3   $gff   -i $valid_dm  -s  n" );
+    system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm  -s  y" );
     
     DEBUG("step 13 -> creating input file for CViT plotting script package...");
     system("perl -S cvit.input.generator.pl -l $NBS_candidates_lst  -p $aa_infile -f $gff -t gene -c blue   -t2 NBS  -pfx $prefix");
@@ -446,6 +447,10 @@ else {
     DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...");
     DEBUG("step 13 -> skipped whole genome CViT input generaton, due to lack of gff3 file...");
 }
+
+# ------------------generate summary table ---------------------------------------------
+system("perl -S RGA.summary.pl $RGA_candidates_fasta >$summary_table");
+
 #------------------ clean files ----------------------------
 push(@deletion, $error_report) if (-z $error_report);  #remove Error.log if its' empty logged.
 close ERRREPORT;
