@@ -24,7 +24,7 @@ Arguments:
         -f       gff3 file
         -t       gff3 types in 3rd column, like 'gene','mRNA','sRNA', default = 'gene'
         -c       color of annoated gene,'red','blue','green','yellow','orange','black'
-        -t2      gene type,like 'RLK', "RLP","NBS"
+        -t2      gene type,like 'RLK', "RLP", "NBS"
         -dir     output directory
         -pfx     prefix for output filename
 
@@ -63,7 +63,6 @@ while (<IN>) {
     $list{$array[0]} = 1;
 }
 close IN;
-
 
 open(IN,"$options->{f}");
 while (<IN>) {
