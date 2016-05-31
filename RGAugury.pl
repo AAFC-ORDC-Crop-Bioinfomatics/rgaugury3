@@ -456,18 +456,19 @@ if ($gff and -s $gff) {
     system("perl -S cvit.input.generator.pl -l $RLP_candidates_lst  -p $aa_infile -f $gff -t gene -c orange -t2 RLP  -pfx $prefix");
     system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC -pfx $prefix");
     
-    my $input1 = $prefix."CViT.NBS.blue.txt";
-    my $input2 = $prefix."CViT.RLK.green.txt";
-    my $input3 = $prefix."CViT.RLP.orange.txt";
-    my $input4 = $prefix."CViT.TMCC.black.txt";
-    my $input5 = $prefix."CViT.all.txt";
+    my $input1 = $prefix."CViT.NBS.blue.txt";     my $output1 = $prefix."NBS";
+    my $input2 = $prefix."CViT.RLK.green.txt";    my $output2 = $prefix."RLK";
+    my $input3 = $prefix."CViT.RLP.orange.txt";   my $output3 = $prefix."RLP";
+    my $input4 = $prefix."CViT.TMCC.black.txt";   my $output4 = $prefix."TMCC";
+    my $input5 = $prefix."CViT.all.txt";          my $output5 = $prefix."ALL";
+    
     system("cat $input1 $input2 $input3 $input4 >$input5");
     
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.NBS   $chrgff $input1 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLK   $chrgff $input2 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLP   $chrgff $input3 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.TMCC  $chrgff $input4 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.ALL   $chrgff $input5 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $output1   $chrgff $input1 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $output2   $chrgff $input2 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $output3   $chrgff $input3 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $output4   $chrgff $input4 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $output5   $chrgff $input5 1>/dev/null");
 }
 else {
     DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...");
