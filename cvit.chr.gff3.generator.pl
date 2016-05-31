@@ -40,8 +40,10 @@ while (<IN>) {
     my ($chr) = $array[0] =~ /chr(\d+)/i;
     
     if (looks_like_number($chr) and $chr>=1) {
-        if ($chr{$chr} and $chr{$chr} < max($array[3],$array[4])) {
-            $chr{$chr} = max($array[3],$array[4]);
+        if ($chr{$chr}) {
+            if ($chr{$chr} < max($array[3],$array[4])) {
+                $chr{$chr} = max($array[3],$array[4]);
+            }
         }
         else {
             $chr{$chr} = max($array[3],$array[4]);
