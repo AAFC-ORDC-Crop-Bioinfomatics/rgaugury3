@@ -54,7 +54,7 @@ open(OUT,">$output");
 
 my $maxlen = 0;
 foreach my $chr (sort {$a <=> $b} keys %chr) {
-    print OUT join("\t","Chr".$chr, "RGAugury", "RGA", 1, $chr{$chr},".",".",".","ID=Chr".$chr);
+    print OUT join("\t","Chr".$chr, "RGAugury", "chromosome", 1, $chr{$chr},".",".",".","ID=Chr".$chr);
     print OUT "\n";
     
     if ($chr{$chr}>=$maxlen) {

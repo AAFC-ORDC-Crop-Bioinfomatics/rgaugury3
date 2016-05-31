@@ -131,7 +131,7 @@ my $error_report                  = $prefix."Error.logfile.txt";
 my $valid_dm                      = $prefix."dm.compile.txt";
 my $info_table                    = $prefix."RGA.info.txt";
 my $summary_table                 = $prefix."RGA.summaries.txt";
-my $chrgff                        = $prefix."CViT.chromosome.txt";
+my $chrgff                        = $prefix."CViT.chromosome.gff";
 my $cvitini                       = $prefix."CViT.ini";
 # --initializing the log4perl modules --------------------------------------------
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
@@ -439,14 +439,16 @@ if ($gff and -s $gff) {
     system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm  -s  y" );
     
     my $max_len   = `perl -S cvit.chr.gff3.generator.pl -i $gff -o $chrgff`;
-    my $max_len_v = $max_len =~ /= (\d+)/;
+    my ($max_len_v) = $max_len =~ /= (\d+)/;
     
     my $ratio     = $max_len_v/30_000_000;
-    my $tick_interval = (sprintf("%d",$ratio) + 1)*500_000;
-    my $scale_factor  = 2e-5*$ratio;
+    my $tick_interval = (sprintf("%d",$ratio) + 1)*1_000_000;
+    my $scale_factor  = sprintf("%f",(0.00002)*$ratio);
 
-    system("sed  '/\(^tick_interval\s*=\).*/ s//\1   $tick_interval/'  $FindBin::Bin/cvit.ini >$cvitini ");
-    system("sed  '/\(^scale_factor\s*=\).*/ s//\1   $scale_factor/'    $FindBin::Bin/cvit.ini >$cvitini ");
+    my $cmd1 = "sed  '/\\(^tick_interval\\s*=\\).*/ s//\\1   $tick_interval/'  $FindBin::Bin/cvit.ini >$cvitini";
+    system($cmd1);
+    my $cmd2 = "sed -i '/\\(^scale_factor\\s*=\\).*/ s//\\1   $scale_factor/'  $cvitini";
+    system($cmd2);
     
     DEBUG("step 13 -> running CViT plotting script package...");
     system("perl -S cvit.input.generator.pl -l $NBS_candidates_lst  -p $aa_infile -f $gff -t gene -c blue   -t2 NBS  -pfx $prefix");
@@ -454,10 +456,18 @@ if ($gff and -s $gff) {
     system("perl -S cvit.input.generator.pl -l $RLP_candidates_lst  -p $aa_infile -f $gff -t gene -c orange -t2 RLP  -pfx $prefix");
     system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC -pfx $prefix");
     
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.NBS   $chrgff $prefix.NBS.blue.txt");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLK   $chrgff $prefix.RLK.green.txt");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLP   $chrgff $prefix.RLP.orange.txt");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.TMCC  $chrgff $prefix.TMCC.black.txt");
+    my $input1 = $prefix."CViT.NBS.blue.txt";
+    my $input2 = $prefix."CViT.RLK.green.txt";
+    my $input3 = $prefix."CViT.RLP.orange.txt";
+    my $input4 = $prefix."CViT.TMCC.black.txt";
+    my $input5 = $prefix."CViT.all.txt";
+    system("cat $input1 $input2 $input3 $input4 >$input5");
+    
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.NBS   $chrgff $input1 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLK   $chrgff $input2 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.RLP   $chrgff $input3 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.TMCC  $chrgff $input4 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o $prefix.ALL   $chrgff $input5 1>/dev/null");
 }
 else {
     DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...");
