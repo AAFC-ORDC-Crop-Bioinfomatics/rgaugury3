@@ -132,6 +132,7 @@ my $valid_dm                      = $prefix."dm.compile.txt";
 my $info_table                    = $prefix."RGA.info.txt";
 my $summary_table                 = $prefix."RGA.summaries.txt";
 my $chrgff                        = $prefix."CViT.chromosome.gff";
+my $genegff                       = $prefix."RGA.gff";
 my $cvitini                       = $prefix."CViT.ini";
 # --initializing the log4perl modules --------------------------------------------
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
@@ -229,7 +230,7 @@ if ($cc_prediction and -s $cc_prediction) {
     DEBUG("step 7 -> $cc_prediction detected in current folder, pipeline will jumps to next step - code 002");
 }
 else {
-    DEBUG("step 7 -> to predict coiled coils...");    
+    DEBUG("step 7 -> predicting coiled coils...");    
     system("perl -S coils.identification.pl $RGA_blast_fasta $cpu $cc_prediction");
 }
 
@@ -394,7 +395,7 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
             $type = join(">","NBS",$type);
         }
         
-        # -----------------------------create the RGA candidates basic info. SUMMARY table ---------------------        
+        # -----------------------------create the RGA candidates browser info. in SUMMARY table ---------------------        
         if ($gff) {
             print SUMMARY join("\t",$id, $seqlen, $type, "img/$id.png");
         }
@@ -438,9 +439,14 @@ if ($gff and -s $gff) {
     system("perl -S plot.pre-processing.pl -l1 $NBS_candidates_lst -l2 $RLP_candidates_lst -l3 $RLK_candidates_lst -l4 $TMCC_candidates_lst -nd $NBS_merged_domain -rd $RLKorRLP_merged_domain -o $valid_dm");
     system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm  -s  y" );
     
+    my %valid_gff = %{valid_gff_extraction($gff, $RGA_candidates_lst)};
+    output_RGA_gff($genegff, \%valid_gff);
+    
+    
     my $max_len   = `perl -S cvit.chr.gff3.generator.pl -i $gff -o $chrgff`;
     my ($max_len_v) = $max_len =~ /= (\d+)/;
     
+    # to get a proper ratio to replace the tick interval and scale factor in cvit.ini, which can plot a better figure in width vs height.
     my $ratio     = $max_len_v/30_000_000;
     my $tick_interval = (sprintf("%d",$ratio) + 1)*1_000_000;
     my $scale_factor  = sprintf("%f",(0.00002)*$ratio);
@@ -464,14 +470,15 @@ if ($gff and -s $gff) {
     
     system("cat $input1 $input2 $input3 $input4 >$input5");
     
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $output1   $chrgff $input1 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $output2   $chrgff $input2 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $output3   $chrgff $input3 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $output4   $chrgff $input4 1>/dev/null");
-    system("perl -S cvit.pl -i png -l -c $cvitini -o $output5   $chrgff $input5 1>/dev/null");
+    # create image under img folder
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output1   $chrgff $input1 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output2   $chrgff $input2 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output3   $chrgff $input3 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output4   $chrgff $input4 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output5   $chrgff $input5 1>/dev/null");
 }
 else {
-    DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...");
+    DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...      ");
     DEBUG("step 13 -> skipped whole genome CViT input generaton, due to lack of gff3 file...");
 }
 
@@ -690,3 +697,48 @@ sub getLogFilename{
     my $filename = $status_log;
     return $filename;
 } 
+
+sub valid_gff_extraction {
+    my ($gff, $lst) = @_;
+    
+    my %lst = ();
+    my %validgff = ();
+    open(LST,$lst) or die "unable to open $lst";
+    while (<LST>) {
+        chomp;
+        my ($id,@others) = split/\t/,$_;
+        $lst{$id} = 1;
+    }
+    close LST;
+    
+    open(GFF,$gff) or die "unable to open $gff";
+    while (<GFF>) {
+        chomp;
+        next if (/^#/ or /^\s*$/);
+        
+        my @array = split/\t/,$_;
+        $array[8] =~ s/\s+//g;
+        
+        if (exists $lst{$array[8]}) {
+            push(@{$validgff{$array[8]}},$_);
+        }
+    }
+    close GFF;
+
+    return(\%validgff);    
+}
+
+
+sub output_RGA_gff {
+    my ($output, $ref) = @_;
+    my %gff = %{$ref};
+    
+    open(OUT,">$genegff");
+    foreach my $id (sort {$a cmp $b} keys %gff) {
+        my @gff = @{$gff{$id}};
+        foreach my $line (@gff) {
+            print OUT "$line\n";
+        }
+    }
+    close OUT;
+}
