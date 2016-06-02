@@ -437,7 +437,7 @@ if ($nt_infile) {
 if ($gff and -s $gff) {
     DEBUG("step 12 -> creating domain and motif architecture figure...");
     system("perl -S plot.pre-processing.pl -l1 $NBS_candidates_lst -l2 $RLP_candidates_lst -l3 $RLK_candidates_lst -l4 $TMCC_candidates_lst -nd $NBS_merged_domain -rd $RLKorRLP_merged_domain -o $valid_dm");
-    system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm  -s  y" );
+    system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm " );
     
     my %valid_gff = %{valid_gff_extraction($gff, $RGA_candidates_lst)};
     output_RGA_gff($genegff, \%valid_gff);
