@@ -149,7 +149,8 @@ while (<IN>) {  #each line represent a gene
 
     my $white  = $image->colorAllocate(255,255,255);
     my $gray   = $image->colorAllocate(222,222,222);
-    my $gray1  = $image->colorAllocate(155,155,155);
+    my $gray1  = $image->colorAllocate(177,177,177);
+    my $gray2  = $image->colorAllocate(100,100,100);
     my $black  = $image->colorAllocate(0,0,0);       
     my $red    = $image->colorAllocate(255,0,0);      
     my $blue   = $image->colorAllocate(0,0,255);
@@ -274,7 +275,7 @@ while (<IN>) {  #each line represent a gene
                 if ($x1  - $cat_start == 1) { # if utr is directly connected with exon, then there would be no linker between utr and codon region, can be applied to other components besides utr and codon region
                 }
                 else {
-                    $image->filledRectangle(abs($cat_start) + 1, abs((2*$top_space+$height)/2) - 2, $start+$left_space -1, abs((2*$top_space+$height)/2) + 2, $gray1);
+                    $image->filledRectangle(abs($cat_start) + 1, abs((2*$top_space+$height)/2) - 2, $start+$left_space -1, abs((2*$top_space+$height)/2) + 2, $gray2);
                 }
             }
             $cat_start = $x2;
