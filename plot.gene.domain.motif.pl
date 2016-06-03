@@ -8,7 +8,7 @@ use FindBin;
 my $version = 0.1;
 # -
 GetOptions(my $options = {},
-              "-gff3=s","-i=s"
+              "-gff3=s","-i=s","-m=s"
 );
 
 my $USAGE = <<USAGE;
@@ -24,6 +24,7 @@ Arguments:
 
         -gff3    gene annotation gff3
         -i       motif and domain input
+        -m       output meta data
 
     enjoy it!
 USAGE
@@ -35,6 +36,8 @@ my $gff3   = $options->{gff3};
 
 #motif file,  specified on command line
 my $input  = $options->{i};
+
+my $output = ($options->{m}) ? $options->{m} : "RGA.gene.structure.meta.txt" ;
 
 #intron scale true or false,  specified on command line
 #my $scale  = ($options->{s})?($options->{s}):'n';
@@ -95,7 +98,18 @@ my %motif_img = (
     30 => $FindBin::Bin.'/motif/Image030.png'
 );
 
+my %hash = (
+    1 => 'NBS',
+    2 => 'LRR',
+    3 => 'TIR',
+    4 => 'CC' ,
+    5 => 'stk',
+    6 => 'tm' ,
+    7 => 'sp' ,
+    8 => 'LysM'
+);
 
+open(META,">$output");
 
 #processing motif input
 open(IN, $input);
@@ -255,7 +269,7 @@ while (<IN>) {  #each line represent a gene
             my $x2 = int($end/$factor)   + $left_space;
             my $y2 = $top_space + $height;
             
-            $image->filledRectangle($x1,$y1,$x2,$y2, $gray);
+            $image->filledRectangle($x1,$y1,$x2,$y2 + 1, $gray);
             if ($cat_start) {
                 if ($x1  - $cat_start == 1) { # if utr is directly connected with exon, then there would be no linker between utr and codon region, can be applied to other components besides utr and codon region
                 }
@@ -264,6 +278,25 @@ while (<IN>) {  #each line represent a gene
                 }
             }
             $cat_start = $x2;
+        }
+         
+        # draw cds
+        
+        foreach my $codon (@codon) {
+            my ($start,$end) = split/\|/,$codon;
+            
+            #-----------minus strand---------------
+            if ($start>$end) {
+                $start = abs($start - $genelen) + 1;
+                $end   = abs($end   - $genelen) + 1;
+            }
+            
+            my $x1 = int($start/$factor) + $left_space;
+            my $y1 = $top_space;
+            my $x2 = int($end/$factor)   + $left_space;
+            my $y2 = $top_space + $height;
+            
+            $image->filledRectangle($x1,$y1,$x2,$y2 + 1, $gray1);
         }
         
         #------------ coordination convert from aa to nn------------
@@ -300,10 +333,11 @@ while (<IN>) {  #each line represent a gene
         #tile up the image for the motif, sort motif is pretty important.
         foreach my $motif(sort {$a <=> $b} keys %{$tile_data{motif}}) {
             my @array = @{$tile_data{motif}->{$motif}};
-            #print join("=",$motif,@array);print "\n";
+
+            print META join("\t",$id,$hash{$motif},"color_".$motif,@array);print META "\n";
+
             foreach my $cat_coor (@array) {
                 my ($start,$end) = split/\|/,$cat_coor;
-                #print "$motif..$start..$end\n";
                 motif_tile($start,$end,$motif_img{$motif},$image);
             }
         }                
@@ -315,7 +349,7 @@ while (<IN>) {  #each line represent a gene
     print OUT $image->png;
     close OUT;
 }
-
+close META;
 ouptut_unfound_gff3_list();
 
 # -------------------- function ------------------------
