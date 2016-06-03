@@ -282,7 +282,6 @@ while (<IN>) {  #each line represent a gene
         }
          
         # draw cds
-        
         foreach my $codon (@codon) {
             my ($start,$end) = split/\|/,$codon;
             
