@@ -50,15 +50,17 @@ my %aa_nn_mapping = (); #the value of aa_nn_mapping will be used by many modules
 my @no_found_gff3 = ();
 
 #use to zoom in or zoom out; output in filename as x1..
+# so far only 1 works, don't use other factor like bigger than 1 or less than 1.
+# more job needs to implemented on motif_tile or domain_draw
 my $factor = 1;
 
 #to set a fixed length for intro, pixel unit, if specified n for -s
 my $fixed_intron_len = 40;
 
 # figure parameters
-my $height = 100;    #pixel
-my $left_space = 5; #pixel
-my $top_space  = 2;   #pixel
+my $height     = 100;    #pixel
+my $left_space = 0;      #pixel
+my $top_space  = 2;      #pixel
 
 my %motif_img = (
     1  => $FindBin::Bin.'/motif/Image001.png',
@@ -99,8 +101,8 @@ my %motif_img = (
 open(IN, $input);
 while (<IN>) {  #each line represent a gene
     chomp;
-    my ($id,@array) = split/\s+/,$_; # one id , one tile
-    
+    my ($id, @array) = split/\s+/,$_; # one id , one tile
+        
     if (looks_like_number($gene{$id}->{len})) {
         #keep reading and processing if existing this gene in gff3
     }
@@ -129,19 +131,7 @@ while (<IN>) {  #each line represent a gene
     #}
     
     # to generate a canvas according to parameters specified on command line
-    my $image = '';
-    #if ($scale eq 'y' or $scale eq 'Y') {
-        $image = new GD::Image(abs($genelen/$factor)         + 1.2*$left_space, $height + 2*$top_space);    
-    #}
-    #elsif ($scale eq 'n' or $scale eq 'N') {
-    #    #the final length for a modified gene
-    #    $epi_gene_length += $intron_No*$fixed_intron_len;
-    #    
-    #    $image = new GD::Image(abs($epi_gene_length/$factor) + 1.2*$left_space, $height + 2*$top_space);    
-    #}
-    #else {
-    #    die "scale can be only y or n option\n";
-    #}
+    my $image = new GD::Image(abs($genelen/$factor)         + 1.2*$left_space, $height + 2*$top_space);    
 
     my $white  = $image->colorAllocate(255,255,255);
     my $gray   = $image->colorAllocate(222,222,222);
@@ -267,7 +257,11 @@ while (<IN>) {  #each line represent a gene
             
             $image->filledRectangle($x1,$y1,$x2,$y2, $gray);
             if ($cat_start) {
-                $image->filledRectangle(abs($cat_start) + 1, abs((2*$top_space+$height)/2) - 2, $start+$left_space -1, abs((2*$top_space+$height)/2) + 2, $gray1);
+                if ($x1  - $cat_start == 1) { # if utr is directly connected with exon, then there would be no linker between utr and codon region, can be applied to other components besides utr and codon region
+                }
+                else {
+                    $image->filledRectangle(abs($cat_start) + 1, abs((2*$top_space+$height)/2) - 2, $start+$left_space -1, abs((2*$top_space+$height)/2) + 2, $gray1);
+                }
             }
             $cat_start = $x2;
         }
@@ -279,15 +273,18 @@ while (<IN>) {  #each line represent a gene
             if ($tag =~ /motif/) {
                 my ($motif_number,$p_start,$p_end) = $tag =~ /motif_(\d+?)\|(\d+?)\-(\d+)/;
                 my @coor = mapping_coor($p_start,$p_end,$id);
+                
+                #print join("\t",$motif_number, @coor);print "\n";
+                
                 #print "@coor\n";
                 push(@{$tile_data{motif}->{$motif_number}},@coor);
             }
-            elsif ($tag =~ /domain/) {
-                my ($domain_name,$p_start,$p_end) = $tag =~ /domain_(\S+?)\|(\d+?)\-(\d+)/;
-                my @coor = mapping_coor($p_start,$p_end,$id);
-                #print "@coor\n";
-                push(@{$tile_data{domain}->{$domain_name}},@coor);
-            }
+            #elsif ($tag =~ /domain/) {
+            #    my ($domain_name,$p_start,$p_end) = $tag =~ /domain_(\S+?)\|(\d+?)\-(\d+)/;
+            #    my @coor = mapping_coor($p_start,$p_end,$id);
+            #    #print "@coor\n";
+            #    push(@{$tile_data{domain}->{$domain_name}},@coor);
+            #}
         }
         
         ##plot the domain
@@ -300,11 +297,13 @@ while (<IN>) {  #each line represent a gene
         #    }
         #}
         
-        #tile up the image for the motif
+        #tile up the image for the motif, sort motif is pretty important.
         foreach my $motif(sort {$a <=> $b} keys %{$tile_data{motif}}) {
             my @array = @{$tile_data{motif}->{$motif}};
+            #print join("=",$motif,@array);print "\n";
             foreach my $cat_coor (@array) {
                 my ($start,$end) = split/\|/,$cat_coor;
+                #print "$motif..$start..$end\n";
                 motif_tile($start,$end,$motif_img{$motif},$image);
             }
         }                
@@ -321,19 +320,17 @@ ouptut_unfound_gff3_list();
 
 # -------------------- function ------------------------
 sub motif_tile{
-    #problem yet to be resolved in this subfunction, but it works well know. the only potential issue is that if the motif_image is not sorted for its invoking 'foreach', then the plot figure will randomly change the color pattern.
+    #problem yet to be resolved in this subfunction, but it works well now. the only potential issue is that if the motif_image is not sorted while invoking 'foreach', then the plot figure will randomly change the color pattern.
     
-    my ($start,$end,$motif_image,$im) = @_;
+    my ($start, $end, $motif_image, $im) = @_;
     my $xpos = $start;
     my $ypos = $top_space + 2;
     #print "$motif_image\n";
     while ($xpos <$end) {
         my $width = (($end - $xpos + 1)>=100) ? 100 : $end - $xpos + 1;
         my $motif_image_new = GD::Image->newFromPng("$motif_image",0);
-        $im->copy($motif_image_new,$xpos + $left_space,$ypos - 1 , 0, 0, $width, 100); #$top_space + $height - 5
-        
+        $im->copy($motif_image_new, $xpos + $left_space, $ypos - 1 , 0, 0, $width, 100); #$top_space + $height - 5
         $xpos += 100;
-        last if ($xpos >=100);
     }
 }
 
@@ -437,7 +434,6 @@ sub gff3_parser {
 
 sub aa_nn_mapping{
     # this function will generate a mapping table for each aa<=>nn-represented by pixel position
-    
     my ($genelen,$geneid,@codon) = @_;
     
     # put into all DNA exon coordination into @tmp array
@@ -448,12 +444,14 @@ sub aa_nn_mapping{
     
     foreach my $cds(@codon){
         my ($start,$end) = split/\|/, $cds;
-        
+
         if ($start>$end) {#when gene located in minus strand
             $start = abs($start - $genelen) + 1;
             $end   = abs($end   - $genelen) + 1;
         }
-
+        
+        #print "$start, $end \n";
+        
         #if ($scale_y_n eq 'n') {
         #    my $start_new = $coor + 1;
         #    my $end_new   = $start_new + abs($start - $end);
@@ -477,7 +475,7 @@ sub aa_nn_mapping{
 
     my @tmp3 = ();
     
-    foreach my $number (@tmp){
+    foreach my $number (sort {$a <=> $b}  @tmp){
         
         push(@tmp3, $number);
         
@@ -492,6 +490,14 @@ sub aa_nn_mapping{
             @tmp3 = ();
         }
     }
+    
+    # --------------debug test purpose ------------------
+    #foreach my $gene (keys %aa_nn_mapping) {
+    #    foreach my $aa_p (sort {$a <=> $b} keys %{$aa_nn_mapping{$gene}}) {
+    #        my @array = @{$aa_nn_mapping{$gene}->{$aa_p}};
+    #        #print "$aa_p => (@array)\n";
+    #    }
+    #}
 }
 
 #to conver the motif aa coor to the nn coor
