@@ -61,9 +61,9 @@ my $factor = 1;
 my $fixed_intron_len = 40;
 
 # figure parameters
-my $height     = 100;    #pixel
-my $left_space = 0;      #pixel
-my $top_space  = 2;      #pixel
+my $height     = 100;     #pixel
+my $left_space = 50;      #pixel
+my $top_space  = 2;       #pixel
 
 my %motif_img = (
     1  => $FindBin::Bin.'/motif/Image001.png',
@@ -330,17 +330,35 @@ while (<IN>) {  #each line represent a gene
         #    }
         #}
         
+        # due to redundancy of motif definition, some of them are merged by coordiation.
+        my %tile_data_unique = %{unique_motif_meta(\%tile_data)};
+        
         #tile up the image for the motif, sort motif is pretty important.
-        foreach my $motif(sort {$a <=> $b} keys %{$tile_data{motif}}) {
-            my @array = @{$tile_data{motif}->{$motif}};
+        foreach my $motif (sort {$a cmp $b} keys %tile_data_unique) {
+            #print "$motif\t";
+            foreach my $type (sort {$a <=> $b} keys %{$tile_data_unique{$motif}}) {
+                print META join("\t", $id, $hash{$type},"color_".$type );
+                my @array = @{$tile_data_unique{$motif}->{$type}};
+                print META "\t";
+                foreach my $region (@array) {
+                    my ($start,$end) = @{$region};
+                    print META join("|",$start,$end);
+                    print META "\t";
 
-            print META join("\t",$id,$hash{$motif},"color_".$motif,@array);print META "\n";
-
-            foreach my $cat_coor (@array) {
-                my ($start,$end) = split/\|/,$cat_coor;
-                motif_tile($start,$end,$motif_img{$motif},$image);
+                    motif_tile($start,$end,$motif_img{$type},$image);
+                }
+                print META "\n";
             }
-        }                
+        }
+
+        #tile up the image for the motif, sort motif is pretty important.
+        #foreach my $motif(sort {$a <=> $b} keys %{$tile_data{motif}}) {
+        #    my @array = @{$tile_data{motif}->{$motif}};
+        #    foreach my $cat_coor (@array) {
+        #        my ($start,$end) = split/\|/,$cat_coor;
+        #        motif_tile($start,$end,$motif_img{$motif},$image);
+        #    }
+        #}                
     #}
     #else {
     #    die "scale can be only y or n\n";
@@ -595,3 +613,61 @@ sub maxone {
     my @a = sort(@array);
     return $a[-1];
 }
+
+sub unique_motif_meta {
+    my $motif_regions_ref = shift;
+    my %motif_regions = %{$motif_regions_ref};
+    my %motif_regions_unique = ();
+    
+    foreach my $class (sort {$a cmp $b} keys %motif_regions) {
+        foreach my $type (sort {$a <=> $b} keys %{$motif_regions{$class}}) {
+            my @regions1 = @{$motif_regions{$class}->{$type}};
+            my @regions2 = ();
+            foreach my $region (@regions1) {
+                #print join("\t",$class,$type,$region,"\n");
+                my ($start,$end) = split/\|/,$region;
+                ($start,$end) = ($end,$start) if ($start>$end);
+                push(@regions2, [$start, $end]);
+                
+            }
+                
+            my @sorted = sort {$a->[0] <=> $b->[0]} @regions2;
+            my @merged = ();
+            
+            my $tmp_start = "";
+            my $tmp_end   = "";
+            my $i = 0;
+            
+            foreach my $ref (@sorted) {
+                $i++;
+                my ($start,$end) = @{$ref};
+                
+                if ($i == 1) {
+                    $tmp_start = $start;
+                    $tmp_end   = $end  ;
+                }
+                else {
+                    if ($start>$tmp_end) {
+                        push(@{$motif_regions_unique{$class}->{$type}},[$tmp_start, $tmp_end]);
+                        $tmp_start = $start;
+                        $tmp_end   = $end  ;
+                    }
+                    elsif ($start>=$tmp_start and $start<=$tmp_end) {
+                        if ($end >= $tmp_end) {
+                            $tmp_end  = $end;
+                        }
+                        elsif ($end<$tmp_end) {
+
+                        }
+                    }
+                    elsif ($start<$tmp_start) {
+                        print STDERR "meta data wasn't successfully sorted prior to merge\n";
+                    }
+                }
+            }
+            push(@{$motif_regions_unique{$class}->{$type}},[$tmp_start, $tmp_end]);
+        }
+    }
+    return(\%motif_regions_unique);
+}
+
