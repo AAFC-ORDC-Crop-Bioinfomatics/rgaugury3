@@ -62,7 +62,7 @@ my $fixed_intron_len = 40;
 
 # figure parameters
 my $height     = 100;     #pixel
-my $left_space = 50;      #pixel
+my $left_space = -1;      #pixel
 my $top_space  = 2;       #pixel
 
 my %motif_img = (
