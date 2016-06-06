@@ -40,7 +40,7 @@ USAGE
 
 #---------- parameters which should be defined in advance -----------
 GetOptions(my $options = {},
-                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s","-e=i"
+                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s","-e=s"
                   );
 
 my $start_run = time();
@@ -59,7 +59,7 @@ my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d";
 my $e_seq    = 0.1;
 my $e_dom    = 0.1;
 my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
-my $blast_evalue   = (defined $options->{e} and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
+my $blast_evalue   = (looks_like_number($options->{e}) and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
 
 # make sure below folder contain pfam and preselected RGA database
 my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
