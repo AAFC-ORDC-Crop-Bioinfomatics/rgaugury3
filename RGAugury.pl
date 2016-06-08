@@ -371,7 +371,7 @@ system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_
 my %id = ();
 open(OUT,">$RGA_candidates_fasta");
 open(SUMMARY, ">$info_table");
-print SUMMARY join("\t","ID","Length","Type","Gene Structure\n");
+print SUMMARY join("\t","ID","Length(aa)","Type","Gene Structure\n");
 
 open(LST,">$RGA_candidates_lst");
 
