@@ -1,0 +1,128 @@
+{% extends "base.html" %} {% block js %}
+<script src="{{ url_for('static', filename='js/tool.js') }}">
+</script>
+{% endblock %} {% block content %}
+<div class="container">
+    <div id="RGAugury">
+        <form action="" enctype="multipart/form-data" method="POST" name="rag" role="form">
+            <input type="hidden" name="fingerprint" value="">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <fieldset class="well the-fieldset">
+                            <legend class="the-legend embossed_txt">
+                                Project name
+                            </legend>
+                            <p>
+                                Project name:
+                                <input maxlength="20" id="proj_name" name="proj_name" type="text" class="form-control" />
+                            </p>
+                            <p hidden="">
+                                E-mail:
+                                <input id="input1" type="text">
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <fieldset class="well the-fieldset">
+                            <legend class="the-legend embossed_txt">
+                                Sequence parameters
+                            </legend>
+                            <p>
+                                Enter protein sequence(s) in FASTA format:
+                                <button class="btn btn-primary sample_fasta" type="button">
+                                    Sample
+                                </button>
+                            </p>
+                            <textarea spellcheck="false" class="form-control" id="protein_seq" name="protein_seq" rows="5"></textarea>
+                            <br> or load a local file in
+                            <a href="help#markdown-header-fasta-format-for-protein-and-dna">
+                                    FASTA
+                                </a> format:
+                            <input id="seq_file" name="seq_file" type="file" value="">
+                            <br> Genric gene feature
+                            <a href="help#markdown-header-gff3">
+                                            (.gff3)
+                                        </a> file (optional):
+                            <input id="gff3_file" name="gff3_file" type="file" />
+                            <br>
+                            <br>
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <fieldset class="well the-fieldset">
+                            <legend class="the-legend embossed_txt">
+                                Program parameters
+                            </legend>
+                            <p>
+                                E-value for initial BLASTP (defaul:1e-5):
+                                <input id="ev" name="ev" type="text" class="form-control">
+                            </p>
+                            <p>
+                                Databases for InterProscan:
+                                <label class="checkbox-inline" for="database">
+                                    <input checked="" name="database" type="checkbox" value="pfam"> pfam
+                                </label>
+                                <label class="checkbox-inline" for="pros">
+                                    <input checked="" name="database" type="checkbox" value="gene3d"> gene3D
+                                </label>
+                                <label class="checkbox-inline" for="pros">
+                                    <input name="database" type="checkbox" value="SMART"> SMART
+                                </label>
+                                <label class="checkbox-inline" for="pros">
+                                    <input name="database" type="checkbox" value="superfamily"> superFamily
+                                </label>
+                                <label class="checkbox-inline" for="pros">
+                                    <input name="database" type="checkbox" value="pather"> panther
+                                </label>
+                            </p>
+                            <p {{cpu}}>
+                                CPU threads Number:
+                                <select name="cpu">
+                                    <option>1</option>
+                                    <option selected>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            Submit
+                        </button>
+                        <!-- or -->
+                        <button class="btn btn-info btn-lg" type="reset">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4>
+                </h4>
+            </div>
+            <div class="modal-footer">
+                <button id='still-run' class="btn btn-danger" data-dismiss="modal" type="button">
+                    I know the consequence.
+                </button>
+                <button class="btn btn-default" data-dismiss="modal" type="button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

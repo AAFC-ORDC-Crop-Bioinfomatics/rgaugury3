@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<category>
+
+    <level_1 name="NBS-encoding">
+
+	<level_2 name="NBS"/>      
+	<level_2 name="CNL"/>    
+	<level_2 name="TNL"/>
+	<level_2 name="CN"/>   
+	<level_2 name="TN"/>    
+	<level_2 name="NL"/>   
+	<level_2 name="Other"/>  
+
+    </level_1>
+
+    <level_1 name="RLP"/>
+
+    <level_1 name="RLK"/>
+
+    <level_1 name="TM-cc"/>
+
+
+</category>

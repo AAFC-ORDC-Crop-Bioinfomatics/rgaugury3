@@ -1,0 +1,151 @@
+@import 'default';
+
+.summary_table {
+    width:100%;
+
+}
+
+.span_legend{
+    margin: -1.5em auto 0;
+    text-align:center;
+    width:30%;
+    display:block;
+    font-size:1.5em;
+}
+
+#summary_table
+    margin-top:1em
+    width:100%
+    border:3px solid white
+
+
+#summary_table td
+  border:3px solid white !important
+
+
+#summary_table th
+  border:3px solid white !important
+
+.light_green_bg {
+    background-color:#dff0d8;
+}
+
+.light_pink_bg {
+    background-color:#f2dede;
+}
+
+
+#download_area li:before{
+    content:'*'
+}
+
+#gene_type li button
+    width:50%
+
+.table_display
+    width:100%
+    display:table
+.table_cell
+    display:table-cell
+    width:auto
+    text-align:center
+
+#download_area 
+    @extends .table_display
+    margin:4em auto
+
+
+#download_area li
+    @extends .table_cell
+    font-size:1.2em
+
+#gene_type
+    @extends .table_display
+    margin-top:1em
+
+#gene_type li
+    @extends .table_cell
+
+.ds_table
+    @extends #summary_table
+
+.ds_table th
+    @extends #summary_table th
+    height: 30px !important
+    padding:3px !important
+
+.ds_table td
+    @extends .ds_table th
+    padding:3px
+
+.ds_table td:nth-child(odd)
+    @extends .light_green_bg
+
+.ds_table th:nth-child(odd)
+    @extends .light_green_bg
+
+.ds_table a
+    height:2em
+    width: 7em
+    margin:auto
+
+.thumbnail
+    margin-bottom:0px
+
+#gallery .modal-dialog
+    max-width:950px;
+    min-width:400px;
+
+.modal-body img
+    width:100%
+
+#img_nav
+    float:left
+    display:none
+
+#img_nav+button
+    float:right
+.pager
+    margin:0px
+
+#domain th:nth-child(4):after
+    content:""
+
+.ds_table th:nth-child(1)
+    width:150px !important
+
+.ds_table td:nth-child(1)
+    @extends .ds_table th:nth-child(1)
+
+.ds_table th:nth-child(2)
+    width:150px !important
+
+.ds_table td:nth-child(2)
+    @extends .ds_table th:nth-child(2)
+
+.ds_table th:nth-child(3)
+    width:100px !important
+
+.ds_table td:nth-child(3)
+    @extends .ds_table th:nth-child(3)
+
+.ds_table th:nth-child(4)
+    width:calc(100% - 350px) !important
+
+.ds_table td:nth-child(4)
+    @extends .ds_table th:nth-child(4)
+    background-color:white
+
+.paginate_input
+    width:40px
+    text-align:center
+    margin:10px 2px 0px 10px
+
+.paginate_of
+    margin-right:10px
+
+#gene_type button
+    font-weight:bold
+
+td img
+    cursor:pointer
