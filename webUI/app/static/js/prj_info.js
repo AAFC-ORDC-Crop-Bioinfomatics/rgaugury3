@@ -18,12 +18,12 @@ $(function() {
         $('#domain').height('initial');
     });
 
-    $(document).on('click', '.ds_table img', function(event) {
-        var src = $(this).attr('src');
-        var url = '/gallery' + src;
-        window.location.href = url;
-        event.preventDefault() 
-    });
+//    $(document).on('click', '.ds_table img', function(event) {
+//        var src = $(this).attr('src');
+//        var url = '/gallery' + src;
+//        window.location.href = url;
+//        event.preventDefault() 
+//    });
 
     $('#gallery').bind('DOMMouseScroll mousewheel', function(event) {
         var gallery = $('#gallery .modal-dialog');
