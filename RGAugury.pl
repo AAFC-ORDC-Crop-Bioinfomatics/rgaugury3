@@ -62,7 +62,7 @@ my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")}
 my $blast_evalue   = (looks_like_number($options->{e}) and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
 
 # make sure below folder contain pfam and preselected RGA database
-my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
+my $pfam_index_folder = (-e $ENV{PFAMDB}) ? $ENV{PFAMDB}: die "unable to locate pfam DB path in ENV, check if PFAMDB has been correctly set in your ENV variable";
 my $RGD_index_file    = (-e $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta") ? $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
@@ -135,6 +135,7 @@ my $summary_table                 = $prefix."RGA.summaries.txt";
 my $chrgff                        = $prefix."CViT.chromosome.gff";
 my $genegff                       = $prefix."RGA.gff";
 my $cvitini                       = $prefix."CViT.ini";
+
 # --initializing the log4perl modules --------------------------------------------
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
 
