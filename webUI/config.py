@@ -63,5 +63,5 @@ JOBS = 1 # max number of jobs that run concurrently
 ### wiki help ###
 WIKI = 'https://bitbucket.org/yaanlpc/rgaugury/wiki/Web%20UI%20Help'
 # any bitbucket username and password will work
-USER_NAME = 'rgaugury@gmail.com'
-PASSWORD = 'RGAaafc2016'
+USER_NAME = ''
+PASSWORD = ''
