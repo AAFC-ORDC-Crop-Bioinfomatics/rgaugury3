@@ -11,7 +11,8 @@ ENVIR = {
 
 'JAVA_HOME':'/home/quanx/app/jdk1.8.0_91',
 'PERL5LIB':'/home/quanx/app/PfamScan',
-'COILSDIR':'/home/quanx/job/repo/rgaugury/coils'
+'COILSDIR':'/home/quanx/job/repo/rgaugury/coils',
+'PFAMDB':'/home/quanx/pfamdb'
 }
 
 
