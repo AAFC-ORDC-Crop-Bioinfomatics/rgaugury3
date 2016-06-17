@@ -12,13 +12,15 @@ import re
 from psutil import Process
 import os 
 
+InterProScan_PAHT = ''
 ## set up environment variables
 for key, value in ENVIR.iteritems():
     if key =='PATH':
+        InterProScan_PAHT = re.search(':([^:]*?interproscan[^:]*?):',value).group(1)
         os.environ[key] = os.environ[key] +':'+value
     else:
         os.environ[key] = value
-    print os.environ[key]
+    
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -30,7 +32,16 @@ def index():
         cpu_toggle =''
         if CPU_TOGGLE == 0:
             cpu_toggle = 'hidden'
-        return render('index.html', cpu=cpu_toggle)
+        property_file  = InterProScan_PAHT +'/interproscan.properties'
+        with open(property_file, 'r') as f:
+            for line in f:
+                 m = re.search('panther.models.dir\s*=\s*(.+)\s*', line)
+                 if m:
+                    panther_dir = m.group(1)
+        panther = 'disabled'
+        if path.exists(InterProScan_PAHT + '/' +panther_dir):
+            panther = ''
+        return render('index.html', cpu=cpu_toggle, panther=panther)
 
 @app.route('/latestVersion')
 def get_data():

@@ -122,6 +122,7 @@ $(function() {
 
     handleResize($('textarea'));
 
+    $('input.disabled').parent().css("color", "#aaaaaa");
 });
 
 function handleResize(textarea) {
