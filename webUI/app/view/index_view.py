@@ -2,7 +2,7 @@ from app import app, db, models
 from flask import request
 from time import time, strptime
 from config import PRJ_HOME, PERL, RGAUGURY_PL,CPU_TOGGLE
-from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE
+from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR
 from os import path, makedirs, chdir
 from subprocess import Popen, PIPE
 from datetime import datetime
@@ -10,6 +10,15 @@ from app.tool import render
 import requests
 import re
 from psutil import Process
+import os 
+
+## set up environment variables
+for key, value in ENVIR.iteritems():
+    if key =='PATH':
+        os.environ[key] = os.environ[key] +':'+value
+    else:
+        os.environ[key] = value
+    print os.environ[key]
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
