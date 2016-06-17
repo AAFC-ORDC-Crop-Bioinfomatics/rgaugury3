@@ -3,11 +3,11 @@ import psutil
 
 ### environment variables ###
 ENVIR = {
-'PATH' : '/home/quanx/app/jdk1.8.0_91/bin:/home/quanx/app/ncbi-blast-2.3.0+/bin:'\
-'/home/quanx/app/hmmer-3.1b2-linux-intel-x86_64/binaries:/home/quanx/app/PfamScan:'\
-'/home/quanx/app/interproscan-5.19-58.0:/home/quanx/job/repo/rgaugury:'\
-'/home/quanx/job/repo/rgaugury/coils:/home/quanx/app/cvit.1.2.1:/home/quanx/app/phobius1.01:'\
-'/home/quanx/app/ncbi-blast-2.3.0+/bin',
+'PATH' : '/home/quanx/app/jdk1.8.0_91/bin:/home/quanx/app/ncbi-blast-2.3.0+/bin:\
+/home/quanx/app/hmmer-3.1b2-linux-intel-x86_64/binaries:/home/quanx/app/PfamScan:\
+/home/quanx/app/interproscan-5.19-58.0:/home/quanx/job/repo/rgaugury:\
+/home/quanx/job/repo/rgaugury/coils:/home/quanx/app/cvit.1.2.1:/home/quanx/app/phobius1.01:\
+/home/quanx/app/ncbi-blast-2.3.0+/bin',
 
 'JAVA_HOME':'/home/quanx/app/jdk1.8.0_91',
 'PERL5LIB':'/home/quanx/app/PfamScan',
