@@ -60,20 +60,20 @@
                             </p>
                             <p>
                                 Databases for InterProscan:
-                                <label class="checkbox-inline" for="database">
-                                    <input checked="" name="database" type="checkbox" value="pfam"> pfam
+                                <label class="checkbox-inline" for="pfam">
+                                    <input id="pfam" checked="" name="database" type="checkbox" value="pfam"> pfam
                                 </label>
-                                <label class="checkbox-inline" for="pros">
-                                    <input checked="" name="database" type="checkbox" value="gene3d"> gene3D
+                                <label class="checkbox-inline" for="gene3d">
+                                    <input id="gene3d" checked="" name="database" type="checkbox" value="gene3d"> gene3D
                                 </label>
-                                <label class="checkbox-inline" for="pros">
-                                    <input name="database" type="checkbox" value="SMART"> SMART
+                                <label class="checkbox-inline" for="SMART">
+                                    <input id="SMART" name="database" type="checkbox" value="SMART"> SMART
                                 </label>
-                                <label class="checkbox-inline" for="pros">
-                                    <input name="database" type="checkbox" value="superfamily"> superFamily
+                                <label class="checkbox-inline" for="superFamily">
+                                    <input id="superFamily" name="database" type="checkbox" value="superfamily"> superFamily
                                 </label>
-                                <label class="checkbox-inline" for="pros">
-                                    <input name="database" type="checkbox" value="pather"> panther
+                                <label class="checkbox-inline" for="pather">
+                                    <input {{panther}} class="{{panther}}" id="pather" name="database" type="checkbox" value="pather"> panther
                                 </label>
                             </p>
                             <p {{cpu}}>
