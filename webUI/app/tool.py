@@ -127,15 +127,19 @@ def getCPU():
 
 def getSequence(prj_id, gene):
     path = PRJ_HOME + '/' + prj_id +'/' +prj_id +'.fasta'
-    found = False
+    found = 0
+    result='Can not find the protein sequence'
     with open(path, 'r') as f:
         for line in f:
-            if found:
-                return line
-            if line.strip() == '>'+gene:
-                found = True
-
-    return 'Can not find the protein sequence'
+            if re.search('>', line):
+                if line.strip() == '>'+gene:
+                    result = ''
+                    found = 1
+                elif found == 1:
+                    return result
+            elif found==1:
+                result += line.strip().replace(' ','').replace('\t','')
+    return result
 
 def getGff(prj_id, gene):
     path = PRJ_HOME + '/' + prj_id + '/' + prj_id + GFF_FILE
