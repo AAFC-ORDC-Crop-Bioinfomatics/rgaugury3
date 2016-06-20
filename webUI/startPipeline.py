@@ -2,17 +2,14 @@
 import sys
 from subprocess import Popen, PIPE
 import argparse
-from app import app, db, models
+from app import app, db, models, logging
 from psutil import Process
 from config import PRJ_HOME, META_FILE,FASTA_EXTENSION,GENE_FILE, LOG_FILE
-from config import TOTAL_STEPS,DATE_FORMAT, FINAL_STATUS,PENDING, WEB_LOG
+from config import TOTAL_STEPS,DATE_FORMAT, FINAL_STATUS,PENDING
 from app.tool import countType, initGeneImage, initGeneSection,coutInputAmount, getCPU
 from datetime import datetime
 from os.path import exists
 import re
-import logging
-
-logging.basicConfig(filename=WEB_LOG,level=logging.DEBUG)
 
 command = sys.argv[1:14]
 
