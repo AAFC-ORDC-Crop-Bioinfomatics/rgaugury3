@@ -1,5 +1,5 @@
 from app import app, db, models
-from config import PRJ_HOME, META_FILE
+from config import PRJ_HOME, META_FILE, MOTIF_PATH, GENE_IMAGE
 from app.tool import render, getGeneId, getSequence, getGff
 import sys
 from flask import jsonify,send_from_directory
@@ -28,7 +28,7 @@ def gallery(prj_id,img):
     l = section.span.split('|')
     start = l[0]
     ending = l[1]
-    spans.append(Span(start,ending,geneImage.path,section.category))
+    spans.append(Span(start,ending,'/'+GENE_IMAGE +'/'+geneImage.name,section.category))
   
   return render('gallery.html',title='GSV', prj_id=prj_id, img_path=img_path, gffs= getGff(prj_id,gene.name), \
                                name= gene.name, type =gene_type, length = gene.length, simpleName =gene.name.split('.')[0], \
@@ -40,10 +40,9 @@ def jsonifiedSection(prj_id,geneName):
     sections = getSections(prj_id,geneName)
     return jsonify(data=[section.toList() for section in sections])
 
-@app.route('/projects/img/<image>')
-def getGeneImage(image):
-    directory = PRJ_HOME + '/img'
-    return send_from_directory(directory,image)
+@app.route('/'+GENE_IMAGE+'/<name>')
+def getGeneImage(name):
+    return send_from_directory(MOTIF_PATH,name)
 
 def getSections(prj_id,geneName):
     gene_id =  getGeneId(prj_id,geneName)
