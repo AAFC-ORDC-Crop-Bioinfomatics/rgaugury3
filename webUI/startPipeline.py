@@ -4,12 +4,15 @@ from subprocess import Popen, PIPE
 import argparse
 from app import app, db, models
 from psutil import Process
-from config import PRJ_HOME, META_FILE,FASTA_EXTENSION,GENE_FILE,LOG_FILE
-from config import TOTAL_STEPS,DATE_FORMAT, FINAL_STATUS,PENDING
+from config import PRJ_HOME, META_FILE,FASTA_EXTENSION,GENE_FILE, LOG_FILE
+from config import TOTAL_STEPS,DATE_FORMAT, FINAL_STATUS,PENDING, WEB_LOG
 from app.tool import countType, initGeneImage, initGeneSection,coutInputAmount, getCPU
 from datetime import datetime
 from os.path import exists
 import re
+import logging
+
+logging.basicConfig(filename=WEB_LOG,level=logging.DEBUG)
 
 command = sys.argv[1:14]
 
@@ -54,7 +57,15 @@ if args.cpu_num == '-1':
     command[6] = str(getCPU())
     
 print command
-Popen(command).wait()
+logging.info(command)
+
+if app.debug:
+    Popen(command).wait()
+else:
+    o,e=Popen(command,stdout=PIPE,stderr=PIPE).communicate()
+
+    logging.info(o)
+    logging.error(e)
 
 '''
 Task has been finished
