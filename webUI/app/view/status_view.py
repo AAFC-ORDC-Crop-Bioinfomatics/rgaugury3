@@ -109,6 +109,8 @@ def syc(projects):
     db = []
     for prj in projects:
         db.append(prj.id)
+    if not isdir(PRJ_HOME):
+        return
     dirs = listdir(PRJ_HOME)
     for folder in dirs:
         if folder not in db:

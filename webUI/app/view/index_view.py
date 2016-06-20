@@ -1,4 +1,4 @@
-from app import app, db, models
+from app import app, db, models, logging
 from flask import request
 from time import time, strptime
 from config import PRJ_HOME, PERL, RGAUGURY_PL,CPU_TOGGLE
@@ -33,14 +33,19 @@ def index():
         if CPU_TOGGLE == 0:
             cpu_toggle = 'hidden'
         property_file  = InterProScan_PAHT +'/interproscan.properties'
-        with open(property_file, 'r') as f:
-            for line in f:
-                 m = re.search('panther.models.dir\s*=\s*(.+)\s*', line)
-                 if m:
-                    panther_dir = m.group(1)
         panther = 'disabled'
-        if path.exists(InterProScan_PAHT + '/' +panther_dir):
-            panther = ''
+        if path.exists(property_file):
+            with open(property_file, 'r') as f:
+                for line in f:
+                     m = re.search('panther.models.dir\s*=\s*(.+)\s*', line)
+                     if m:
+                        panther_dir = m.group(1)
+            if path.exists(InterProScan_PAHT + '/' +panther_dir):
+                panther = ''
+        else:
+            print "There is no "+property_file
+            logging.error("There is no "+property_file)
+
         return render('index.html', cpu=cpu_toggle, panther=panther)
 
 @app.route('/latestVersion')
