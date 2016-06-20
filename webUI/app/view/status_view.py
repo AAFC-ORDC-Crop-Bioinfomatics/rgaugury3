@@ -7,10 +7,13 @@ from psutil import Process, pid_exists
 from shutil import rmtree
 from os.path import isdir, isfile
 from bs4 import BeautifulSoup
+from os import listdir
 
 @app.route('/status')
 def status():
   projects = db.session.query(models.Project).all()
+  syc(projects)
+
   for prj in projects:  
     proj_folder=PRJ_HOME + '/' + prj.id
     if not isdir(proj_folder):
@@ -101,3 +104,12 @@ def cancel(prj_id):
 def getTable(status_page):
     soup = BeautifulSoup(status_page, 'html.parser')
     return str(soup.table)
+
+def syc(projects):
+    db = []
+    for prj in projects:
+        db.append(prj.id)
+    dirs = listdir(PRJ_HOME)
+    for folder in dirs:
+        if folder not in db:
+            rmtree (PRJ_HOME + '/' + folder)

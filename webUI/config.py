@@ -54,6 +54,7 @@ META_FILE ='.RGA.gene.meta.txt'
 START_PIPELINE = BASE_PATH + '/startPipeline.py'
 LOG_FILE = '.status.log'
 GFF_FILE = '.RGA.gff'
+WEB_LOG = 'webui.log'
 ### others ###
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 SAMPLE_FASTA = BASE_PATH + '/sample.known.fa'
