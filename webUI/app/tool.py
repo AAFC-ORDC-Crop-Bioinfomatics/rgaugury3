@@ -69,16 +69,11 @@ def initGeneImage(path):
         for line in f:
             list = line.split('\t')
             name = list[2]
+            name = 'Image'+name.split('_')[1].zfill(3)+'.png'
             geneImage = query.filter_by(name = name).first()
             if geneImage is None:
                 category = list[1]
-                original = 'Image'+name.split('_')[1].zfill(3)+'.png'
-                path = MOTIF_PATH+'/'+original
-                target_dir = BASE_PATH+PRJ_IMG_PATH
-                if not isdir(target_dir):
-                    makedirs(target_dir)
-                copy(path,target_dir)
-                geneImage = models.GeneImage(name=name,path=PRJ_IMG_PATH+'/'+original,category=category)
+                geneImage = models.GeneImage(name=name,category=category)
                 db.session.add(geneImage)
                 db.session.flush()
     db.session.commit()

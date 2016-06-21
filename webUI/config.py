@@ -36,7 +36,7 @@ WTF_CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
 
 PROJECTS ='/projects'
-PRJ_IMG_PATH = PROJECTS + '/img'
+PRJ_IMG_PATH = '/img'
 PRJ_HOME = BASE_PATH + PROJECTS
 PIPELINE_HOME='/home/quanx/job/repo/rgaugury'
 MOTIF_PATH = PIPELINE_HOME + '/motif'
@@ -55,6 +55,7 @@ START_PIPELINE = BASE_PATH + '/startPipeline.py'
 LOG_FILE = '.status.log'
 GFF_FILE = '.RGA.gff'
 WEB_LOG = 'webui.log'
+GENE_IMAGE='gene_image'
 ### others ###
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 SAMPLE_FASTA = BASE_PATH + '/sample.known.fa'

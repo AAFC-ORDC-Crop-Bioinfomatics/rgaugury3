@@ -63,7 +63,6 @@ class GeneImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     category = db.Column(db.String(20))
-    path = db.Column(db.String(120))
 
 class Gff(db.Model):
     seqname = db.Column(db.String(20), primary_key=True)
