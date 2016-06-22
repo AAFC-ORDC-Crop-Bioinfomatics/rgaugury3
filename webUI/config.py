@@ -15,7 +15,7 @@ ENVIR = {
 'PFAMDB':'/home/quanx/pfamdb'
 }
 
-### production envirionment ########
+### production environment ########
 WEB_UI_LOG = False
 ENABLE_CACHE = True       ### ! important, set enable_cache as True in the deployment enviroment.
 DEBUG = False   ### ! important
