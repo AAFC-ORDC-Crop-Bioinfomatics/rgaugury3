@@ -2,7 +2,8 @@
 import sys
 from subprocess import Popen, PIPE
 import argparse
-from app import app, db, models, logging
+from app import db, models
+import app
 from psutil import Process
 from config import PRJ_HOME, META_FILE,FASTA_EXTENSION,GENE_FILE, LOG_FILE
 from config import TOTAL_STEPS,DATE_FORMAT, FINAL_STATUS,PENDING
@@ -10,6 +11,9 @@ from app.tool import countType, initGeneImage, initGeneSection,coutInputAmount, 
 from datetime import datetime
 from os.path import exists
 import re
+
+if app.app.config['WEB_UI_LOG']:
+    from weblog import logging
 
 command = sys.argv[1:14]
 
@@ -54,13 +58,13 @@ if args.cpu_num == '-1':
     command[6] = str(getCPU())
     
 print command
-logging.info(command)
-
-if app.debug:
+if app.app.config['WEB_UI_LOG']:
+    logging.info(command)
+if app.app.debug:
     Popen(command).wait()
 else:
     o,e=Popen(command,stdout=PIPE,stderr=PIPE).communicate()
-
+if app.app.config['WEB_UI_LOG']:
     logging.info(o)
     logging.error(e)
 

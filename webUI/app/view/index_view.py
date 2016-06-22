@@ -1,7 +1,7 @@
-from app import app, db, models, logging
+from app import app, db, models
 from flask import request
 from time import time, strptime
-from config import PRJ_HOME, PERL, RGAUGURY_PL,CPU_TOGGLE
+from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE
 from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR
 from os import path, makedirs, chdir
 from subprocess import Popen, PIPE
@@ -11,8 +11,11 @@ import requests
 import re
 from psutil import Process
 import os 
+if app.config.get('WEB_UI_LOG', None):
+    from weblog import logging
 
 InterProScan_PAHT = ''
+
 ## set up environment variables
 for key, value in ENVIR.iteritems():
     if key =='PATH':
@@ -44,7 +47,8 @@ def index():
                 panther = ''
         else:
             print "There is no "+property_file
-            logging.error("There is no "+property_file)
+            if app.config.get('WEB_UI_LOG', None):
+                logging.error("There is no "+property_file)
 
         return render('index.html', cpu=cpu_toggle, panther=panther)
 
