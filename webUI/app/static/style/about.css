@@ -111,6 +111,7 @@ th {
   line-height: 20px;
   margin-bottom: 0px;
   padding: 3px 7px;
+  border-radius: 3px;
 }
 .the-fieldset {
   border: 2px groove #444;

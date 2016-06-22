@@ -17,9 +17,12 @@ ENVIR = {
 
 ### production environment ########
 WEB_UI_LOG = False
-ENABLE_CACHE = True       ### ! important, set enable_cache as True in the deployment enviroment.
-DEBUG = False   ### ! important
+ENABLE_CACHE = False       ### ! important, set enable_cache as True in the deployment enviroment.
+DEBUG = True   ### ! important
 PIPELINE_HOME='/home/quanx/job/repo/rgaugury'
+# any bitbucket username and password will work
+USER_NAME = ''
+PASSWORD = ''
 
 ### application ###
 PORT = 7000
@@ -67,6 +70,3 @@ JOBS = 1 # max number of jobs that run concurrently
 
 ### wiki help ###
 WIKI = 'https://bitbucket.org/yaanlpc/rgaugury/wiki/Web%20UI%20Help'
-# any bitbucket username and password will work
-USER_NAME = ''
-PASSWORD = ''
