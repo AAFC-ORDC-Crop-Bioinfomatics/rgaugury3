@@ -15,7 +15,14 @@
                     <legend class="the-legend embossed_txt">
                         Protein Information
                     </legend>
-                    <h5>Gene ID: <a target="_blank"href="http://www.ncbi.nlm.nih.gov/gene/?term={{simpleName}}"><span class='highlight'>{{name}} ({{type}})</span></a></h5>
+                    <h5>Gene ID:<span class='highlight'>{{name}} ({{type}})</span> 
+                        <a class="logo" target="_blank" href="http://www.ncbi.nlm.nih.gov/gene/?term={{simpleName}}">
+                            <img class="logo" src="{{ url_for ('static', filename='img/ncbi.png') }}" alt="ncbi_logo">
+                        </a> 
+                        <a class="logo" target="_blank" href="http://plants.ensembl.org/Multi/Search/Results?species=all;idx=;q={{simpleName}};site=ensemblunit">
+                            <img class="logo" src="{{ url_for ('static', filename='img/e.png') }}" alt="EnsemblPlants">
+                        </a>
+                    </h5>
                     <h5>Length: {{length}} (aa)</h5>
                     <h5>Protein Sequence:</h5>
                     <div class="sequence">{{sequence}}</div>
