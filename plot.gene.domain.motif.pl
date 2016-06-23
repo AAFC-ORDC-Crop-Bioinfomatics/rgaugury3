@@ -423,7 +423,7 @@ sub gff3_parser {
         if ($array[2] =~ /mRNA/i) {
             $gff3{$array[8]}->{mRNA} = $_;
         }
-        elsif ($array[2] =~ /CDS/i or $array[2] =~ /UTR/i) {
+        elsif ($array[2] =~ /CDS/i or $array[2] =~ /exon/i or $array[2] =~ /UTR/i) {
             push(@{$gff3{$array[8]}->{exon}},[@array]);
         }
     }
@@ -458,7 +458,7 @@ sub gff3_parser {
             
             $gene{$geneid}->{len} = $len;
         }
-        elsif ($array[2] =~ /CDS/i or $array[2] =~ /UTR/i) {
+        elsif ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i or $array[2] =~ /UTR/i) {
             my $start = minone($array[3],$array[4]) - $offset;
             my $end   = maxone($array[3],$array[4]) - $offset;
 
@@ -467,12 +467,12 @@ sub gff3_parser {
             # ---------consider the strand info-----------
             if ($array[6] eq '+') {
                 push(@{$gene{$geneid}->{exon}},join("|",$start, $end));
-                push(@{$gene{$geneid}->{codon}},join("|",$start, $end)) if ($array[2] =~ /CDS/i);
+                push(@{$gene{$geneid}->{codon}},join("|",$start, $end)) if ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i);
             }
             else {
                 #because flax gff3 always put smaller number at the first, thus in minus strand the smaller coordination is actually the 3' end
                 unshift(@{$gene{$geneid}->{exon}}, join("|", $end, $start));
-                unshift(@{$gene{$geneid}->{codon}},join("|", $end, $start))  if ($array[2] =~ /CDS/i); 
+                unshift(@{$gene{$geneid}->{codon}},join("|", $end, $start))  if ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i); 
             }
         }
         else {
@@ -628,7 +628,6 @@ sub unique_motif_meta {
                 my ($start,$end) = split/\|/,$region;
                 ($start,$end) = ($end,$start) if ($start>$end);
                 push(@regions2, [$start, $end]);
-                
             }
                 
             my @sorted = sort {$a->[0] <=> $b->[0]} @regions2;
