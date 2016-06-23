@@ -161,6 +161,9 @@ function checkversion() {
                 v_status = -1;
             } else if (data == '0') {
                 versionIsOk = true;
+                if ($('#modal').hasClass('in')){
+                   $('form').trigger('submit'); 
+                } 
             }
         }
     });

@@ -11,6 +11,8 @@ import requests
 import re
 from psutil import Process
 import os 
+from random import randint
+
 if app.config.get('WEB_UI_LOG', None):
     from weblog import logging
 
@@ -84,12 +86,14 @@ def get_data():
 def processForm():
     # gent project user input name
     proj_name=request.form.get('proj_name')
+    fingerprint = request.form.get('fingerprint')
 
     if not proj_name:
     	proj_name = ""
     	  
     # generate a project
-    proj_id ="proj" + str(int(time()))
+    # add finger print to avoid confliction between two projects submitted at the same time
+    proj_id =fingerprint[1:] + str(int(time()))
 
     # generate a project folder
     proj_folder=PRJ_HOME + '/' + proj_id
@@ -139,7 +143,7 @@ def processForm():
     # chnge the current folder to the newly generated project folder to run the pipeline
     chdir(proj_folder)
    
-    fingerprint = request.form.get('fingerprint')
+    
     start_time = datetime.fromtimestamp(time()).strftime(DATE_FORMAT)
     command = [START_PIPELINE, RGAUGURY_PL,
                '-p',protein_seq_file,
