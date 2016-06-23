@@ -60,10 +60,9 @@ if args.cpu_num == '-1':
 print command
 if app.app.config['WEB_UI_LOG']:
     logging.info(command)
-if app.app.debug:
-    Popen(command).wait()
-else:
-    o,e=Popen(command,stdout=PIPE,stderr=PIPE).communicate()
+
+o,e=Popen(command,stdout=PIPE,stderr=PIPE).communicate()
+
 if app.app.config['WEB_UI_LOG']:
     logging.info(o)
     logging.error(e)
