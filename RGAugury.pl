@@ -591,7 +591,6 @@ sub format_fasta {
             $fasta{$title} = $seq;
         }
         close IN;
-        #DEBUG("$output existed in current folder, reading it to RAM and going ahead with next step...");
     }
     else {
         open(IN, $input) or die "unalbe to open $input\n";
@@ -599,7 +598,7 @@ sub format_fasta {
             chomp;
             my ($title, $seq) = split/\n/,$_,2;
             next unless ($title and $seq);
-            my ($id) = $title =~ /([a-zA-Z0-9\.\-\_]+)/;
+            my ($id) = $title =~ /(\S+)/;   #([a-zA-Z0-9\.\-\_]+)
             
             $seq   =~ s/\s+//g;
             $seq   =~ s/\*//g;
@@ -614,7 +613,6 @@ sub format_fasta {
         }
         close OUT;
     }
-    
     return \%fasta;
 }
 
@@ -717,10 +715,10 @@ sub valid_gff_extraction {
         next if (/^#/ or /^\s*$/);
         
         my @array = split/\t/,$_;
-        $array[8] =~ s/\s+//g;
+        my ($geneid) = $array[8] =~ /ID=(.*?)\;/i;
         
-        if (exists $lst{$array[8]}) {
-            push(@{$validgff{$array[8]}},$_);
+        if (exists $lst{$geneid}) {
+            push(@{$validgff{$geneid}},$_);
         }
     }
     close GFF;

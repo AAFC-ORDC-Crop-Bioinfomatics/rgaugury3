@@ -36,6 +36,8 @@ while (<IN>) {
     chomp;
     next if (/^#/ or /^\s*$/);
     my @array = split/\t/,$_;
+    
+    #
     next unless(/^chr\d+/i);
     my ($chr) = $array[0] =~ /chr(\d+)/i;
     

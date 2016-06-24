@@ -400,11 +400,11 @@ sub gff3_parser {
     #All the data will saved in %gene, especially the @exon
     my ($file) = @_;
     my $offset = 0;
-    my %gene   = ();
     my $len    = 0;
     
     # use to store original gff3
     my %gff3   = ();
+    my %gene   = ();
     
     # use to store sorted gff3 by column 8, 3 and column 4
     my @gff3_sorted = ();
@@ -414,17 +414,20 @@ sub gff3_parser {
     while (<IN>) {
         chomp;
         next if (/^#/ or /^\s*$/);
-        
         my @array = split/\t/,$_;
-        $array[8] =~ s/\s+//g;
+        
+        # only Feature : mRNA, CDS, UTR and gene are acceptable for parsing.
+        next unless($array[2]=~ /mRNA/i or $array[2]=~ /exon/i or $array[2]=~ /CDS/i  or $array[2]=~ /gene/i);
+        
+        my ($geneid) = $array[8] =~ /ID=(.*?)\;/i;
         
         ($array[3],$array[4]) = ($array[4],$array[3]) if ($array[3]>$array[4]);
         
         if ($array[2] =~ /mRNA/i) {
-            $gff3{$array[8]}->{mRNA} = $_;
+            $gff3{$geneid}->{mRNA} = $_;
         }
         elsif ($array[2] =~ /CDS/i or $array[2] =~ /exon/i or $array[2] =~ /UTR/i) {
-            push(@{$gff3{$array[8]}->{exon}},[@array]);
+            push(@{$gff3{$geneid}->{exon}},[@array]);
         }
     }
     close IN;
@@ -445,34 +448,28 @@ sub gff3_parser {
     # processing gff3 parsing
     foreach my $ref (@gff3_sorted) {
         my @array = @{$ref};
-        
-        #print join("\t",@array);
-        #print "\n";
-        
-        #print "$array[0],$array[3],$array[8]\n";
-        
+
         if ($array[2] eq 'mRNA') {
-            $len = abs($array[4] - $array[3]) + 1;
             $offset = minone($array[3],$array[4]) - 1;
-            my $geneid  = $array[8];
+            my ($geneid)  = $array[8] =~ /ID=(.*?)\;/i;
             
-            $gene{$geneid}->{len} = $len;
+            $gene{$geneid}->{len} = abs($array[4] - $array[3]) + 1;
         }
         elsif ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i or $array[2] =~ /UTR/i) {
             my $start = minone($array[3],$array[4]) - $offset;
             my $end   = maxone($array[3],$array[4]) - $offset;
 
-            my $geneid = $array[8];
+            my ($geneid) = $array[8] =~ /ID=(.*?)\;/i;
 
             # ---------consider the strand info-----------
             if ($array[6] eq '+') {
                 push(@{$gene{$geneid}->{exon}},join("|",$start, $end));
-                push(@{$gene{$geneid}->{codon}},join("|",$start, $end)) if ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i);
+                push(@{$gene{$geneid}->{codon}},join("|",$start, $end)) if ($array[2] =~ /CDS/i);
             }
             else {
                 #because flax gff3 always put smaller number at the first, thus in minus strand the smaller coordination is actually the 3' end
                 unshift(@{$gene{$geneid}->{exon}}, join("|", $end, $start));
-                unshift(@{$gene{$geneid}->{codon}},join("|", $end, $start))  if ($array[2] =~ /CDS/i  or $array[2] =~ /exon/i); 
+                unshift(@{$gene{$geneid}->{codon}},join("|", $end, $start))  if ($array[2] =~ /CDS/i); 
             }
         }
         else {
