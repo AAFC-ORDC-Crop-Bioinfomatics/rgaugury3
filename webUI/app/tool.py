@@ -150,7 +150,7 @@ def getGff(prj_id, gene):
     with open(path) as f:
         for line in f:
             l = line.split('\t')
-            if gene == l[8].strip():
+            if re.match(r'.*'+gene+'.*', l[8].strip()):
                 gffs.append(models.Gff(seqname = l[0], source = l[1], feature =l[2],\
                        start = l[3], end = l[4], score = l[5], \
                        strand  = l[6], frame  = l[7], attribute  =gene))
