@@ -8,6 +8,10 @@ img_tag = '<img src ="{src}" alt="{src}">'
 
 $(window).on("load", function() {
     initTable();
+    $('a').click((event)=>{
+        location.reload()
+    });
+
     var url = $(location).attr('href');
     var list = url.split('/');
     prj_id = list[5]
