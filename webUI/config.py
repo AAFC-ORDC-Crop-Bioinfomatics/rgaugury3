@@ -61,10 +61,10 @@ LOG_FILE = '.status.log'
 GFF_FILE = '.RGA.gff'
 WEB_LOG = 'webui.log'
 GENE_IMAGE='gene_image'
-
+SAMPLE_GFF = 'sample.gff'
 ### others ###
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
-SAMPLE_FASTA = BASE_PATH + '/sample.known.fa'
+SAMPLE_FASTA = BASE_PATH + '/sample.fas'
 TOTAL_CPU = psutil.cpu_count()
 JOBS = 1 # max number of jobs that run concurrently
 

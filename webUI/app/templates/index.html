@@ -40,11 +40,17 @@
                                     FASTA
                                 </a> format:
                             <input id="seq_file" name="seq_file" type="file" value="">
-                            <br> Genric gene feature
-                            <a href="help#markdown-header-gff3">
-                                            (.gff3)
-                                        </a> file (optional):
-                            <input id="gff3_file" name="gff3_file" type="file" />
+                            <br>
+
+                            <div hidden id="div-gff">
+                                General feature format <a href="help#markdown-header-gff3"> (.gff3) </a> file (optional):
+                                <input id="gff3_file" name="gff3_file" type="file" />
+                            </div>
+                            
+                            <input type="hidden" name="gff3" value="default">
+                            <div id='div-sample-gff'>
+                                Sample gff3 file has been provided.
+                            </div>
                             <br>
                             <br>
                         </fieldset>

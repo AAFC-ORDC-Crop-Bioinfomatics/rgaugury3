@@ -18,22 +18,32 @@ $(function() {
     function fail() {
         $('.sample_fasta').text('Error!');
     }
+
     $('.sample_fasta').click(function() {
         $(this).text('Loading ...');
         $(this).addClass('disabled');
         $('#protein_seq').removeClass('place-holder');
         download_to_textbox($(this), "/sample_fasta", $('#protein_seq'), success, fail);
+        sampleGff(true)
     });
 
     $('#seq_file').change(function(e) {
         if (e.target.value === '') {
-            // Textarea has no value
             // do nothing
         } else {
-            // Textarea has a value
             $("#protein_seq").val('');
+            sampleGff(false)
         }
     });
+
+    $('#gff3_file').change(function(e) {
+        if (e.target.value === '') {
+            // do nothing
+        } else {
+            sampleGff(false)
+        }
+    });
+
 
     $(window).click(function(e) {
         if ($('#protein_seq').val() == '') {
@@ -51,6 +61,7 @@ $(function() {
         } else {
             // Textarea has a value
             $("#seq_file").val('');
+            sampleGff(false)
         }
     });
 
@@ -196,10 +207,22 @@ function loadSampleFasta() {
             $('#protein_seq').val(data);
         }
     });
-
+    sampleGff(true);
 }
 
 function emtpyBlack(element) {
     element.val('');
     element.css('color', 'black');
+}
+
+function sampleGff(enabled){
+    if (enabled){
+        $('#div-sample-gff').show()
+        $('#div-gff').hide()
+        $("input[name='gff3']").val('default')
+    }else{
+        $('#div-sample-gff').hide()
+        $('#div-gff').show()
+        $("input[name='gff3']").val("")
+    }
 }

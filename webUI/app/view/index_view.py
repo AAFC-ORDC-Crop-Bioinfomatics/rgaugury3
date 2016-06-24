@@ -1,8 +1,8 @@
 from app import app, db, models
 from flask import request
 from time import time, strptime
-from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE
-from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR
+from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE, SAMPLE_GFF
+from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR, BASE_PATH
 from os import path, makedirs, chdir
 from subprocess import Popen, PIPE
 from datetime import datetime
@@ -12,6 +12,7 @@ import re
 from psutil import Process
 import os 
 from random import randint
+from shutil import copyfile
 
 if app.config.get('WEB_UI_LOG', None):
     from weblog import logging
@@ -119,9 +120,11 @@ def processForm():
     gff3_f = request.files['gff3_file']
     if gff3_f:
     	gff3_f.save(gff3_file)
+    elif request.form.get('gff3') == 'default': 
+        copyfile(path.join(BASE_PATH, SAMPLE_GFF), gff3_file)
     else:
-    	gff3_file=""
-    
+        gff3_file=''    
+
     # get E value	  
     evalue=request.form.get('ev')
     if not evalue:
