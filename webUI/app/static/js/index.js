@@ -128,6 +128,7 @@ $(function() {
         loadDefaultPrjName();
         loadDefaultEvalue();
         loadSampleFasta();
+        $("#seq_file").val('');
         e.preventDefault();
     });
 
