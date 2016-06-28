@@ -7,7 +7,7 @@ We sincerely this tool can significantly benefit your resistance gene study.
 
 ### FAQ ###
 
- Q: is this a free software?  
+###Q: is this a free software?  
  A: yes it’s totally free under the GPL license.  
 
 
@@ -16,4 +16,4 @@ We sincerely this tool can significantly benefit your resistance gene study.
 
 
  Q:how to cite this tool if my research benefit from RGAugury?  
- A:Please use below information.  
+ A:Please use below information.
