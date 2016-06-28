@@ -15,5 +15,5 @@ We sincerely this tool can significantly benefit your resistance gene study.
  A:please follow the [wiki](https://bitbucket.org/yaanlpc/rgaugury/wiki/) page for installation instruction, as well as [WebUI](https://bitbucket.org/yaanlpc/rgaugury/wiki/Web%20UI%20Help) help page.  
 
 
-* Q:how to cite this tool if my research benefit from RGAugury?
-* A:Please use below information.
+ Q:how to cite this tool if my research benefit from RGAugury?  
+ A:Please use below information.  
