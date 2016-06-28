@@ -13,9 +13,8 @@ $(function() {
     
     $('#gene_type button').click(function() {
         highlight($(this))
-        $('#domain').height($('#domain').height());
         initDSTable(activeTable, $(this).text());
-        $('#domain').height('initial');
+      
     });
 
 //    $(document).on('click', '.ds_table img', function(event) {
@@ -145,9 +144,9 @@ function getTableData(type, setTable) {
 };
 
 function addXSclass() {
-    $('.col-sm-6').addClass('col-xs-6');
-    $('.col-sm-5').addClass('col-xs-5');
-    $('.col-sm-7').addClass('col-xs-7');
+    $('.col-sm-5').addClass('col-xs-5')
+    $('.col-sm-6').addClass('col-xs-6')
+    $('.col-sm-7').addClass('col-xs-7')
 }
 
 function setDataTable(data) {
