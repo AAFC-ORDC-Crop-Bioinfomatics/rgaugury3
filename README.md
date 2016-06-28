@@ -5,7 +5,7 @@ This project aims to develop a sophisticated informatics tools for large scale o
 
 We sincerely wish this tool can significantly benefit your resistance gene study.
 
-### FAQ ###
+## FAQ ##
 ###Q: is this a free software?  
 A: yes it’s totally free under the GPL license.  
 
