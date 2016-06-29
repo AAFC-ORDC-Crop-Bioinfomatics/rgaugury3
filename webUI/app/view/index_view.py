@@ -94,7 +94,7 @@ def processForm():
     	  
     # generate a project
     # add finger print to avoid confliction between two projects submitted at the same time
-    proj_id =fingerprint[1:] + str(int(time()))
+    proj_id =fingerprint[-2:] + str(int(time()))
 
     # generate a project folder
     proj_folder=PRJ_HOME + '/' + proj_id
