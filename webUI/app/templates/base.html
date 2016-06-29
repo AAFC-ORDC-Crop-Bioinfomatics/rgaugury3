@@ -11,7 +11,8 @@
     <link href="{{ url_for('static', filename='style/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('static', filename='style/frijole.css') }}" rel="stylesheet" type="text/css"> {% if css_file %}
     <link href="{{ css_file }}" rel="stylesheet" type="text/css"> {% else %}
-    <link href="{{ url_for('static', filename='style/default.css') }}" rel="stylesheet" type="text/css"> {% endif %} {% block style %}{% endblock %}
+    <link href="{{ url_for('static', filename='style/default.css') }}" rel="stylesheet" type="text/css"> {% endif %}
+    {% block style %}{% endblock %}
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}">
     </script>
     {% if js_file %}

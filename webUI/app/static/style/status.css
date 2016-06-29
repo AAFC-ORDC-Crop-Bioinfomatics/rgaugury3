@@ -189,9 +189,6 @@ a.disabled {
   width: 50%;
   text-align: left;
 }
-#prj_table {
-  margin-bottom: 100px;
-}
 div.tooltip-inner {
   max-width: none;
   white-space: nowrap;
@@ -213,7 +210,6 @@ div.tooltip-inner {
 th,
 td {
   vertical-align: middle !important;
-  border: 1px solid #808080 !important;
 }
 .show {
   cursor: default;

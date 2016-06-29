@@ -192,4 +192,23 @@ textarea {
 }
 #div-sample-gff {
   color: #337ab7;
+  visibility: hidden;
+  position: absolute;
+}
+#sample-span {
+  color: #337ab7;
+}
+#sample-div {
+  float: right;
+  margin-right: 2em;
+}
+#sequence-div {
+  float: left;
+  margin-bottom: 2em;
+}
+#div-gff-fasta {
+  position: ralative;
+}
+#loadFile-div {
+  position: static;
 }
