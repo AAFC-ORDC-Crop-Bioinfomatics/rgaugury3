@@ -307,8 +307,8 @@ th {
 
 @font-face {
     font-family: 'Glyphicons Halflings';
-    src: url(/static/font/glyphicons-halflings-regular.eot);
-    src: url(/static/font/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'), url(/static/font/glyphicons-halflings-regular.woff2) format('woff2'), url(/static/font/glyphicons-halflings-regular.woff) format('woff'), url(/static/font/glyphicons-halflings-regular.ttf) format('truetype'), url(/static/font/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+    src: url(../font/glyphicons-halflings-regular.eot);
+    src: url(../font/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'), url(../font/glyphicons-halflings-regular.woff2) format('woff2'), url(../font/glyphicons-halflings-regular.woff) format('woff'), url(../font/glyphicons-halflings-regular.ttf) format('truetype'), url(../font/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
 }
 
 .glyphicon {

@@ -1,61 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="#" rel="shortcut icon" />
-    <title>
-         About 
-    </title>
-    <link href="/static/style/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/style/frijole.css" rel="stylesheet" type="text/css"> 
-    <link href="/static/style/about.css" rel="stylesheet" type="text/css">  
-    <script src="/static/js/jquery.min.js">
-    </script>
-    
-    <script src="/static/js/bootstrap.min.js">
-    </script>
-    
-</head>
-
-<body>
-    <div id="main_container">
-        <!--header starts here-->
-        <div class="container-fluid header gradient">
-            <div class="container">
-                <ul class="nav navbar-nav navbar-right" style="float: right;">
-                    <li>
-                        <button class="menu_btn" onclick="window.location='/';">
-                            Home
-                        </button>
-                    </li>
-                    <li>
-                        <button class="menu_btn" onclick="window.location='/status';">
-                            Status of submitted projects
-                        </button>
-                    </li>
-                    <li>
-                        <button class="menu_btn" onclick="window.location='/help';">
-                            Help
-                        </button>
-                    </li>
-                    <li>
-                        <button class="menu_btn" onclick="window.location='/about';">
-                            About
-                        </button>
-                    </li>
-                </ul>
-                <a class="navbar-brand text3D" href="/">
-                    <strong>RGA</strong><span id='ugury'>ugury</span>
-                </a>
-                <div class="clear explain">
-                    A bioinformatics tool for genome-wide resistance gene analogs(RGA) identification in plant genomes.
-                </div>
-            </div>
-        </div>
-        <!--header ends here-->
-        
+{% extends "base.html" %} {% block content %}
 <div class="container">
     <div class="panel panel-default">
         <div class="panel-body">
@@ -120,41 +63,7 @@ Tél: 204-822-7525/Tél Cell: 204-384-0704/ATS: 613-759-7470
         </div>
     </div>
 </div>
+{% endblock %}
 
-        <!--footer starts here-->
-    </div>
-    <footer class="footer text-center">
-        <div class="container-fluid gradient">
-            <div class="container">
-                <div>
-                    <a href="http://www.agr.gc.ca/eng/home/?id=1395690825741" target="_blank">
-                        <img alt="AAFC" height="30px" src="/static/img/aafc.png" />
-                    </a>
-                </div>
-                <div>
-                    Copyright © 2016
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!--footer ends here-->
-    <script>
-    function locateFooter() {
-        var delta = $(window).height() - $('#main_container').height();
-        if (delta > $('footer').height()) {
-            $('footer').addClass('navbar-fixed-bottom');
-        } else {
-            $('footer').removeClass('navbar-fixed-bottom');
-        }
-    }
-    $(function() {
-        $(window).resize(locateFooter);
-        locateFooter();
-        $('footer').css({
-            visibility: 'visible'
-        });
-    });
-    </script>
-</body>
 
-</html>
+

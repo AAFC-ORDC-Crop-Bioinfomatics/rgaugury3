@@ -13,11 +13,11 @@ from shutil import copy
 def render(temp, **context):
     temp_name = temp.split('.')[0]
     js = url_for('static', filename='js/'+temp_name+'.js') 
-    if isfile(app.config['PROGRAM_HOME']+js):
-        context['js_file'] = js
+    #if isfile(app.config['PROGRAM_HOME']+js):
+    context['js_file'] = js
     css = url_for('static', filename='style/'+temp_name+'.css')
-    if isfile(app.config['PROGRAM_HOME']+css):
-        context['css_file'] = css
+    #if isfile(app.config['PROGRAM_HOME']+css):
+    context['css_file'] = css
     return render_template(temp, **context)
 
 # count genen types in a project

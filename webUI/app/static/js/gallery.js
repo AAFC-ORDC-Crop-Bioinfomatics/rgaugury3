@@ -1,21 +1,22 @@
-section_info = undefined;
-prj_id = '';
-gene_name = '';
-scale = 0;
-data = undefined;
+section_info = undefined
+prj_id = ''
+gene_name = ''
+scale = 0
+data = undefined
+root=""
 
 img_tag = '<img src ="{src}" alt="{src}">'
 
 $(window).on("load", function() {
+    root = $("#root").text().trim();
+    prj_id = $("#prj_id").text().trim();
+    gene_name = $("#gene_name").text().trim();
+
     initTable();
     $('a').click((event)=>{
         location.reload()
     });
 
-    var url = $(location).attr('href');
-    var list = url.split('/');
-    prj_id = list[5]
-    gene_name = list[7].split('.').slice(0, -1).join('.')
     gene = $('.gene_img');
     var height = gene.prop('naturalHeight');
     var width = gene.prop('naturalWidth');
@@ -27,7 +28,7 @@ $(window).on("load", function() {
 
     $('#scale').text(scaled + ':' + scale);
 
-    $.get('/section/' + prj_id + '/' + gene_name, function(data, status) {
+    $.get(root+'section/' + prj_id + '/' + gene_name, function(data, status) {
         if (status == 'success') {
             window.data = data.data
         }

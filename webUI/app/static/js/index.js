@@ -1,7 +1,7 @@
 ips_url = 'https://www.ebi.ac.uk/interpro/interproscan.html';
 versionIsOk = false;
 versionStatus = 'Please wait, Checking the latest version of Interproscan...';
-STILL_RUN = 'Your interproscan is not the latest verion or there is no the Internet connection. Would you like to continue any way? ';
+STILL_RUN = 'Failed to check the latest version. Would you like to continue any way? ';
 v_status = 0;
 count = 0;
 $(function() {
@@ -18,7 +18,7 @@ $(function() {
       //$('#div-sample-gff').show()
       $('#div-sample-gff').css("visibility", "visible");
       $("input[name='gff3']").val('default')
-      $.get('/sample_fasta', function(data, status) {
+      $.get('sample_fasta', function(data, status) {
         if (status = 'success') {
           $('#protein_seq').val(data);
           $('#protein_seq').attr("readonly", "readonly");
@@ -190,15 +190,10 @@ function handleResize(textarea) {
 // get latest interproscan version
 function checkversion() {
   $.ajax({
-    url: '/latestVersion',
+    url: 'latestVersion',
     dataType: "text",
     success: function(data) {
-      if (data == '1') {
-        // need to upgrade interproscan
-        versionIsOk = false;
-        versionStatus = 'Please upgrade interproscan first.'
-        v_status = -1;
-      } else if (data == '-1') {
+      if (data == '-1') {
         versionIsOk = false;
         versionStatus = 'Failed to check latest interproscan version';
         v_status = -1;
@@ -207,6 +202,11 @@ function checkversion() {
         if ($('#modal').hasClass('in')) {
           $('form').trigger('submit');
         }
+      } else {
+        // need to upgrade interproscan
+        versionIsOk = false;
+        versionStatus = 'The latest version is ' + data + '. Please upgrade interproscan first.'
+        v_status = 1;
       }
     }
   });

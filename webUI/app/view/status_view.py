@@ -2,7 +2,7 @@ from app import app, db, models
 from app.tool import render, kill_proc_tree
 from config import PRJ_HOME, TOTAL_STEPS, FINAL_STATUS, DATE_FORMAT,CANCELED,PENDING
 from datetime import datetime
-from flask import request
+from flask import request,url_for
 from psutil import Process, pid_exists
 from shutil import rmtree
 from os.path import isdir, isfile
@@ -45,7 +45,7 @@ def status():
         
     db.session.commit()
 
-  return render('status.html', projects=projects, title='Job List Status')
+  return render('status.html', projects=projects, title='Job List Status', root= url_for('index'))
 
     
 @app.route('/cancel',methods=['POST'])

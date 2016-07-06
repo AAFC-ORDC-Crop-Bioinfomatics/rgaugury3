@@ -31,27 +31,27 @@
             <div class="container">
                 <ul class="nav navbar-nav navbar-right" style="float: right;">
                     <li>
-                        <button class="menu_btn" onclick="window.location='/';">
+                        <button class="menu_btn" onclick="window.location='{{ url_for("index")}}';">
                             Home
                         </button>
                     </li>
                     <li>
-                        <button class="menu_btn" onclick="window.location='/status';">
+                        <button class="menu_btn" onclick="window.location='{{ url_for("status")}}';">
                             Status of Submitted Projects
                         </button>
                     </li>
                     <li>
-                        <button class="menu_btn" onclick="window.location='/help';">
+                        <button class="menu_btn" onclick="window.location='{{ url_for("help")}}';">
                             Help
                         </button>
                     </li>
                     <li>
-                        <button class="menu_btn" onclick="window.location='/about';">
+                        <button class="menu_btn" onclick="window.location='{{ url_for("about")}}';">
                             About
                         </button>
                     </li>
                 </ul>
-                <a class="navbar-brand text3D" href="/">
+                <a class="navbar-brand text3D" href="{{ url_for("index")}}">
                     <strong>RGA</strong><span id='ugury'>ugury</span>
                 </a>
                 <div class="clear explain">
