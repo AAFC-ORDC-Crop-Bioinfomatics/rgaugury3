@@ -16,7 +16,7 @@ ENVIR = {
 }
 
 ### production environment ########
-WEB_UI_LOG = True
+WEB_UI_LOG = False
 ENABLE_CACHE = False       ### ! important, set enable_cache as True in the deployment enviroment.
 DEBUG = False   ### ! important
 PIPELINE_HOME='/home/quanx/job/repo/rgaugury'

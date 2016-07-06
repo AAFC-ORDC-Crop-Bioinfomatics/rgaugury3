@@ -63,9 +63,7 @@ def get_data():
         now = None
         if m:
             latest = m.group(1)
-            logging.debug('latest version is '+latest)
         else:
-            logging.error("failed to get latest version ")
             return '-1'
 
         proc = Popen('interproscan.sh',stdout=PIPE)
@@ -76,18 +74,15 @@ def get_data():
         m = re.search('InterProScan-(.*)',out)
         if m:
             now = m.group(1)
-            logging.debug('local version is '+now)
             if now == str(latest):
                 return '0'
             else:
                 return latest
         else:
-            logging.error("failed to get local version ")
             return '-1'
     except:
         connection_error = 'connection error. There might be no Internet connection.'
         print connection_error
-        logging.error(connection_error)
         return '-1'
     
 
