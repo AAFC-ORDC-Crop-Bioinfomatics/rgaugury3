@@ -2,7 +2,7 @@ from app import app
 from config import ENABLE_CACHE, SAMPLE_FASTA
 from view import status_view, gallery_view
 from view import prj_info_view, help_view
-from view import index_view, admin_view
+from view import index_view
 from tool import render
 
 

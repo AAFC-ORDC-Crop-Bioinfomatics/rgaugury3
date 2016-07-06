@@ -14,9 +14,9 @@
 {% endblock %}
 
 {% block content %}
-    <span hidden="" id="prj_id">
-        {{prj_id}}
-    </span>
+    <span hidden="" id="prj_id">{{prj_id}}</span>
+    <span hidden="" id="root">{{root}}</span>
+
     <div class="container">
         <div class="panel panel-default">
             <div class="panel-body">
@@ -96,7 +96,7 @@
                     {% if gff3 == 'Yes'%}
                     <li>
                         Whole genome RGA distribution can be viewed
-                        <a href="#" id="distribution">
+                        <a href="{{ url_for('distribution', prj_id = '')}}{{ prj_id}}" id="distribution">
                             here
                         </a>
                     </li>

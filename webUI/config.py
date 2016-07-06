@@ -16,9 +16,9 @@ ENVIR = {
 }
 
 ### production environment ########
-WEB_UI_LOG = False
+WEB_UI_LOG = True
 ENABLE_CACHE = False       ### ! important, set enable_cache as True in the deployment enviroment.
-DEBUG = True   ### ! important
+DEBUG = False   ### ! important
 PIPELINE_HOME='/home/quanx/job/repo/rgaugury'
 # any bitbucket username and password will work
 USER_NAME = ''

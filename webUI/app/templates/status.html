@@ -2,6 +2,9 @@
 <script src="{{ url_for('static', filename='js/tool.js') }}">
 </script>
 {% endblock %} {% block content %}
+
+<span hidden="" id="root">{{root}}</span>
+
 <div class="container">
   <h2 class="text-info text-center">
         RGAugury intermediate progress report
@@ -90,7 +93,7 @@
         </td>
         {% if project.status == 'complete' %}
         <td>
-          <a href="/prj_info/{{project.id}}">
+          <a href="{{ url_for('prj_info' ,prj_id='') }}{{project.id}}">
             <button class="btn btn-primary" type="button">
               Check
             </button>
@@ -132,7 +135,7 @@
     </tbody>
   </table>
   <div hidden class="bokeh_jump">
-    <a class="btn btn-success" href="/" role="button">
+    <a class="btn btn-success" href="{{ url_for("index")}}" role="button">
             Back to Home
         </a>
   </div>

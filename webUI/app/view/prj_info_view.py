@@ -1,7 +1,7 @@
 from app import app,db,models
 from app.tool import render, zipdir
 from config import FASTA_EXTENSION, PRJ_HOME,PROJECTS, GENE_FILE,FINAL_STATUS,SUMMARY_FILE,META_FILE
-from flask import send_from_directory, jsonify, redirect
+from flask import send_from_directory, jsonify, redirect, url_for
 from os.path import isfile, isdir
 from zipfile import ZipFile, ZIP_DEFLATED
 import os
@@ -26,16 +26,15 @@ def prj_info(prj_id):
       return redirect('/status')
     gff3 = project_info.gff3
     gene_amount = db.session.query(models.GeneAmount).get(project_info.gene_amount)
-    annotation_url = '/' +prj_id +'/'+prj_id+FASTA_EXTENSION
       
     tbs =[td(pink,gene_amount.nbs),td(pink,gene_amount.cnl),td(pink,gene_amount.tnl),\
           td(pink,gene_amount.cn),td(pink,gene_amount.tn),td(pink,gene_amount.nl),\
           td(pink,gene_amount.tx),td(pink,gene_amount.other),td(green,gene_amount.rlp),\
           td(pink,gene_amount.rlk), td(green,gene_amount.tmcc)]
     
-    annotation_url =  PROJECTS+annotation_url+'.zip'
+    annotation_url =  url_for('index')[:-1]+PROJECTS+'/'+prj_id +'/'+prj_id+FASTA_EXTENSION+'.zip'
     return render('prj_info.html', prj_name=project_info.name, values = tbs, title='Results and Summaries',\
-                  annotation_url=annotation_url, prj_id=prj_id, gff3 =gff3)
+                  annotation_url=annotation_url, prj_id=prj_id, gff3 =gff3, root=url_for('index'))
   
 @app.route(PROJECTS+'/<id>/<file>.zip')
 def download_prj (id,file):

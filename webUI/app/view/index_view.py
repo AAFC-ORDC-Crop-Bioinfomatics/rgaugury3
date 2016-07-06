@@ -29,7 +29,6 @@ for key, value in ENVIR.iteritems():
     
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         if request.form:
@@ -64,23 +63,31 @@ def get_data():
         now = None
         if m:
             latest = m.group(1)
+            logging.debug('latest version is '+latest)
         else:
+            logging.error("failed to get latest version ")
             return '-1'
 
         proc = Popen('interproscan.sh',stdout=PIPE)
+
         out = proc.stdout.readline()
+        
         Process(proc.pid).terminate()
         m = re.search('InterProScan-(.*)',out)
         if m:
             now = m.group(1)
-            if now == latest:
+            logging.debug('local version is '+now)
+            if now == str(latest):
                 return '0'
             else:
-                return '1'
+                return latest
         else:
+            logging.error("failed to get local version ")
             return '-1'
     except:
-        print 'connection error. There might be no Internet connection.'
+        connection_error = 'connection error. There might be no Internet connection.'
+        print connection_error
+        logging.error(connection_error)
         return '-1'
     
 

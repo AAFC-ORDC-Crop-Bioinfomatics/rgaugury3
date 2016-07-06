@@ -1,14 +1,19 @@
-prj_id = "";
-gene_img = '<a href="/gallery{data}" target="_blank"><img src = "{data}" width="100%" height="100%"></a>';
-invalid_img = '<a href="#" class="thumbnail disabled"> <span class="glyphicon glyphicon-picture"></span> </a>';
-table_header = undefined;
-nbs_data = undefined;
-rlp_data = undefined;
-rlk_data = undefined;
-tmcc_data = undefined;
+prj_id = ""
+gene_img_1 = '<a href="'
+gene_img_2 = 'gallery/{data}" target="_blank"><img src ="'
+gene_img_3 = '{data}" width="100%" height="100%"></a>'
+invalid_img = '<a href="#" class="thumbnail disabled"> <span class="glyphicon glyphicon-picture"></span> </a>'
+table_header = undefined
+nbs_data = undefined
+rlp_data = undefined
+rlk_data = undefined
+tmcc_data = undefined
+root=""
 
 $(function() {
     prj_id = $("#prj_id").text().trim();
+    root = $("#root").text().trim();
+
     highlight($('#gene_type button').first());
     
     $('#gene_type button').click(function() {
@@ -35,10 +40,6 @@ $(function() {
             // scroll down
             gallery.width(width * 0.9);
         }
-    });
-
-    $('#distribution').click(function() {
-        window.location.href = '/distribution/' + prj_id;
     });
 
     initDSTable(getAlldata);
@@ -98,7 +99,7 @@ function activeTable(type) {
 
 function addHeader(callback) {
     $.ajax({
-        "url": '/ds_header/' + prj_id,
+        "url": root+'ds_header/' + prj_id,
         "dataType": "json",
         "success": function(json) {
             var tableHeaders = '';
@@ -117,7 +118,7 @@ function addHeader(callback) {
 // if setTable is true, then initialize the table with the json value
 function getTableData(type, setTable) {
     $.ajax({
-        "url": '/gene_info/' + prj_id + '/' + type,
+        "url": root+'gene_info/' + prj_id + '/' + type,
         "dataType": "json",
         "success": function(json) {
             var dataType = type.toLowerCase().replace(/-/, '');
@@ -158,8 +159,8 @@ function setDataTable(data) {
             if (img_path.search(/img/i) < 0) {
                 $('td', row).eq(colum).html(invalid_img);
             } else {
-                var src = '/img/' + prj_id + '/' + data[colum];
-                $('td', row).eq(colum).html(gene_img.replace(/{data}/g, src));
+                var src = 'img/' + prj_id + '/' + data[colum];
+                $('td', row).eq(colum).html(gene_img_1+root+gene_img_2.replace(/{data}/g, src)+root+gene_img_3.replace(/{data}/g, src));
             }
         },
         "initComplete": function(settings, json) {

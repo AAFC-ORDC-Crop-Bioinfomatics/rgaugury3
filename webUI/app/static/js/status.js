@@ -1,9 +1,11 @@
 vars = {};
 OP_DEL = 'delete';
 OP_CANCEL = 'cancel';
-
+root=""
 
 function onStart() {
+    root = $("#root").text().trim();
+
     vars.fingerprint = fingerprint();
 
     $(document).on('click', '.cancel', function() {
@@ -12,7 +14,7 @@ function onStart() {
         }
         vars.prj_id = $(this).closest('tr').find('td:eq(0)').text().trim();
         vars.btn = $(this);
-        $.get('/fingerprint/' + vars.prj_id + '/' + vars.fingerprint, function(data, status) {
+        $.get(root+'fingerprint/' + vars.prj_id + '/' + vars.fingerprint, function(data, status) {
             if (status == 'success') {
                 if (data == '0') {
                     // finger print match
@@ -37,7 +39,7 @@ function onStart() {
         }
         vars.prj_id = $(this).closest('tr').find('td:eq(0)').text().trim();
         vars.btn = $(this);
-        $.get('/fingerprint/' + vars.prj_id + '/' + vars.fingerprint, function(data, status) {
+        $.get(root+'fingerprint/' + vars.prj_id + '/' + vars.fingerprint, function(data, status) {
             if (status == 'success') {
                 if (data == '0') {
                     // finger print match
@@ -61,7 +63,7 @@ function onStart() {
         vars.btn.addClass('disabled');
         vars.btn.text('wait...');
         if (vars.operation == OP_CANCEL) {
-            $.post("/cancel", {
+            $.post("cancel", {
                 prj_id: vars.prj_id
             }, function(data, status) {
                 if (status == 'success') {
@@ -73,7 +75,7 @@ function onStart() {
                 }
             });
         } else if (vars.operation == OP_DEL) {
-            $.post("/delete", {
+            $.post("delete", {
                 prj_id: vars.prj_id
             }, function(data, status) {
                 if (status == 'success') {
