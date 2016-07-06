@@ -5,7 +5,7 @@ scale = 0
 data = undefined
 root=""
 
-img_tag = '<img src ="{src}" alt="{src}">'
+img_tag = '<img src ="{src}" alt="{src}" />'
 
 $(window).on("load", function() {
     root = $("#root").text().trim();
@@ -13,7 +13,7 @@ $(window).on("load", function() {
     gene_name = $("#gene_name").text().trim();
 
     initTable();
-    $('a').click((event)=>{
+    $('a').click(function(event){
         location.reload()
     });
 
@@ -90,7 +90,7 @@ function initTable() {
         "createdRow": function(row, data, index) {
             var colum = 2;
             var img_path = data[colum];
-            $('td', row).eq(colum).html(img_tag.replace(/{src}/, img_path));
+            $('td', row).eq(colum).html(img_tag.replace(/{src}/g, img_path));
         },
         "pageLength": 25
     });
