@@ -74,22 +74,22 @@
               <p>
                 Databases for InterProscan:
                 <br>
-                <input type="radio" name="mode" value="Quick Mode"> Quick Mode: pfam + gene3D
+                <input type="radio" name="mode" value="Quick Mode" checked> Quick Mode: pfam + gene3D
                 <br>
                 <input type="radio" name="mode" value="Deep Mode"> Deep Mode: pfam + gene3D + SMART + superFamily
                 <br>
-                <input type="radio" name="mode" value="Free Mode" checked> Free Mode:
+                <input type="radio" name="mode" value="Free Mode"> Free Mode:
                 <label class="checkbox-inline" for="pfam">
-                  <input id="pfam" checked name="database" type="checkbox" value="pfam"> pfam
+                  <input id="pfam" checked name="database" type="checkbox" value="pfam" disabled> pfam
                 </label>
                 <label class="checkbox-inline" for="gene3d">
-                  <input id="gene3d" checked name="database" type="checkbox" value="gene3d"> gene3D
+                  <input id="gene3d" checked name="database" type="checkbox" value="gene3d" disabled> gene3D
                 </label>
                 <label class="checkbox-inline" for="SMART">
-                  <input id="SMART" name="database" type="checkbox" value="smart"> SMART
+                  <input id="SMART" name="database" type="checkbox" value="smart" disabled> SMART
                 </label>
                 <label class="checkbox-inline" for="superFamily">
-                  <input id="superFamily" name="database" type="checkbox" value="superfamily"> superFamily
+                  <input id="superFamily" name="database" type="checkbox" value="superfamily" disabled> superFamily
                 </label>
                 <label class="checkbox-inline" for="pather">
                   <input {{panther}} class="{{panther}}" id="pather" name="database" type="checkbox" value="pather"> panther
