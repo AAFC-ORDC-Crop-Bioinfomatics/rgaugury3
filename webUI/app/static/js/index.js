@@ -9,6 +9,34 @@ $(function() {
   calcFingerPrint();
   checkversion();
 
+  $("[name='mode']").click(function(e){
+    mode = $(this).attr('value')
+    if(mode == 'Deep Mode'){
+        $("[name='database']").prop('checked', false);
+        $("[name='db_hidden']").prop('checked', false);
+        $("[value='pfam']").prop('checked', true);
+        $("[value='gene3d']").prop('checked', true);
+        $("[value='smart']").prop('checked', true);
+        $("[value='superfamily']").prop('checked', true);
+        $("[name='database']").prop('disabled', true);
+    } 
+    else if (mode == 'Quick Mode'){
+        $("[name='database']").prop('checked', false);
+        $("[name='db_hidden']").prop('checked', false);
+        $("[value='pfam']").prop('checked', true);
+        $("[value='gene3d']").prop('checked', true);
+        $("[name='database']").prop('disabled', true);
+    } 
+    else {
+         $("[name='database']").prop('disabled', false);
+    }
+  })
+
+  $("[name='database']").click(function(e){
+    var db_type = $(this).val()
+    $("[value="+db_type+"]").prop('checked', $(this).prop('checked'));
+  })
+
   $("[name='sample']").bootstrapSwitch();
 
   $('input[name="sample"]').on('switchChange.bootstrapSwitch', function(event, state) {
@@ -135,6 +163,11 @@ $(function() {
   $('button[type="submit"]').click(function(e) {
     if (versionIsOk) {
       // the version of interproscan is the latest
+      if($('#protein_seq').val()=='' && $("#seq_file").val()==''){
+        alert("There is no input")
+        e.preventDefault()
+      }
+      
     } else {
       e.preventDefault();
       if (v_status == -1) {
