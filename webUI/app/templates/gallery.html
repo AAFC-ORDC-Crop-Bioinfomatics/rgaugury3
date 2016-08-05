@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block js %}
+<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}">
+</script>
+<script src="{{ url_for('static', filename='js/pagination.js') }}">
+</script>
+<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}">
+</script>
+{% endblock %} {% block style %}
+<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css"> {% endblock %} {% block content %}
+<span hidden="" id="root">{{root}}</span>
+<span hidden="" id="prj_id">{{prj_id}}</span>
+<span hidden="" id="gene_name">{{name}}</span>
+
+<div class="container">
+    <div class="panel"> 
+        <div class="panel-body">
+            <div id='main_info_div'>
+                <fieldset class="well the-fieldset">
+                    <legend class="the-legend embossed_txt">
+                        Protein Information
+                    </legend>
+                    <h5>Gene ID:<span class='highlight'>{{name}} ({{type}})</span> 
+                        <a class="logo" target="_blank"  data-toggle="tooltip" title="NCBI" href="http://www.ncbi.nlm.nih.gov/gene/?term={{simpleName}}[sym]">
+                            <img class="logo" src="{{ url_for ('static', filename='img/ncbi.png') }}" alt="ncbi_logo">
+                        </a> 
+                        <a class="logo" target="_blank"  data-toggle="tooltip" title="EnsemblPlants" href="http://plants.ensembl.org/Multi/Search/Results?species=all;idx=;q={{simpleName}};site=ensemblunit">
+                            <img class="logo" src="{{ url_for ('static', filename='img/e.png') }}" alt="EnsemblPlants">
+                        </a>
+                    </h5>
+                    <h5>Length: {{length}} (aa)</h5>
+                    <h5>Protein Sequence:</h5>
+                    <div class="sequence">{{sequence}}</div>
+                </fieldset>
+                <fieldset class="well the-fieldset">
+                    <legend class="the-legend embossed_txt">
+                        Gff3 Information
+                    </legend>
+                    <div id="gff_div">
+                        <table id='gff_table' class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Chr name</th>
+                                    <th>Source</th>
+                                    <th>Feature</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Score</th>
+                                    <th>Strand</th>
+                                    <th>Frame</th>
+                                    <th>Gene ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gff in gffs%}
+                                <tr>
+                                    <td>{{gff.seqname}}</td>
+                                    <td>{{gff.source}}</td>
+                                    <td>{{gff.feature}}</td>
+                                    <td>{{gff.start}}</td>
+                                    <td>{{gff.end}}</td>
+                                    <td>{{gff.score}}</td>
+                                    <td>{{gff.strand}}</td>
+                                    <td>{{gff.frame}}</td>
+                                    <td>{{gff.attribute}}</td>
+                                </tr>
+                                {% endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+                <fieldset class="well the-fieldset">
+                    <legend class="the-legend embossed_txt">
+                        Gene Structure
+                    </legend>
+                    <div id="img_div" class="hint">
+                        <img class="gene_img" src="{{ img_path }}">
+                        <div class="hinttext">
+                            <div id="type"></div>
+                            <div id="span"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <canvas id="ruler"></canvas>
+                    </div>
+            </fieldset>
+            <fieldset class="well the-fieldset">
+                <legend class="the-legend embossed_txt">
+                    Domain Information
+                </legend>
+                <div id="section_div">
+                    <table id='section_table' class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Start</th>
+                                <th>Ending</th>
+                                <th>Image</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for section in sections%}
+                            <tr>
+                                <td>{{section.start}}</td>
+                                <td>{{section.ending}}</td>
+                                <td>{{section.image}}</td>
+                                <td>{{section.category}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
+{% endblock %}

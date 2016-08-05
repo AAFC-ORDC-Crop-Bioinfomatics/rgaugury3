@@ -1,0 +1,192 @@
+{% extends "base.html" %} {% block js %}
+<script src="{{ url_for('static', filename='js/tool.js') }}">
+</script>
+{% endblock %} {% block content %}
+
+<span hidden="" id="root">{{root}}</span>
+
+<div class="container">
+  <h2 class="text-info text-center">
+        RGAugury intermediate progress report
+    </h2>
+  <table id="prj_table" class="table table-striped">
+    <thead>
+      <tr>
+        <th>
+          Project ID
+        </th>
+        <th>
+          Project Name
+        </th>
+        <th>
+          No. Genes
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+          Elapsed Time
+        </th>
+        <th>
+          GFF3
+        </th>
+        <th>
+          E-value
+        </th>
+        <th>
+          Database
+        </th>
+        <th>
+          Submitted Time
+        </th>
+        <th>
+          Operation
+        </th>
+        <th>
+          Delete
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td>
+          {{project.id}}
+        </td>
+        <td>
+          {{project.name}}
+        </td>
+        <td>
+          {{project.input_amount}}
+        </td>
+        {% if project.status == 'complete' %}
+        <td style="color:green">
+          {{project.status}}
+        </td>
+        {% elif project.status == 'canceled'%}
+        <td style="color:red">
+          {{project.status}}
+        </td>
+        {% else %}
+        <td>
+          <div class="progress" title="{{project.step}}">
+            <div class="progress-bar  progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:{{project.status}}">
+            </div>
+            <span class="show">{{project.status}}</span>
+          </div>
+        </td>
+        {% endif %}
+        <td>
+          {{project.elapsed_time}}
+        </td>
+        <td>
+          {{project.gff3}}
+        </td>
+        <td>
+          {{project.e_value}}
+        </td>
+        <td>
+          {{project.database}}
+        </td>
+        <td>
+          {{project.start_time}}
+        </td>
+        {% if project.status == 'complete' %}
+        <td>
+          <a href="{{ url_for('prj_info' ,prj_id='') }}{{project.id}}">
+            <button class="btn btn-primary" type="button">
+              Check
+            </button>
+          </a>
+        </td>
+        <td>
+          <button class="btn btn-danger del_prj" type="button">
+            <span class="glyphicon glyphicon-trash">
+                        </span>
+          </button>
+        </td>
+        {% elif project.status == 'canceled'%}
+        <td>
+          <button class="btn btn-warning cancel disabled" type="button">
+            Cancel
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-danger del_prj" type="button">
+            <span class="glyphicon glyphicon-trash">
+                        </span>
+          </button>
+        </td>
+        {% else %}
+        <td>
+          <button class="btn btn-warning cancel" type="button">
+            Cancel
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-danger disabled del_prj" type="button">
+            <span class="glyphicon glyphicon-trash">
+                        </span>
+          </button>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div hidden class="bokeh_jump">
+    <a class="btn btn-success" href="{{ url_for("index")}}" role="button">
+            Back to Home
+        </a>
+  </div>
+</div>
+<!-- cancel and delete Modal -->
+<div class="modal fade" id="modal" role="dialog">
+  <div class="modal-dialog modal-md">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <p>
+          <h4>
+                        Would you like to
+                        <span id="op_name">
+                        </span>
+                        the project
+                        <span class="prj_name" id="prj_name">
+                        </span>
+                        ?
+                    </h4>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="confirm" type="button">
+          Yes
+        </button>
+        <button class="btn btn-default" data-dismiss="modal" type="button">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- fingerpirnt dismatch Modal -->
+<div class="modal fade" id="fingerprint_modal" role="dialog">
+  <div class="modal-dialog modal-md">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <p>
+          <h4>
+                        You can cancel and delete the project only on the same web browser and computer where the project was created.
+                    </h4>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" type="button">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

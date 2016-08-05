@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}">
+</script>
+<script src="{{ url_for('static', filename='js/pagination.js') }}">
+</script>
+<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}">
+</script>
+{% endblock %}
+
+{% block style %}
+<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+    <span hidden="" id="prj_id">{{prj_id}}</span>
+    <span hidden="" id="root">{{root}}</span>
+
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <fieldset class="well the-fieldset">
+                    <span class="label label-info span_legend">
+                        RGA Category Summary
+                    </span>
+                    <div>
+                        <table id="summary_table">
+                            <thead>
+                                <tr>
+                                    <th class="light_green_bg" colspan="2" rowspan="2">
+                                        Project Name
+                                    </th>
+                                    <th class="light_pink_bg" colspan="8">
+                                        NBS-encoding
+                                    </th>
+                                    <th class="light_green_bg" rowspan="2">
+                                        RLP
+                                    </th>
+                                    <th class="light_pink_bg" rowspan="2">
+                                        RLK
+                                    </th>
+                                    <th class="light_green_bg" rowspan="2">
+                                        TM-CC
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="light_pink_bg">
+                                        NBS
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        CNL
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        TNL
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        CN
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        TN
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        NL
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        TX
+                                    </th>
+                                    <th class="light_pink_bg">
+                                        Other
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="light_green_bg" colspan="2">
+                                        {{prj_name}}
+                                    </td>
+                                    {% for td in values %}
+                                    <td class="{{td.class_name}}">
+                                        {{td.value}}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+                <ul id="download_area">
+                    <li>
+                        RGAugury all results can be downloaded
+                        <a href="{{annotation_url}}">
+                            here
+                        </a>
+                    </li>
+                    {% if gff3 == 'Yes'%}
+                    <li>
+                        Whole genome RGA distribution can be viewed
+                        <a href="{{ url_for('distribution', prj_id = '')}}{{ prj_id}}" id="distribution">
+                            here
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <fieldset class="well the-fieldset">
+                    <span class="label label-info span_legend">
+                        RGA Browser
+                    </span>
+                    <ul id="gene_type">
+                        <li>
+                            <button class="btn btn-primary" type="button">
+                                NBS
+                            </button>
+                        </li>
+                        <li>
+                            <button class="btn btn-primary" type="button">
+                                RLP
+                            </button>
+                        </li>
+                        <li>
+                            <button class="btn btn-primary" type="button">
+                                RLK
+                            </button>
+                        </li>
+                        <li>
+                            <button class="btn btn-primary" type="button">
+                                TM-CC
+                            </button>
+                        </li>
+                    </ul>
+                    <div id="domain">
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</link>

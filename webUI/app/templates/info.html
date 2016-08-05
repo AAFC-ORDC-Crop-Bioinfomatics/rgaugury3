@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+    <br>
+    <br>
+    <h3 class="text-info ">
+                <p>
+                    Your task has been submmited
+                </p>
+
+            </h3>
+    <br>
+    <br>
+    <h4>
+                        Project ID: {{status[0]}}
+                    </h4>
+    <h4>
+                        Project Description: {{status[1]}}
+                    </h4>
+    <h4>
+                        Submit Time: {{status[2]}}
+                    </h4>
+    <br>
+    <h4>
+                            Thank You!
+                        </h4>
+    <br>
+    <br>
+    <br>
+    <div class="bokeh_jump">
+        <a class="btn btn-primary" href="{{ url_for("index")}}" role="button">
+                                            Back to Home
+                                        </a>
+        <a class="btn btn-primary pull-right" href="{{ url_for("status")}}" role="button">
+                                            Check your job status
+                                        </a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+{% endblock %}

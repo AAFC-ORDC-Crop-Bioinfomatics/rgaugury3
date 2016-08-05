@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+         <div id="list">
+                    <ul>
+                        <li>
+                            <div class="nbs_title">NBS</div>
+                            <div><img id='nbs' src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.NBS.png" alt="nbs distribution"></div>
+                        </li>
+                        <li>
+                            <div class="rlk_title">RLK</div>
+                            <div><img src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.RLK.png" alt="rlk distribution"></div>
+                        </li>
+                        <li>
+                            <div class="rlp_title">RLP</div>
+                            <div><img src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.RLP.png" alt="rlp distribution"></div>
+                        </li>
+                        <li>
+                            <div class="tmcc_title">TMCC</div>
+                            <div><img src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.TMCC.png" alt="tmcc distribution"></div>
+                        </li>
+                        <li>
+                            <div class="all_title">ALL</div>
+                            <div><img src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.ALL.png" alt="all distribution"></div>
+                        </li>
+                    </ul>
+         </div>
+         <div id="main">
+            <div id="type">
+                <h3 style="font-weight:bold">ALL</h3>
+            </div>
+            <div id='img'>
+                <img src="{{ url_for('index')}}img/{{prj_id}}/img/{{prj_id}}.ALL.png" alt="all distribution">
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

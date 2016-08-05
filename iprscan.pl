@@ -4,6 +4,11 @@ use Getopt::Long;
 use Log::Log4perl::Level;
 use Log::Log4perl qw(:easy);
 
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(abs_path $0);
+use Tool qw(iprscan);
+
 #owning to iprlookup limitation occasionally, interproscan was invoked by perl script iprscan.pl to run on splitted small data set
 
 
@@ -37,7 +42,7 @@ my $logfile               = $options->{log};
 my $appl                  = $options->{appl};
 my $format                = $options->{f};
 
-iprscan($fasta,  $output);
+iprscan($fasta,  $output, $splitted_files_number, $appl, $format, $logfile);
 
 # -------------------------sub ------------------------------
 sub count_split_number{
@@ -55,7 +60,7 @@ sub count_split_number{
     }
     return $number;
 }
-
+=for comment
 sub iprscan{
     my ($input, $output)    = @_;
     my @splitted_out        = ();
@@ -197,4 +202,4 @@ sub splitted_results_merge {
     }
     close OUT;
 }
-
+=cut

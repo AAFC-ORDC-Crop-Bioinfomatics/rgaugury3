@@ -1,0 +1,238 @@
+.menu_btn {
+  z-index: 0;
+  border: none;
+  font-size: 1.2em;
+  color: #fff;
+  background: none;
+  cursor: pointer;
+  padding: 10px 10px;
+  display: inline-block;
+  margin: 5px 5px;
+  font-weight: 700;
+  outline: none;
+  position: relative;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+.menu_btn:after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+  width: 0%;
+  height: 103%;
+  top: 50%;
+  left: 50%;
+  background: #fff;
+  opacity: 0;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}
+.menu_btn:hover,
+.menu_btn:active {
+  color: #87bbe9;
+}
+.menu_btn:hover:after {
+  width: 100%;
+  opacity: 1;
+}
+.embossed_txt {
+  text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
+  opacity: 0.9;
+}
+.text3D {
+  text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,0.1), 0 0 5px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.3), 0 3px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.2), 0 20px 20px rgba(0,0,0,0.15);
+}
+@media (min-width: 768px) {
+  .container {
+    width: 1200px;
+  }
+}
+.navbar {
+  border-radius: 0;
+}
+html {
+  min-width: 940px;
+}
+.navbar-nav>li,
+.navbar-nav {
+  float: left;
+  margin: 0px;
+}
+.navbar-right {
+  float: right;
+}
+.container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  min-width: 1200px;
+}
+td,
+th {
+  text-align: center;
+  vertical-align: middle !important;
+}
+.well {
+  background-color: #eee;
+}
+.navbar {
+  border-radius: 0;
+}
+.panel {
+  margin-bottom: 0;
+}
+.panel-body {
+  font-size: 14px;
+  background-color: #d3dff5;
+}
+.panel-heading {
+  background-color: #7fc7af;
+}
+.soft {
+  font-size: 14px;
+  font-weight: bold;
+}
+.para {
+  font-size: 14px;
+  font-weight: bold;
+}
+.the-legend {
+  border-style: none;
+  Color: White;
+  background-color: #5bb3ff;
+  width: auto;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 0px;
+  padding: 3px 7px;
+  border-radius: 3px;
+}
+.the-fieldset {
+  border: 2px groove #444;
+  -webkit-box-shadow: 0px 0px 0px 0px #000;
+  box-shadow: 0px 0px 0px 0px #000;
+}
+.footer {
+  visibility: hidden;
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 812px;
+}
+.container-fluid {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #87bbe9;
+}
+a.navbar-brand {
+  color: #e5ffcc;
+}
+.navbar-brand {
+  font-family: 'Frijole', cursive;
+  font-size: 40px;
+}
+footer>div {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.clear {
+  clear: both;
+}
+.header {
+  background: #87bbe9;
+}
+.explain {
+  font-size: 18px;
+  font-weight: bold;
+  padding-left: 15px;
+  color: #295202;
+}
+a.disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  color: #808080;
+}
+.gradient {
+  background: linear-gradient(141deg, rgba(15,184,173,0.6) 0%, rgba(31,200,219,0.6) 51%, rgba(44,181,232,0.6) 75%);
+}
+.btn-primary {
+  background-color: #42739e;
+}
+#ugury {
+  position: relative;
+  bottom: -0.1em;
+}
+.gene_img {
+  height: 30px;
+  width: 1000px;
+}
+#main_info_div {
+  margin-bottom: 3em;
+}
+.panel-body {
+  background-color: #fff;
+  margin: auto;
+  padding: 3em 3em;
+}
+#scale {
+  color: #ff6347;
+}
+.hint {
+  position: relative;
+  display: inline-block;
+  overflow: visible;
+}
+.hint .hinttext {
+  visibility: hidden;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  padding: 3px 10px;
+  width: 8em;
+}
+h4 {
+  color: #ff4500;
+}
+td img {
+  height: 1em;
+  width: 2em;
+}
+#section_div {
+  width: 100%;
+  margin: auto;
+}
+.sequence {
+  width: 1044px;
+  word-wrap: break-word;
+  border: 1px dotted;
+  border-color: #eee;
+}
+.well {
+  background-color: #fff;
+  border: 1px solid;
+  border-color: #eee;
+}
+.highlight {
+  color: dogerblue;
+  font-weight: bold;
+}
+a.logo {
+  display: inline-block;
+  margin-left: 0.2em;
+  height: 1.3em;
+  width: 1.3em;
+}
+img.logo {
+  height: 100%;
+  width: 100%;
+  border: 1px solid;
+  border-radius: 3px;
+}

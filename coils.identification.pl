@@ -2,6 +2,11 @@
 use strict;
 use Scalar::Util qw(looks_like_number);
 
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(abs_path $0);
+use Tool qw(coils_parallel);
+
 die "perl coils.identification.pl <input_fasta> <cpu_number> <output_file>" unless ($#ARGV == 2);
 
 my $input_fasta = $ARGV[0];
@@ -23,7 +28,7 @@ while (<IN>) {
 close IN;
 close OUT;
 
-coils_parallel(".temporary1.txt", ".temporary2.txt");
+coils_parallel(".temporary1.txt", ".temporary2.txt", $cpu);
 
 open(IN,".temporary2.txt");
 my %gene = ();
@@ -64,7 +69,7 @@ sub Ptime{
           my ($msg)= @_;
           print STDERR "$time: $msg\n";
 }
-
+=for comment
 sub generate_rand_filename {
 
      my $length_of_randomstring=shift;
@@ -208,5 +213,6 @@ sub coils_parallel{
     files_remove(@splitted_out);
     files_remove(@renamed_split_files);
 }
+=cut
 
 

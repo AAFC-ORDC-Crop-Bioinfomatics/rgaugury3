@@ -1,0 +1,7 @@
+/* latin */
+@font-face {
+  font-family: 'Frijole';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Frijole'), url("https://fonts.gstatic.com/s/frijole/v5/J98nbmyAJUbYHCciqpEIsg.woff2") format('woff2'), url(https://fonts.gstatic.com/s/frijole/v5/JMJmIdqpEk7-RyNfk_4Nrw.woff) format('woff'), url("/static/font/Frijole.woff2") format('woff2'), url("/static/font/Frijole_ie.woff") format('woff');  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}

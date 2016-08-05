@@ -7,6 +7,12 @@ use File::Path qw(make_path remove_tree);
 use FindBin;
 use Log::Log4perl::Level;
 use Log::Log4perl qw(:easy);
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(abs_path $0);
+
+# included in RGAugury package
+use Tool qw(blastp_parallel pfamscan_parallel);
 
 #----------------------------------RGAugury pipeline---------------------------------------
 
@@ -34,7 +40,7 @@ USAGE
 
 #---------- parameters which should be defined in advance -----------
 GetOptions(my $options = {},
-                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s","-e=i"
+                    "-p=s","-n=s","-g=s","-gff=s","-c=i","-pfx=s","-d=s","-e=s"
                   );
 
 my $start_run = time();
@@ -53,10 +59,10 @@ my $iprDB       = ($options->{d}) ? $options->{d} : "Pfam,gene3d";
 my $e_seq    = 0.1;
 my $e_dom    = 0.1;
 my @interested_NBS = keys %{nbarc_parser("$FindBin::Bin/configuration_nbs.txt")};
-my $blast_evalue   = (defined $options->{e} and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
+my $blast_evalue   = (looks_like_number($options->{e}) and $options->{e} <= 10) ? $options->{e} : "1e-5" ;
 
 # make sure below folder contain pfam and preselected RGA database
-my $pfam_index_folder = (-e $ENV{"HOME"}."/database/pfam") ? $ENV{"HOME"}."/database/pfam": die "unable to locate pfam DB";
+my $pfam_index_folder = (-e $ENV{PFAMDB}) ? $ENV{PFAMDB}: die "unable to locate pfam DB path in ENV, check if PFAMDB has been correctly set in your ENV variable";
 my $RGD_index_file    = (-e $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta") ? $FindBin::Bin."/RGADB/plant.RGA.dataset.unique.fasta" : die "unalbe to locate RGADB file";
 
 # --------set the directory of coils, be sure ncoils is under the path of RGAugury main directory ----------
@@ -78,8 +84,6 @@ my $aa_formated_infile            = $prefix."formated.protein.input.fas";
 my $pfam_out                      = $prefix."pfam.local.search.out";
 #my $NBS_pfam_out                  = $prefix."NBS.pfam.out";
 my $NBS_pre_candidates_lst        = $prefix."NBS.pre.candidates.lst";
-my $NBS_candidates_lst            = $prefix."NBS.candidates.lst";
-my $NBS_candidates_fas            = $prefix."NBS.candidates.fas";
 my $NBS_merged_domain             = $prefix."NBS.merged.domains.txt";
 
 my $RGA_blast_out                 = $prefix."RGA.blastp.$blast_evalue.out";
@@ -101,6 +105,8 @@ my $cc_prediction                 = $prefix."coils.res.txt";
 my $RLKorRLP_prediction_output    = $prefix."RLKorRLP.domain.prediction.txt";
 my $RLKorRLP_merged_domain        = $prefix."RLKorRLP.merged.domains.txt";
 
+my $NBS_candidates_lst            = $prefix."NBS.candidates.lst";
+my $NBS_candidates_fas            = $prefix."NBS.candidates.fas";
 my $RLK_candidates_lst            = $prefix."RLK.candidates.lst";
 my $RLK_candidates_fas            = $prefix."RLK.candidates.fas";  
 my $RLP_candidates_lst            = $prefix."RLP.candidates.lst";
@@ -120,6 +126,15 @@ my $tmp_lrr_ipr                   = $prefix."tmp_lrr_ipr.dissect.txt";
 my $tmp_tir_ipr                   = $prefix."tmp_tir_ipr.dissect.txt";
 my $tmp_cc_ipr                    = $prefix."tmp_cc_ipr.dissect.txt ";  
 my $error_report                  = $prefix."Error.logfile.txt";
+
+# figure plot
+my $valid_dm                      = $prefix."dm.compile.txt";
+my $figure_meta                   = $prefix."RGA.gene.meta.txt";
+my $info_table                    = $prefix."RGA.info.txt";
+my $summary_table                 = $prefix."RGA.summaries.txt";
+my $chrgff                        = $prefix."CViT.chromosome.gff";
+my $genegff                       = $prefix."RGA.gff";
+my $cvitini                       = $prefix."CViT.ini";
 
 # --initializing the log4perl modules --------------------------------------------
 Log::Log4perl->init("$FindBin::Bin/log4perl.conf");
@@ -163,11 +178,12 @@ local $/ = "\n";
 # -------------------------blastp to RGA database------------------
 # -----------this step will get a potential candidates RGA---------
 # ---all furhter analysis will be based on the preRGA fasta seq----
-DEBUG("step 4 -> Blast with RGA DB...");
+
 if ($RGA_blast_out and -s $RGA_blast_out) {
-    DEBUG("$RGA_blast_out detected in current folder, pipeline will jumps to next step - code 003");
+    DEBUG("step 4 -> $RGA_blast_out detected in current folder, pipeline will jumps to next step - code 003");
 }
 else {
+    DEBUG("step 4 -> Blast with RGA DB...");
     blastp_parallel($aa_formated_infile, $RGD_index_file, $blast_evalue, $RGA_blast_out, $cpu);
 }
 
@@ -187,11 +203,12 @@ output_lst_ram_manner(\%RGA_blast_lst, $RGA_blast_lst);
 #-----------------using pfam to scan the pfam-------------------
 #--------remove the $pfam_out if not correctly executed --------
 
-DEBUG("step 6 -> running pfam scan procedure...");
+
 if ($pfam_out and -s $pfam_out) {
-    DEBUG("$pfam_out detected in current folder, pipeline will jumps to next step - code 001");
+    DEBUG("step 6 -> pfam_out detected in current folder, pipeline will jumps to next step - code 001");
 }
 else {
+    DEBUG("step 6 -> running pfam scan procedure...");
     pfamscan_parallel($pfam_out, $e_seq, $e_dom, $cpu, $RGA_blast_fasta, $pfam_index_folder);
 }
 
@@ -210,11 +227,12 @@ while (<IN>) {
 close IN;
 
 # --------------------coiled coil prediction -------------------
-DEBUG("step 7 -> to predict coiled coils...");
+
 if ($cc_prediction and -s $cc_prediction) {
-    DEBUG("$cc_prediction detected in current folder, pipeline will jumps to next step - code 002");
+    DEBUG("step 7 -> $cc_prediction detected in current folder, pipeline will jumps to next step - code 002");
 }
 else {
+    DEBUG("step 7 -> predicting coiled coils...");    
     system("perl -S coils.identification.pl $RGA_blast_fasta $cpu $cc_prediction");
 }
 
@@ -228,30 +246,33 @@ close IN;
 
 # -------------------------iprscan---------------------------------
 #----using above outputed fasta file to do iprscan for 1st time----
-DEBUG("step 8 -> initializing interproscan...");
+
 if ($iprscan_out and -s $iprscan_out) {
-    DEBUG("$iprscan_out detected in current folder, pipeline will jumps to next step - code 004");
+    DEBUG("step 8 -> $iprscan_out detected in current folder, pipeline will jumps to next step - code 004");
 }
 else {
+    DEBUG("step 8 -> initializing interproscan...");    
     system("perl -S iprscan.pl -i $RGA_blast_fasta -appl $iprDB -f tsv -o $iprscan_out -log $interproscan_log");
 }
 
 
-
 # --------------------------RLK and RLP prediction--------------
-DEBUG("step 9 -> analysising RLK and RLP");
+
 if ($RLKorRLP_prediction_output and -s $RLKorRLP_prediction_output) {#$RLKRLP_out_raw
-    DEBUG("$RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
+    DEBUG("step 9 -> $RLKorRLP_prediction_output detected in current folder, pipeline will jumps to next step - code 005");
 }
 else {
-     system("perl -S RLK.prediction.pl  -i  $RGA_blast_fasta  -pfx  $prefix  -pfam  $pfam_out  -iprs $iprscan_out  -cpu $cpu  -lst $RGA_blast_lst   -o $RLKorRLP_prediction_output");
+    DEBUG("step 9 -> analysising RLK and RLP");
+    system("perl -S RLK.prediction.pl  -i  $RGA_blast_fasta  -pfx  $prefix  -pfam  $pfam_out  -iprs $iprscan_out  -cpu $cpu  -lst $RGA_blast_lst   -o $RLKorRLP_prediction_output");
 }
 
-#-----------merge coilsed coil to above output<$RLKorRLP_prediciton_outputs---------------
-open(IN,      $RLKorRLP_prediction_output);
-open(MERGE,     ">$RLKorRLP_merged_domain");
+#----------- merge coilsed coil to above output<$RLKorRLP_prediciton_outputs ---------------
+open(IN,    $RLKorRLP_prediction_output);
+open(MERGE, ">$RLKorRLP_merged_domain");
 print MERGE join("\t", "id", "stk", "tm", "sp", "LysM", "LRR", "CC\n");
-#this will add one more column in terms of cc to the $RLKorRLP_prediction_output
+
+
+#---------------------- this will add one more column in terms of cc to the $RLKorRLP_prediction_output ---------------------
 while (<IN>) {
    chomp;
    next if($_ =~ /LysM\tLRR/); #ignore first headline prior to processing
@@ -306,12 +327,13 @@ close TMP_NBS_LST;
 push(@deletion,$tmp_nbsonly_lst) if (-e $tmp_nbsonly_lst);
 push(@deletion,$NBS_pre_candidates_lst);
 
-DEBUG("step 10 -> extracting interproscan for 2nd round of additional NBS encoding genes...");
+
 if ($iprscan_out_2nd and -s $iprscan_out_2nd) {
-    DEBUG("$iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
+    DEBUG("step 10 -> $iprscan_out_2nd detected in current folder, pipeline will jumps to next step - code 006");
 }
 else {
     # extract iprscan data from previous analyzed iprscan_out as iprscan_out_2nd
+    DEBUG("step 10 -> extracting interproscan for 2nd round of additional NBS encoding genes...");
     iprscan_out_extraction($iprscan_out, $tmp_nbsonly_lst, $iprscan_out_2nd);
 }
 
@@ -341,7 +363,6 @@ foreach my $key (sort {$NBS_candidates_lst{$a} cmp $NBS_candidates_lst{$b}} keys
 }
 close OUT;
 
-
 #----output lst of RLK, RLP and TMCC---
 DEBUG("step 11 -> RLK and RLP prediction is done...");
 system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_candidates_lst $RLK_candidates_lst $RLP_candidates_lst $TMCC_candidates_lst");
@@ -350,7 +371,11 @@ system("perl -S RLK.prediction.result.parser.v2.pl $RLKorRLP_merged_domain $NBS_
 # ----------output RGA candidates aa sequence --------------
 my %id = ();
 open(OUT,">$RGA_candidates_fasta");
+open(SUMMARY, ">$info_table");
+print SUMMARY join("\t","ID","Length(aa)","Type","Gene Structure\n");
+
 open(LST,">$RGA_candidates_lst");
+
 foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, $TMCC_candidates_lst) {
     open(IN,"$lst");
     while (<IN>) {
@@ -360,10 +385,26 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
 
         my $id   = $array[0];
         my $type = $array[1];
+        my $seq  = $protein_fasta{$id};
+        
         
         my $new_id = join("|",$id,$type);
-        print OUT ">$new_id\n$protein_fasta{$id}\n";
+        print OUT ">$new_id\n$seq\n";
         print LST "$id\t$type\n";
+        
+        my $seqlen = length($seq);
+        if ($lst eq $NBS_candidates_lst) {
+            $type = join(">","NBS",$type);
+        }
+        
+        # -----------------------------create the RGA candidates browser info. in SUMMARY table ---------------------        
+        if ($gff) {
+            print SUMMARY join("\t",$id, $seqlen, $type, "img/$id.png");
+        }
+        else {
+            print SUMMARY join("\t",$id, $seqlen, $type, ".");
+        }
+        print SUMMARY "\n";
         
         # ------record outputed RGA --------
         $id{$id} = 1;
@@ -372,6 +413,8 @@ foreach my $lst ($NBS_candidates_lst, $RLK_candidates_lst, $RLP_candidates_lst, 
 }
 close OUT;
 close LST;
+close SUMMARY;
+
 # export fasta sequence via candidate list files ------------------------------------------------------------------------------
 output_protein_fasta_lst_manner($NBS_candidates_lst ,$NBS_candidates_fas)  if ($NBS_candidates_lst  and -s $NBS_candidates_lst);
 output_protein_fasta_lst_manner($RLK_candidates_lst ,$RLK_candidates_fas)  if ($RLK_candidates_lst  and -s $RLK_candidates_lst);
@@ -392,13 +435,56 @@ if ($nt_infile) {
     close OUT;
 }
 
-#------------------prepare CVIT data-=----------------------
+#------------------prepare CViT data and domain architecture plot figures-=----------------------
 if ($gff and -s $gff) {
+    DEBUG("step 12 -> creating domain and motif architecture figure...");
+    system("perl -S plot.pre-processing.pl -l1 $NBS_candidates_lst -l2 $RLP_candidates_lst -l3 $RLK_candidates_lst -l4 $TMCC_candidates_lst -nd $NBS_merged_domain -rd $RLKorRLP_merged_domain -o $valid_dm");
+    system("perl -S plot.gene.domain.motif.pl -gff3   $gff  -i  $valid_dm -m $figure_meta" );
+    
+    my %valid_gff = %{valid_gff_extraction($gff, $RGA_candidates_lst)};
+    output_RGA_gff($genegff, \%valid_gff);
+    
+    my $max_len   = `perl -S cvit.chr.gff3.generator.pl -i $gff -o $chrgff`;
+    my ($max_len_v) = $max_len =~ /= (\d+)/;
+    
+    # to get a proper ratio to replace the tick interval and scale factor in cvit.ini, which can plot a better figure in width vs height.
+    my $ratio     = $max_len_v/30_000_000;
+    my $tick_interval = (sprintf("%d",$ratio) + 1)*1_000_000;
+    my $scale_factor  = sprintf("%f",(0.00002)*$ratio);
+
+    my $cmd1 = "sed  '/\\(^tick_interval\\s*=\\).*/ s//\\1   $tick_interval/'  $FindBin::Bin/cvit.ini >$cvitini";
+    system($cmd1);
+    my $cmd2 = "sed -i '/\\(^scale_factor\\s*=\\).*/ s//\\1   $scale_factor/'  $cvitini";
+    system($cmd2);
+    
+    DEBUG("step 13 -> running CViT plotting script package...");
     system("perl -S cvit.input.generator.pl -l $NBS_candidates_lst  -p $aa_infile -f $gff -t gene -c blue   -t2 NBS  -pfx $prefix");
     system("perl -S cvit.input.generator.pl -l $RLK_candidates_lst  -p $aa_infile -f $gff -t gene -c green  -t2 RLK  -pfx $prefix");
     system("perl -S cvit.input.generator.pl -l $RLP_candidates_lst  -p $aa_infile -f $gff -t gene -c orange -t2 RLP  -pfx $prefix");
     system("perl -S cvit.input.generator.pl -l $TMCC_candidates_lst -p $aa_infile -f $gff -t gene -c black  -t2 TMCC -pfx $prefix");
+    
+    my $input1 = $prefix."CViT.NBS.blue.txt";     my $output1 = $prefix."NBS";
+    my $input2 = $prefix."CViT.RLK.green.txt";    my $output2 = $prefix."RLK";
+    my $input3 = $prefix."CViT.RLP.orange.txt";   my $output3 = $prefix."RLP";
+    my $input4 = $prefix."CViT.TMCC.black.txt";   my $output4 = $prefix."TMCC";
+    my $input5 = $prefix."CViT.all.txt";          my $output5 = $prefix."ALL";
+    
+    system("cat $input1 $input2 $input3 $input4 >$input5");
+    
+    # create image under img folder
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output1   $chrgff $input1 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output2   $chrgff $input2 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output3   $chrgff $input3 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output4   $chrgff $input4 1>/dev/null");
+    system("perl -S cvit.pl -i png -l -c $cvitini -o img/$output5   $chrgff $input5 1>/dev/null");
 }
+else {
+    DEBUG("step 12 -> skipped domain structure generation, due to lack of gff3 file...      ");
+    DEBUG("step 13 -> skipped whole genome CViT input generaton, due to lack of gff3 file...");
+}
+
+# ------------------generate summary table ---------------------------------------------
+system("perl -S RGA.summary.pl $RGA_candidates_fasta >$summary_table");
 
 #------------------ clean files ----------------------------
 push(@deletion, $error_report) if (-z $error_report);  #remove Error.log if its' empty logged.
@@ -409,7 +495,7 @@ foreach my $file (@deletion) {
 }
 
 my $end_run = time();
-DEBUG("step 12 -> You have successfully finished RGA identification, cheering!");
+DEBUG("step 14 -> You have successfully finished RGA identification, cheering!");
 hhmmss_consumed($end_run - $start_run);
 
 #-----------------------------------------------------------
@@ -419,173 +505,6 @@ sub Ptime{
           my $time = localtime;
           my ($msg)= @_;
           print STDERR "$time: $msg\n";
-}
-
-sub generate_rand_filename {
-
-     my $length_of_randomstring=shift;
-
-     my @chars=('a'..'z','A'..'Z','0'..'9');
-     my $random_string;
-     foreach (1..$length_of_randomstring)
-     {
-          # rand @chars will generate a random
-          # number between 0 and scalar @chars
-          $random_string.=$chars[rand @chars];
-     }
-     return $random_string;
-}
-
-sub fasta_file_split {
-    my ($file, $thread) = @_;
-    my @splited_files = ();
-    my $i = 1;
-    my $fileNumber = 1;
-    local $/ = ">";
-    
-    my $seq_number       = `grep ">" $file |wc -l`; $seq_number =~ s/\s+//g;
-    my $each_file_number = abs($seq_number/$thread) + 1;
-    
-    push(@splited_files,".splited_file_$fileNumber.txt");
-    
-    open(IN,$file);
-    open (OUT,">.splited_file_$fileNumber.txt");
-    while (<IN>) {
-        chomp;
-        my ($title,$seq) = split/\n/,$_,2;
-        next unless ($title && $seq);
-        
-        $seq   =~ s/\s+//g;
-        
-        if ($i <= ($fileNumber*$each_file_number)) {
-            print OUT ">$title\n$seq\n";
-            $i++;
-        }
-        else {
-            close OUT;
-            $fileNumber++;
-            push(@splited_files,".splited_file_$fileNumber.txt");
-            
-            open(OUT,">.splited_file_$fileNumber.txt");
-            print  OUT ">$title\n$seq\n";
-            $i++;
-        }
-    }
-    close IN;
-    close OUT;
-    local $/ = "\n";
-    return(@splited_files);
-}
-
-sub files_remove{
-    my @files = @_;
-    foreach my $file (@files) {
-        unlink "$file" or warn "could not remove $file: $!\n";
-    }
-}
-
-sub threads_finish_examination{
-    my ($userID, @keywords) = @_;  #keywords is a key word that can distinguish it from other unrunning return from ps -ef
-    while (1) {
-        #print "ps -u $userID -f\n";
-        my @commands = `ps -f -u $userID`;
-        my $flag = 0;
-        
-        foreach my $line (@commands) {
-               foreach my $keyword (@keywords) {
-                   if ($line =~ /$keyword/i) {
-                       $flag++;
-                   }
-               }
-        }
-        
-        #print STDERR "flag = $flag\n";
-        if ($flag>0) {
-            sleep 10;
-        }
-        else {
-            #all keywords can ben detected from @commands.
-            last;
-        }
-    }
-}
-
-
-sub splitted_results_merge {
-    my ($output,@splitted_out) = @_;
-    
-    open(OUT,">$output");
-    foreach my $file (@splitted_out) {
-        if (-s $file) {
-            open(IN,$file);
-            while (<IN>) {
-                chomp;
-                next if ($_ =~ /^\s*$/ or $_ =~ /^#/);
-                print OUT "$_\n";
-            }
-            close IN;
-        }
-        else {
-            print STDERR "$file size is zero\n";
-        }
-    }
-    close OUT;
-}
-
-sub pfamscan_parallel {
-    my ($pfam_out, $e_seq, $e_dom, $cpu, $RGA_blast_fasta, $pfam_index_folder) = @_;
-    my @splitted_out = ();
-    my $userID = `echo \$USER`;
-    my @fingerprints = ();
-    
-    my @split_files = fasta_file_split($RGA_blast_fasta, $cpu);
-    foreach my $file (@split_files) {
-        if (-e $file) {
-            my $fingerprint = generate_rand_filename(10); #to replace PID to monitor the status of threads
-            push(@fingerprints,$fingerprint);
-            system("perl -S pfam_scan.pl -outfile .splited.$fingerprint.pfam$file.out -e_seq $e_seq -e_dom $e_dom --cpu 1 -as -fasta $file -dir $pfam_index_folder &");
-            push(@splitted_out,".splited.$fingerprint.pfam$file.out");
-        }else {
-            print STDERR "unable to find splitted infile $file\n";
-        }
-    }
-    
-    #below section is to check if all pfam_scan.pl threads are done.
-    threads_finish_examination($userID,@fingerprints);
-
-    #splitted result merge to an intact output $tmp_file
-    splitted_results_merge($pfam_out,@splitted_out);
-
-    files_remove(@splitted_out);
-    files_remove(@split_files);
-}
-
-sub blastp_parallel {
-    my ($aa_formated_infile,$RGD_index_file,$blast_evalue,$RGA_blast_out,$cpu) = @_;
-    my @splitted_out = ();
-    my $userID = `echo \$USER`;
-    my @fingerprints = ();
-    
-    my @split_files = fasta_file_split($aa_formated_infile, $cpu);
-    foreach my $file (@split_files) {
-        if (-e $file) {
-            my $fingerprint = generate_rand_filename(10); #to replace PID to monitor the status of threads
-            push(@fingerprints,$fingerprint);
-            system("blastp -task blastp -query $file -db $RGD_index_file -evalue $blast_evalue -out .splited.$fingerprint.blast$file.out -num_threads 1 -outfmt \"6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen slen stitle\" &");
-            push(@splitted_out,".splited.$fingerprint.blast$file.out");
-        }else {
-            print STDERR "unable to find splitted infile $file\n";
-        }
-    }
-    
-    #below section is to check if all pfam_scan.pl threads are done.
-    threads_finish_examination($userID, @fingerprints);
-
-    #splitted result merge to an intact output $tmp_file
-    splitted_results_merge($RGA_blast_out,@splitted_out);
-
-    files_remove(@splitted_out);
-    files_remove(@split_files);
 }
 
 sub output_protein_fasta_lst_manner {
@@ -605,7 +524,6 @@ sub output_protein_fasta_lst_manner {
     close IN;
     close OUT;
 }
-
 
 sub output_protein_fasta_ram_manner {
     my ($lst_ref, $source_ref, $output, $line) = @_;
@@ -673,7 +591,6 @@ sub format_fasta {
             $fasta{$title} = $seq;
         }
         close IN;
-        DEBUG("$output existed in current folder, reading it to RAM and going ahead with next step...");
     }
     else {
         open(IN, $input) or die "unalbe to open $input\n";
@@ -681,7 +598,7 @@ sub format_fasta {
             chomp;
             my ($title, $seq) = split/\n/,$_,2;
             next unless ($title and $seq);
-            my ($id) = $title =~ /([a-zA-Z0-9\.\-\_]+)/;
+            my ($id) = $title =~ /(\S+)/;   #([a-zA-Z0-9\.\-\_]+)
             
             $seq   =~ s/\s+//g;
             $seq   =~ s/\*//g;
@@ -696,7 +613,6 @@ sub format_fasta {
         }
         close OUT;
     }
-    
     return \%fasta;
 }
 
@@ -706,7 +622,7 @@ sub hhmmss_consumed {
   my $minz = int($leftover/60);
   my $secz = int($leftover % 60);
   my $consumed = sprintf ("%02d:%02d:%02d", $hourz,$minz,$secz);
-  DEBUG("step 13 -> input <$aa_infile> time taken -  $consumed");
+  DEBUG("step 15 -> input <$aa_infile> time taken -  $consumed");
 }
 
 sub extra_LRR_analysis{
@@ -779,3 +695,48 @@ sub getLogFilename{
     my $filename = $status_log;
     return $filename;
 } 
+
+sub valid_gff_extraction {
+    my ($gff, $lst) = @_;
+    
+    my %lst = ();
+    my %validgff = ();
+    open(LST,$lst) or die "unable to open $lst";
+    while (<LST>) {
+        chomp;
+        my ($id,@others) = split/\t/,$_;
+        $lst{$id} = 1;
+    }
+    close LST;
+    
+    open(GFF,$gff) or die "unable to open $gff";
+    while (<GFF>) {
+        chomp;
+        next if (/^#/ or /^\s*$/);
+        
+        my @array = split/\t/,$_;
+        my ($geneid) = $array[8] =~ /ID=(.*?)\;/i;
+        
+        if (exists $lst{$geneid}) {
+            push(@{$validgff{$geneid}},$_);
+        }
+    }
+    close GFF;
+
+    return(\%validgff);    
+}
+
+
+sub output_RGA_gff {
+    my ($output, $ref) = @_;
+    my %gff = %{$ref};
+    
+    open(OUT,">$genegff");
+    foreach my $id (sort {$a cmp $b} keys %gff) {
+        my @gff = @{$gff{$id}};
+        foreach my $line (@gff) {
+            print OUT "$line\n";
+        }
+    }
+    close OUT;
+}
