@@ -44,20 +44,20 @@
               </div>
               <textarea spellcheck="false" class="form-control" id="protein_seq" name="protein_seq" rows="5"></textarea>
               <div id="div-gff-fasta">
-              <div id='div-sample-gff'>
-                <br> Sample gff3 file has been provided.
-              </div>
-              <div id="loadFile-div">
-                <br> or load a local file in
-                <a href="help#markdown-header-fasta-format-for-protein-and-dna"> FASTA </a> format:
-                <input id="seq_file" name="seq_file" type="file" value="">
-                <br>
-                <div id="div-gff">
-                  General feature format <a href="help#markdown-header-gff3"> (.gff3) </a> file (optional):
-                  <input id="gff3_file" name="gff3_file" type="file" />
+                <div id='div-sample-gff'>
+                  <br> Sample gff3 file has been provided.
                 </div>
-              </div>
-              <input type="hidden" name="gff3" value="">
+                <div id="loadFile-div">
+                  <br> or load a local file in
+                  <a href="help#markdown-header-fasta-format-for-protein-and-dna"> FASTA </a> format:
+                  <input id="seq_file" name="seq_file" type="file" value="">
+                  <br>
+                  <div id="div-gff">
+                    General feature format <a href="help#markdown-header-gff3"> (.gff3) </a> file (optional):
+                    <input id="gff3_file" name="gff3_file" type="file" />
+                  </div>
+                </div>
+                <input type="hidden" name="gff3" value="">
               </div>
               <br>
             </fieldset>
@@ -73,21 +73,37 @@
               </p>
               <p>
                 Databases for InterProscan:
+                <br>
+                <input type="radio" name="mode" value="Quick Mode" checked> Quick Mode: pfam + gene3D
+                <br>
+                <input type="radio" name="mode" value="Deep Mode"> Deep Mode: pfam + gene3D + SMART + superFamily
+                <br>
+                <input type="radio" name="mode" value="Free Mode"> Free Mode:
                 <label class="checkbox-inline" for="pfam">
-                  <input id="pfam" checked="" name="database" type="checkbox" value="pfam"> pfam
+                  <input id="pfam" checked name="database" type="checkbox" value="pfam" disabled> pfam
                 </label>
                 <label class="checkbox-inline" for="gene3d">
-                  <input id="gene3d" checked="" name="database" type="checkbox" value="gene3d"> gene3D
+                  <input id="gene3d" checked name="database" type="checkbox" value="gene3d" disabled> gene3D
                 </label>
                 <label class="checkbox-inline" for="SMART">
-                  <input id="SMART" name="database" type="checkbox" value="SMART"> SMART
+                  <input id="SMART" name="database" type="checkbox" value="smart" disabled> SMART
                 </label>
                 <label class="checkbox-inline" for="superFamily">
-                  <input id="superFamily" name="database" type="checkbox" value="superfamily"> superFamily
+                  <input id="superFamily" name="database" type="checkbox" value="superfamily" disabled> superFamily
                 </label>
                 <label class="checkbox-inline" for="pather">
                   <input {{panther}} class="{{panther}}" id="pather" name="database" type="checkbox" value="pather"> panther
+                  {% if panther == 'disabled'%} 
+                    {{ '(to be installed)' }}
+                  {% endif %}
                 </label>
+
+
+                <input hidden name="db_hidden" type="checkbox" value="pfam" checked>
+                <input hidden name="db_hidden" type="checkbox" value="gene3d" checked>
+                <input hidden name="db_hidden" type="checkbox" value="smart">
+                <input hidden name="db_hidden" type="checkbox" value="superfamily"> 
+                <input hidden name="db_hidden" type="checkbox" value="pather">
               </p>
               <p {{cpu}}>
                 CPU threads Number:

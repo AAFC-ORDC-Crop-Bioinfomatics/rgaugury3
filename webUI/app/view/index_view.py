@@ -142,7 +142,7 @@ def processForm():
         cpu_num = '-1'
 
     # get selected databases
-    dbs = request.form.getlist('database')
+    dbs = request.form.getlist('db_hidden')
     dbs_str = ",".join(dbs);
     
     # chnge the current folder to the newly generated project folder to run the pipeline
