@@ -176,6 +176,7 @@ $(function() {
         $('#modal').modal('show');
       } else {
         $('#modal h4').text(versionStatus);
+        $('#still-run').css('visibility', 'visible');
         $('#modal').modal('show');
         checkversion();
       }
