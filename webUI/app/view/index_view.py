@@ -1,7 +1,7 @@
 from app import app, db, models
 from flask import request
 from time import time, strptime
-from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE, SAMPLE_GFF
+from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE, SAMPLE_GFF, WEB_UI_LOG
 from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR, BASE_PATH
 from os import path, makedirs, chdir
 from subprocess import Popen, PIPE
@@ -13,8 +13,7 @@ from psutil import Process
 import os 
 from random import randint
 from shutil import copyfile
-
-if app.config.get('WEB_UI_LOG', None):
+if WEB_UI_LOG == True:
     from weblog import logging
 
 InterProScan_PAHT = ''
@@ -49,7 +48,7 @@ def index():
                 panther = ''
         else:
             print "There is no "+property_file
-            if app.config.get('WEB_UI_LOG', None):
+            if WEB_UI_LOG == True:
                 logging.error("There is no "+property_file)
 
         return render('index.html', cpu=cpu_toggle, panther=panther)
