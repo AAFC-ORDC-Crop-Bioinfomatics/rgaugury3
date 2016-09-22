@@ -6,7 +6,7 @@ use Getopt::Long;
 #this script is better than extract.gff.to.CVIT.kits.by.gene.id.pl
 
 GetOptions(my $options = {},
-              "-l=s","-f=s","-t=s","-c=s","-t2=s","-p=s","-dir=s"
+              "-l=s","-f=s","-t=s","-c=s","-t2=s","-p=s","-dir=s","-pfx=s"
 );
 
 
@@ -24,8 +24,9 @@ Arguments:
         -f       gff3 file
         -t       gff3 types in 3rd column, like 'gene','mRNA','sRNA', default = 'gene'
         -c       color of annoated gene,'red','blue','green','yellow','orange','black'
-        -t2      gene type,like 'RLK', "RLP","NBS"
+        -t2      gene type,like 'RLK', "RLP", "NBS"
         -dir     output directory
+        -pfx     prefix for output filename
 
 enjoy it!
 USAGE
@@ -39,6 +40,7 @@ my %id = ();#all id derived from protein fasta file
 my $type = ($options->{t}) ? $options->{t} : 'gene';
 my $type2 = $options->{t2};
 my $dir = ($options->{dir}) ? $options->{dir}: "./" ;
+my $prefix = ($options->{pfx}) ? $options->{pfx} : "input" ;  $prefix =~ s/\.$//g;
 
 local $/ = ">";
 
@@ -61,7 +63,6 @@ while (<IN>) {
     $list{$array[0]} = 1;
 }
 close IN;
-
 
 open(IN,"$options->{f}");
 while (<IN>) {
@@ -99,7 +100,7 @@ while (<IN>) {
 }
 close IN;
 
-open(OUT,">$dir/CVIT.input.$type2.$options->{c}.txt"); 
+open(OUT,">$dir/$prefix.CViT.$type2.$options->{c}.txt"); 
 foreach my $id (sort {$a cmp $b} keys %gene) {
                     my $chr   =  $gene{$id}->{chr};
                     my $start =  $gene{$id}->{start};

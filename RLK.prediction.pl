@@ -4,6 +4,10 @@ use Getopt::Long;
 use Scalar::Util qw(looks_like_number);
 use FindBin;
 
+use File::Basename qw(dirname);
+use Cwd  qw(abs_path);
+use lib dirname(abs_path $0);
+use Tool qw(transmembrane);
 
 #print STDERR "This script is yet to be finished, the RLK and RLP has minor redundant with NBS encoding genes\n";
 
@@ -47,7 +51,7 @@ my $phobius_output = "$prefix"."phobius.txt";
 
 my @pfam_rlk       = keys %{file_parser("$FindBin::Bin/configuration_rlk.txt")};
 
-transmembrane($input, $phobius_output);
+transmembrane($input, $phobius_output, $cpu);
 
 # --------------data processing-----------
 
@@ -146,6 +150,7 @@ foreach my $file (@tmp) {
 close ALL;
 
 # -----------sub--------------
+=for comment
 sub transmembrane {
     my ($input, $output) = @_;
     my @splitted_out = ();
@@ -181,7 +186,7 @@ sub transmembrane {
     files_remove(@splitted_out);
     files_remove(@renamed_split_files);
 }
-
+=cut
 
 sub pfam_parse{
     my $input = shift;
@@ -267,7 +272,7 @@ sub Ptime{
           my ($msg)= @_;
           print STDERR "$time: $msg\n";
 }
-
+=for comment
 sub fasta_file_split {
     my ($file, $thread) = @_;
     my @splited_files = ();
@@ -373,7 +378,7 @@ sub splitted_results_merge {
     }
     close OUT;
 }
-
+=cut
 sub file_parser {
     my $file = shift;
     my %pfam = ();

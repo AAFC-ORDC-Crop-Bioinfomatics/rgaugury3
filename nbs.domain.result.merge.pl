@@ -65,7 +65,7 @@ foreach my $gene (sort {$a cmp $b} keys %domain) {
     my $cc  = ($domain{$gene}->{cc}  and $domain{$gene}->{cc}  =~ /domain/) ? $domain{$gene}->{cc}  : '.' ;
 
     #make sure all identified genes go through below process as NBS-encoding genes
-    next unless ($nbs =~ /domain/);
+    next unless ($nbs =~ /domain/i or $tir =~ /domain/i);
     
     print join("\t", $gene,$seqlen{$gene},$nbs,$lrr,$tir,$cc);
     print "\n";
