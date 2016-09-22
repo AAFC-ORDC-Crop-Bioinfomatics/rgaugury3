@@ -78,9 +78,10 @@ def getPrjInfo():
 def delete(prj_id):
     # delete records in database
     prj = db.session.query(models.Project).get(prj_id)
-    if prj and prj.gene_amount:
-        gene_amount = db.session.query(models.GeneAmount).get(prj.gene_amount)
-        db.session.delete(gene_amount)
+    if prj:
+        if prj.gene_amount:
+            gene_amount = db.session.query(models.GeneAmount).get(prj.gene_amount)
+            db.session.delete(gene_amount)
         db.session.delete(prj)
         db.session.commit()
     # delete project folder

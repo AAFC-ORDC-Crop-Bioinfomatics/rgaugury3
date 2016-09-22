@@ -176,6 +176,7 @@ $(function() {
         $('#modal').modal('show');
       } else {
         $('#modal h4').text(versionStatus);
+        $('#still-run').css('visibility', 'visible');
         $('#modal').modal('show');
         checkversion();
       }
@@ -238,7 +239,7 @@ function checkversion() {
       } else {
         // need to upgrade interproscan
         versionIsOk = false;
-        versionStatus = 'The latest version is ' + data + '. Please upgrade interproscan first.'
+        versionStatus = 'The latest version is ' + data + '. Please update the InterproScan database as soon as possible, otherwise the prediction performance and prediction will be affected'
         v_status = 1;
       }
     }

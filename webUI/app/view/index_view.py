@@ -1,23 +1,23 @@
 from app import app, db, models
 from flask import request
 from time import time, strptime
-from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE, SAMPLE_GFF
+from config import PRJ_HOME, PERL, RGAUGURY_PL, CPU_TOGGLE, SAMPLE_GFF, WEB_UI_LOG
 from config import DATE_FORMAT, SAMPLE_FASTA,START_PIPELINE,ENVIR, BASE_PATH
 from os import path, makedirs, chdir
 from subprocess import Popen, PIPE
 from datetime import datetime
-from app.tool import render
+from app.tool import render, get_byte_size
 import requests
 import re
 from psutil import Process
 import os 
 from random import randint
 from shutil import copyfile
-
-if app.config.get('WEB_UI_LOG', None):
+if WEB_UI_LOG == True:
     from weblog import logging
 
 InterProScan_PAHT = ''
+PANTHER_MIN_SIZE = 10000000900 # byte
 
 ## set up environment variables
 for key, value in ENVIR.iteritems():
@@ -45,11 +45,16 @@ def index():
                      m = re.search('panther.models.dir\s*=\s*(.+)\s*', line)
                      if m:
                         panther_dir = m.group(1)
-            if path.exists(InterProScan_PAHT + '/' +panther_dir):
+                        print panther_dir
+            if panther_dir[0] != '/':
+                panther_dir = InterProScan_PAHT + '/' +panther_dir
+            if path.exists(panther_dir) and get_byte_size(panther_dir) > PANTHER_MIN_SIZE:
                 panther = ''
+                print "found panther"
+
         else:
             print "There is no "+property_file
-            if app.config.get('WEB_UI_LOG', None):
+            if WEB_UI_LOG == True:
                 logging.error("There is no "+property_file)
 
         return render('index.html', cpu=cpu_toggle, panther=panther)
@@ -112,6 +117,7 @@ def processForm():
     if protein_seq_str:
         with open(protein_seq_file, "w") as fh:
             fh.write(protein_seq_str)
+            fh.close()
     else:
         seq_f = request.files['seq_file']
         if seq_f:

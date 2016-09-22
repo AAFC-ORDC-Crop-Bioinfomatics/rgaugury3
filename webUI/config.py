@@ -5,21 +5,21 @@ import psutil
 ENVIR = {
 'PATH' : '/home/quanx/app/jdk1.8.0_91/bin:/home/quanx/app/ncbi-blast-2.3.0+/bin:\
 /home/quanx/app/hmmer-3.1b2-linux-intel-x86_64/binaries:/home/quanx/app/PfamScan:\
-/home/quanx/app/interproscan-5.19-58.0:/home/quanx/job/repo/rgaugury:\
-/home/quanx/job/repo/rgaugury/coils:/home/quanx/app/cvit.1.2.1:/home/quanx/app/phobius1.01:\
+/home/quanx/app/interproscan-5.17-57.0:/home/quanx/repo/rga:\
+/home/quanx/repo/rga/coils:/home/quanx/app/cvit.1.2.1:/home/quanx/app/phobius1.01:\
 /home/quanx/app/ncbi-blast-2.3.0+/bin',
 
 'JAVA_HOME':'/home/quanx/app/jdk1.8.0_91',
 'PERL5LIB':'/home/quanx/app/PfamScan',
-'COILSDIR':'/home/quanx/job/repo/rgaugury/coils',
+'COILSDIR':'/home/quanx/repo/rga/coils',
 'PFAMDB':'/home/quanx/pfamdb'
 }
 
 ### production environment ########
 WEB_UI_LOG = False
 ENABLE_CACHE = False       ### ! important, set enable_cache as True in the deployment enviroment.
-DEBUG = False   ### ! important
-PIPELINE_HOME='/home/quanx/job/repo/rgaugury'
+DEBUG = True   ### ! important
+PIPELINE_HOME='/home/quanx/repo/rga'
 # any bitbucket username and password will work
 USER_NAME = ''
 PASSWORD = ''
