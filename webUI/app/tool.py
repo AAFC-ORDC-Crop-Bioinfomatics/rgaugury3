@@ -155,3 +155,11 @@ def getGff(prj_id, gene):
                        start = l[3], end = l[4], score = l[5], \
                        strand  = l[6], frame  = l[7], attribute  =gene))
     return gffs
+
+def get_byte_size(start_path = '.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
