@@ -84,6 +84,7 @@ def createZip(id, file):
         addZip(id+META_FILE,zipf)
         addZip(id+GENE_FILE,zipf)
         addZip(id+SUMMARY_FILE,zipf)
+        addZip(id+'.CViT.all.txt',zipf)
 
 @app.route('/distribution/<prj_id>')
 def distribution(prj_id):
