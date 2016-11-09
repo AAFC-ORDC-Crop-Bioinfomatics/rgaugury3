@@ -450,7 +450,9 @@ if ($gff and -s $gff) {
     # to get a proper ratio to replace the tick interval and scale factor in cvit.ini, which can plot a better figure in width vs height.
     my $ratio     = $max_len_v/30_000_000;
     my $tick_interval = (sprintf("%d",$ratio) + 1)*1_000_000;
-    my $scale_factor  = sprintf("%f",(0.00002)*$ratio);
+    my $scale_factor  = sprintf("%f",(0.00002)/$ratio);
+    
+    DEBUG("step 12 -> maxlen = $max_len_v or $max_len; ratio = $ratio ; scale_factor = $scale_factor;  tick_interval = $tick_interval...");
 
     my $cmd1 = "sed  '/\\(^tick_interval\\s*=\\).*/ s//\\1   $tick_interval/'  $FindBin::Bin/cvit.ini >$cvitini";
     system($cmd1);
