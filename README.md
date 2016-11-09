@@ -16,3 +16,4 @@ A:please follow the [Wiki](https://bitbucket.org/yaanlpc/rgaugury/wiki/) page fo
 
 ###Q:how to cite this tool if my research benefited from RGAugury?  
 A:Please use below information.
+Li, P., Quan, X., Jia, G., Xiao, J., Cloutier, S. and You, F.M. (2016) RGAugury: a pipeline for genome-wide prediction of resistance gene analogs (RGAs) in plants. BMC genomics, 17, 852.
