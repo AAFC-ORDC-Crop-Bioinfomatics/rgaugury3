@@ -2,7 +2,7 @@ package Tool;
 use strict;
 use warnings;
 use Exporter qw(import);
- 
+
 our @EXPORT_OK = qw(parallel blastp_parallel files_remove pfamscan_parallel transmembrane iprscan coils_parallel splitted_results_merge);
 
 my $BLASTP = "blastp";
@@ -13,11 +13,17 @@ my $IPSCAN= "iprscan";
 
 sub parallel {
   my ($task,$input_file,$cpu,$cmd,$output_file) = @_;
+
+  if (-z $input_file) {
+    system("touch $output_file");
+    return;
+  }
+
   my @split_files = fasta_file_split($input_file, $cpu);
   my @pids=();
   my @splitted_out = ();
   my $pid;
-  
+
   foreach my $file (@split_files) {
       if (-e $file) {
           my $output = ".splited.$task$file.out";
@@ -40,13 +46,13 @@ sub parallel {
           print STDERR "unable to find splitted infile $file\n";
       }
   }
-  
-  waitpid($_,0) for @pids;  
+
+  waitpid($_,0) for @pids;
   #splitted result merge to an intact output $tmp_file
   splitted_results_merge($output_file,@splitted_out);
   files_remove(@splitted_out);
   files_remove(@split_files);
-} 
+}
 
 sub blastp_parallel {
   my ($aa_formated_infile,$RGD_index_file,$blast_evalue,$RGA_blast_out,$cpu) = @_;
@@ -54,12 +60,12 @@ sub blastp_parallel {
   $cmd .= "-out {out} -num_threads 1 -outfmt '6 qseqid sseqid pident length mismatch ";
   $cmd .= "gapopen qstart qend sstart send evalue bitscore qlen slen stitle'";
 
-  parallel($BLASTP, $aa_formated_infile,$cpu,$cmd,$RGA_blast_out);  
+  parallel($BLASTP, $aa_formated_infile,$cpu,$cmd,$RGA_blast_out);
 }
 
 sub pfamscan_parallel {
     my ($pfam_out, $e_seq, $e_dom, $cpu, $RGA_blast_fasta, $pfam_index_folder) = @_;
-    my $cmd = "perl -S pfam_scan.pl -outfile {out} -e_seq $e_seq -e_dom $e_dom --cpu 1 -as -fasta {in} -dir $pfam_index_folder";            
+    my $cmd = "perl -S pfam_scan.pl -outfile {out} -e_seq $e_seq -e_dom $e_dom --cpu 1 -as -fasta {in} -dir $pfam_index_folder";
     parallel($PFAMSCAN, $RGA_blast_fasta, $cpu,$cmd, $pfam_out);
 }
 
@@ -109,20 +115,20 @@ sub fasta_file_split {
     my $i = 1;
     my $fileNumber = 1;
     local $/ = ">";
-    my $seq_number = `grep ">" $file |wc -l`; 
+    my $seq_number = `grep ">" $file |wc -l`;
     $seq_number =~ s/\s+//g;
     my $each_file_number = abs($seq_number/$thread) + 1;
     push(@splited_files,".splited_file_$fileNumber.txt");
-    
+
     open(IN,$file);
     open (OUT,">.splited_file_$fileNumber.txt");
     while (<IN>) {
         chomp;
         my ($title,$seq) = split/\n/,$_,2;
         next unless ($title && $seq);
-        
+
         $seq   =~ s/\s+//g;
-        
+
         if ($i <= ($fileNumber*$each_file_number)) {
             print OUT ">$title\n$seq\n";
             $i++;
@@ -131,7 +137,7 @@ sub fasta_file_split {
             close OUT;
             $fileNumber++;
             push(@splited_files,".splited_file_$fileNumber.txt");
-            
+
             open(OUT,">.splited_file_$fileNumber.txt");
             print  OUT ">$title\n$seq\n";
             $i++;
@@ -151,4 +157,3 @@ sub files_remove{
 }
 
 1;
-
