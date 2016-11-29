@@ -10,7 +10,7 @@ We sincerely wish this tool can significantly benefit your resistance gene study
 A: yes it’s totally free under the GPL license.  
 
 
-###Q:How do I get it set up?  
+###Q:how do I get it set up?  
 A:please follow the [Wiki](https://bitbucket.org/yaanlpc/rgaugury/wiki/) page for installation instruction, as well as [WebUI](https://bitbucket.org/yaanlpc/rgaugury/wiki/Web%20UI%20Help) help page.  
 
 
