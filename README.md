@@ -23,4 +23,4 @@ A: please contact with Dr. You via his email or office phone number.
 A:Please use below citation.
 
   
-Li, P., Quan, X., Jia, G., Xiao, J., Cloutier, S. and You, F.M. (2016) RGAugury: a pipeline for genome-wide prediction of resistance gene analogs (RGAs) in plants. BMC genomics, 17, 852.
+Li, P., Quan, X., Jia, G., Xiao, J., Cloutier, S. and You, F.M. (2016) RGAugury: a pipeline for genome-wide prediction of resistance gene analogs (RGAs) in plants. **BMC genomics****, 17, 852.
