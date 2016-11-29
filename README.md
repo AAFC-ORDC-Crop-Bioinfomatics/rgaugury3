@@ -14,6 +14,10 @@ A: yes it’s totally free under the GPL license.
 A:please follow the [Wiki](https://bitbucket.org/yaanlpc/rgaugury/wiki/) page for installation instruction, as well as [WebUI](https://bitbucket.org/yaanlpc/rgaugury/wiki/Web%20UI%20Help) help page.  
 
 
+###Q:who shall I contact with if meeting technical issue whatever installation or usage?  
+A: please contact with Dr. You via his email or office phone number.
+
+
 ###Q:how to cite this tool if my research benefited from RGAugury?  
 A:Please use below information.
 
