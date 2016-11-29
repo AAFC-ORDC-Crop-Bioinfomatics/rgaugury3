@@ -1,7 +1,8 @@
+
 ## Welcome ##
 
 Welcome to the RGAugury project.
-This project aims to develop a sophisticated informatics tools for large scale of resistance gene analogs identification, include major groups of RGAs, such as NBS encoding genes, receptor like proteins and receptor like protein kinases. It’s thus named as RGA augury or RGAugury standalone pipeline. At the meantime, we also provide a friendly web-based user interface for those who just want to have easier usages and experience via web, it's already embedded in master branch.
+This project aims to develop a sophisticated informatics tools for large scale of resistance gene analogs identification, include major groups of RGAs, such as NBS encoding genes, receptor like proteins and receptor like protein kinases. It’s thus named as RGA augury or RGAugury standalone pipeline. At the meantime, we also provide a friendly web-based [user interface](http://rgaugury.bitbucket.org/index.html) for those who just want to have easier usages and experience via web, it's already embedded in master branch.
 
 We sincerely wish this tool can significantly benefit your resistance gene study and enjoy the convenience.
 
