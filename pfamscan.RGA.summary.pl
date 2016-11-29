@@ -6,11 +6,11 @@ use Getopt::Long;
 my $USAGE = <<USAGE;
 Scripts: pfam_scan RGA summary script
 
-arguments: 
+arguments:
 
         -i           inputfile, output by pfam_scan.pl script
         -pfx         prefix
-        
+
 USAGE
 
 #---------- parameters which should be defined in advance -----------
@@ -36,30 +36,30 @@ while (<IN>) {
     next if (/^\s/);
     next if (/^>/);
     next unless (/^\w/);
-    
+
     my $start = $array[1];
     my $end   = $array[2];
-    
+
     my ($id) = $array[0] =~ /(\S+)/;
     if ($array[6] =~ /LRR/i) {
         $summary{$id}->{LRR}++;
         push(@{$domain{LRR}->{$id}},join("|","domain_LRR","$start-$end"));
     }
-    
+
     if ($array[6] =~ /NB-ARC/i) {
         $summary{$id}->{NBS}++;
-        push(@{$domain{NBS}->{$id}},join("|","domain_NBS","$start-$end"));        
+        push(@{$domain{NBS}->{$id}},join("|","domain_NBS","$start-$end"));
     }
-    
-    if ($array[6] =~ /TIR/i) {
+
+    if ($array[6] =~ /TIR/) {
         $summary{$id}->{TIR}++;
-        push(@{$domain{TIR}->{$id}},join("|","domain_TIR","$start-$end"));        
+        push(@{$domain{TIR}->{$id}},join("|","domain_TIR","$start-$end"));
     }
-    
+
     # -----------more motif dissect------------------
     #if ($array[6] =~ /PPR/i) {
     #    $summary{$id}->{PPR}++;
-    #    push(@{$domain{PPR}->{$id}},join("|","domain_PPR","$start-$end"));        
+    #    push(@{$domain{PPR}->{$id}},join("|","domain_PPR","$start-$end"));
     #}
 }
 close IN;
@@ -83,10 +83,4 @@ foreach my $domain (keys %domain) {
         print DOMAIN "\n";
     }
     close DOMAIN;
-}    
-
-
-
-
-
-
+}
