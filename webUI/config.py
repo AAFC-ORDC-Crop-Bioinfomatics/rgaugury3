@@ -3,26 +3,30 @@ import psutil
 
 ### environment variables ###
 ENVIR = {
-'PATH' : '/home/quanx/app/jdk1.8.0_91/bin:/home/quanx/app/ncbi-blast-2.3.0+/bin:\
-/home/quanx/app/hmmer-3.1b2-linux-intel-x86_64/binaries:/home/quanx/app/PfamScan:\
-/home/quanx/app/interproscan-5.17-57.0:/home/quanx/repo/rga:\
-/home/quanx/repo/rga/coils:/home/quanx/app/cvit.1.2.1:/home/quanx/app/phobius1.01:\
-/home/quanx/app/ncbi-blast-2.3.0+/bin',
+'PATH' : '/usr/bin/:\
+/home/xuyihui/RGAugury/ncbi-blast-2.10.1+-x64-linux/ncbi-blast-2.10.1+/bin:\
+/home/xuyihui/RGAugury/hmmer3.1b2:\
+/home/xuyihui/RGAugury/PfamScan:\
+/home/xuyihui/database/interproscan-5.46-81.0-64-bit/interproscan-5.46-81.0:\
+/home/xuyihui/RGAugury/rgaugury:\
+/home/xuyihui/RGAugury/rgaugury/coils:\
+/home/xuyihui/RGAugury/cvit.1.2.1:\
+/home/xuyihui/RGAugury/phobius101_linux/tmp/tmprnL5On/phobius',
 
-'JAVA_HOME':'/home/quanx/app/jdk1.8.0_91',
-'PERL5LIB':'/home/quanx/app/PfamScan',
-'COILSDIR':'/home/quanx/repo/rga/coils',
-'PFAMDB':'/home/quanx/pfamdb'
+ 'JAVA_HOME':'/usr/lib/jvm/java-11-openjdk-amd64',
+ 'PERL5LIB':'/home/xuyihui/RGAugury/PfamScan',
+ 'COILSDIR':'/home/xuyihui/RGAugury/rgaugury/coils',
+ 'PFAMDB':'/home/xuyihui/database/pfamdb'
 }
 
 ### production environment ########
 WEB_UI_LOG = False
-ENABLE_CACHE = False       ### ! important, set enable_cache as True in the deployment enviroment.
-DEBUG = True   ### ! important
-PIPELINE_HOME='/home/quanx/repo/rga'
+ENABLE_CACHE = True      ### ! important, set enable_cache as True in the deployment enviroment.
+DEBUG = False   ### ! important
+PIPELINE_HOME='/home/xuyihui/RGAugury/rgaugury'
 # any bitbucket username and password will work
-USER_NAME = ''
-PASSWORD = ''
+USER_NAME = 'xuyihui1999@icloud.com'
+PASSWORD = 'Xu65183843'
 
 ### application ###
 PORT = 7000

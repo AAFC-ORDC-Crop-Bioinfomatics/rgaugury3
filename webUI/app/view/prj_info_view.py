@@ -46,7 +46,10 @@ def ds_header(prj_id):
   path = PRJ_HOME + '/' + prj_id + '/' + prj_id + GENE_FILE
   with open(path,'r') as f:
     row = f.readline().split('\t')
+    
+
   return jsonify(columns=row)  
+
 
 
 @app.route('/gene_info/<prj_id>/<gene_type>')

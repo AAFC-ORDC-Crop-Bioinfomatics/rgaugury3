@@ -10,16 +10,21 @@ rlk_data = undefined
 tmcc_data = undefined
 root=""
 
+
+    
 $(function() {
+    
     prj_id = $("#prj_id").text().trim();
+
     root = $("#root").text().trim();
 
     highlight($('#gene_type button').first());
     
     $('#gene_type button').click(function() {
-        highlight($(this))
+        
+        highlight($(this));
         initDSTable(activeTable, $(this).text());
-      
+        console.log(prj_id);
     });
 
 //    $(document).on('click', '.ds_table img', function(event) {
@@ -112,6 +117,8 @@ function addHeader(callback) {
                 e.stopImmediatePropagation();
             });
             callback();
+        },"error": function(){
+            console.log("can't get json data")
         }
     });
 }

@@ -80,7 +80,7 @@ Step 4: Restart the apache 'service apache2 restart'
     3 . install python-dev
     "~$sudo apt-get install python-dev" to install psutil
     4 . install modules
-    "~$sudo pip install -r requirements.txt" (requirements.txt is under webUI folder)
+    "~$pip install -r requirements.txt" (requirements.txt is under webUI folder)
     5 . install database
     "~$sudo apt-get install sqlite3"
     6 . initialize database
